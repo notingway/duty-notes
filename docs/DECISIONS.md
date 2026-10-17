@@ -53,7 +53,7 @@ you clicked in the tree.
 
 - **The editor's buttons split by what they do.** The left pane has the ones that add something (+ Encounter, + Phase, Import). The right pane has one line under the
   sheet's name for the ones that act on the selected sheet (Move up, Move down, Duplicate, Export, Delete), and the result of the last import or export is shown
-  there too. Export copies a whole encounter, so only an encounter has the button; a phase does not show one (exporting a single phase is on the roadmap).
+  there too. Export copies a whole encounter, so only an encounter has the button; a phase does not show one (exporting or importing a single phase was considered and dropped; see the roadmap).
 
 - **Ctrl + click on Delete skips the confirmation.** Deleting always asks first, but Undo brings a sheet back, so the owner can hold Ctrl to skip the question. (Same habit as Ctrl + right-click on a locked overlay.)
 

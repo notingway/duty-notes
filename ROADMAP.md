@@ -11,20 +11,14 @@ the items below.
 
 ## Open
 
-1. **Job-aware overlay.** Dim or hide the skills your job doesn't have, so you spot your own mitigation at a glance.
-   Small: the job matching already exists for the skill picker (`ActionCatalog.UsableBy`). Probably a three-way setting
-   (show all, dim, hide) in Settings > Style or Layout.
-2. **Publishing.** Needed only if it is released:
-   - the GitHub repository (handle `notingway`) and its address in the manifest (`RepoUrl`);
+1. **Publishing.** Needed only if it is released:
+   - the repository exists (`notingway/duty-notes`, private for now); its address still has to go in the manifest (`RepoUrl`), and it has to be made public;
    - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
    - decide whether to test through a testing channel first.
-3. **Live cooldowns on the icons** (greyed with a timer). The biggest and riskiest item: it needs the game's action manager and
-   internal structures that change between patches.
-4. **Import a single phase** into an existing encounter. Import currently takes whole encounters only.
-5. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
-6. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
+2. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
+3. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
-7. **Turn the console tests into a proper test framework** (xunit) and, if a repository is set up, run them in CI. CI needs
+4. **Turn the console tests into a proper test framework** (xunit) and, if a repository is set up, run them in CI. CI needs
    the Dalamud assemblies, which come from a Dalamud distribution, not from NuGet.
 
 ## Small things noticed and left
@@ -35,6 +29,9 @@ the items below.
 
 ## Declined or deferred (don't redo without a reason)
 
+- **A job-aware overlay** (dim or hide the skills your job doesn't have). Abandoned by the owner. It would have been small: the job matching exists for the skill picker (`ActionCatalog.UsableBy`), with a three-way setting (show all, dim, hide).
+- **Live cooldowns on the icons** (greyed with a timer). Abandoned by the owner. It was the biggest and riskiest idea: it needs the game's action manager and internal structures that change between patches.
+- **Importing a single phase** into an existing encounter. Abandoned by the owner. Import and export take whole encounters only, so a phase has no Export button.
 - **Sorting skills by duration, cooldown or power.** Alphabetical and cooldown would be reliable, but duration and power
   are not in the game data in a usable form (descriptions leave the duration blank). Could return with a hand-curated table.
 - **An editable column title** to replace "Mechanic". The word is the community's own; kept.
