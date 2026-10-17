@@ -69,6 +69,7 @@ and they need the Dalamud files on disk.
 | `Configuration.cs` **pure** | The saved data: `SheetRow`, `SheetNode`, `Configuration`, the `Defaults` class, enums. Also the navigation state, per-section reset methods (each returns an undo closure), and tree helpers. |
 | `Sharing.cs` **pure** | Export/import text. `Sharing.Converter` turns untrusted data into real sheets (clamps, caps, drops unknown ids). |
 | `OverlayWindow.cs` | The overlay: one shared table for all sections, title rows, optional header rows, `SpanningTextRow` for note rows, the right-click menu, auto-size anchoring. |
+| `ScreenPlacement.cs` **pure** | `KeepOnScreen`: moves a window just far enough to be reachable. The overlay calls it on its first frame after opening. Window positions themselves are remembered by Dalamud in `dalamudUI.ini`, not by the plugin. |
 | `SaveScheduler.cs` **pure** | Decides when a pending save is due (after a quiet moment, never later than a longest wait). `Plugin.Save()` writes now; `Plugin.SaveSoon()` is for changes that arrive every frame (a dragged slider, typing). |
 | `HelpCommands.cs` **pure** | The list of chat commands, what each does, and which get a suggested macro. The Help tab is drawn from it (`HelpTab.cs`). |
 | `HelpTab.cs` | The Help tab: how to make a macro, and the commands with Copy buttons. |

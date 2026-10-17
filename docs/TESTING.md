@@ -19,7 +19,7 @@ They also need the Dalamud files on disk: the project references `Dalamud.dll` a
 as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
 shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-At the time of writing: **48 tests, 207 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+At the time of writing: **54 tests, 225 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
 `dotnet test` reports the tests; the checks are the `Check` calls.)
 
 | Test class | What it checks |
@@ -28,6 +28,7 @@ At the time of writing: **48 tests, 207 checks, all passing.** (This is the one 
 | `SettingsTests` (defaults, resets, overlay visibility) | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
 | `SerializationTests` (saving and loading settings) | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
 | `SaveSchedulerTests` (when a pending save is written) | Nothing is pending until something changes; a change is due after the quiet time; a burst of changes is one save; a run of changes that never pauses is still saved at the longest wait; a save clears what was pending and the next change starts a fresh wait |
+| `ScreenPlacementTests` (keeping a window reachable) | A window that is already reachable is left alone; one above the top, or too far off any side, is moved back so its title bar is on the screen and 80 pixels of it show; a second screen keeps its own origin; tiny, huge and unknown-size cases are handled |
 | `HelpTests` (the command list) | The Help tab's list is well formed, matches the commands `Plugin.OnCommand` handles (it reads `Plugin.cs`), and matches the README |
 | `SharingTests` (export and import) | Round trip, what this game version doesn't know, broken text, which message each kind of header gets (a newer version versus not ours), and hostile text (a gzip bomb, type-name tricks, oversized counts, control characters) |
 
@@ -64,6 +65,7 @@ Tested outside the game only. Confirm each, and then move it up to the list abov
 
 | Feature | What to check |
 | --- | --- |
+| **Overlay off the screen** | Move the overlay mostly off the top of the screen (or leave it there), close the game and start it again, then show the overlay: it comes back on the screen, with its title bar reachable. The Dalamud log has a line "The overlay was off the screen at ..., and was moved to ...". On a fresh install it first appears at the top left, a little in from the corner |
 | **The overlay starts hidden** | Close the game with the overlay showing (and **Show overlay** ticked), then start it again: the overlay is hidden and **Show overlay** in the editor is unticked, with or without encounters. `/dutynotes` and the tickbox show it. Entering a duty with a sheet for your job still brings it up by itself (auto-open) |
 | **Delete row label** | A note row's delete button now says **Delete row**, the same as a mechanic row's, and its undo entry says "Deleted row" |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and

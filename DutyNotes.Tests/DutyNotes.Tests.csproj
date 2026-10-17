@@ -37,6 +37,7 @@
     <Compile Include="..\DutyNotes\Sharing.cs" Link="Plugin\Sharing.cs" />
     <Compile Include="..\DutyNotes\HelpCommands.cs" Link="Plugin\HelpCommands.cs" />
     <Compile Include="..\DutyNotes\SaveScheduler.cs" Link="Plugin\SaveScheduler.cs" />
+    <Compile Include="..\DutyNotes\ScreenPlacement.cs" Link="Plugin\ScreenPlacement.cs" />
   </ItemGroup>
 
   <ItemGroup>

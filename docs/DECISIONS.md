@@ -76,6 +76,8 @@ you clicked in the tree.
 
 - **The overlay starts hidden every time the game starts.** Whether it was showing when the game last closed is not remembered (`OverlayVisible` is reset at startup). It comes up through `/dutynotes`, the "Show overlay" tickbox, or auto-select (auto open) when you enter a duty with a sheet for your job. A fresh install, or an empty list, therefore never greets you with a window. If a "show at start" setting is ever wanted, it belongs in Settings > Behavior.
 
+- **The overlay is kept on the screen.** Its position and size are remembered between sessions by Dalamud itself (ImGui keeps every window's layout in `dalamudUI.ini`), so the plugin does not store them. The first time the overlay opens after each start, `ScreenPlacement.KeepOnScreen` checks that its title bar is on the screen and 80 pixels of it show, and moves it just far enough if not (a position saved by an older version, or a change of resolution or monitor, would otherwise leave it out of reach). On a fresh install it starts at the top left (80, 80).
+
 ## What the overlay shows
 
 - **Show full encounter** (setting): the encounter's own rows, then every phase, one shared table. Off: the encounter's own

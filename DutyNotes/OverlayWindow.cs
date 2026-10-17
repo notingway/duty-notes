@@ -18,6 +18,10 @@ public sealed class OverlayWindow : Window, IDisposable
         Size = new Vector2(420, 240);
         SizeCondition = ImGuiCond.FirstUseEver;
 
+        // Where it first appears, on a fresh install (a window that has been placed before keeps its own place).
+        Position = new Vector2(80, 80);
+        PositionCondition = ImGuiCond.FirstUseEver;
+
         // Dalamud closes a focused window when Escape is pressed. The overlay stays up during play, and Escape is
         // what you press for the game's own menus, so it must not close (and switch "Show overlay" off) by accident.
         RespectCloseHotkey = false;
@@ -56,6 +60,24 @@ public sealed class OverlayWindow : Window, IDisposable
     {
         lastSize = null;
         settleFrames = SettleFramesAfterOpen;
+        placeOnScreen = true;
+    }
+
+    // Each time the overlay opens, a position that is off the screen (saved by an older version, or left behind by a change of
+    // resolution or monitor) is corrected on its first frame.
+    private bool placeOnScreen;
+
+    private void KeepWindowOnScreen()
+    {
+        placeOnScreen = false;
+
+        var viewport = ImGui.GetWindowViewport();
+        var pos = ImGui.GetWindowPos();
+        var fixedPos = ScreenPlacement.KeepOnScreen(pos, ImGui.GetWindowSize(), viewport.Pos, viewport.Size);
+        if (fixedPos == pos) return;
+
+        ImGui.SetWindowPos(fixedPos);
+        Plugin.Log.Information("The overlay was off the screen at {Old}, and was moved to {New}", pos, fixedPos);
     }
 
     public override void OnClose()
@@ -112,6 +134,8 @@ public sealed class OverlayWindow : Window, IDisposable
     {
         var cfg = plugin.Config;
         baseFontSize = ImGui.GetFontSize(); // the unscaled size, before any font is pushed
+
+        if (placeOnScreen) KeepWindowOnScreen();
 
         if (cfg.AutoSize) KeepAnchorFixed(cfg);
         else lastSize = null;
