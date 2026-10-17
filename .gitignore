@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+*.pdb
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Test and tooling output
+TestResults/
+*.log
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Local scratch: throwaway probe projects (see CLAUDE.md)
+probe/
+dnprobe/
+mitprobe/
