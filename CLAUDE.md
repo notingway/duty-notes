@@ -268,6 +268,6 @@ The same trick works for testing logic outside the game: a temp console project 
 ## Where things stand
 
 See [ROADMAP.md](ROADMAP.md) for the open work and [docs/TESTING.md](docs/TESTING.md) for what is confirmed in game. At
-the time of writing, the owner had run everything in `docs/TESTING.md` in game and confirmed it, except the two newest changes (the overlay starting hidden at every game start, and the Delete row label). Older notes below may still list items that are now confirmed: switching rows off, column alignment, the Help tab with its macro icons, the
+the time of writing, the owner had run everything in `docs/TESTING.md` in game and confirmed it, except the two newest changes (the overlay being moved back on the screen when its saved position is off it, and the Delete row label). The overlay starting hidden and keeping its position are confirmed. Older notes below may still list items that are now confirmed: switching rows off, column alignment, the Help tab with its macro icons, the
 Ctrl + right-click menu on a locked overlay and several visual changes (the full list is in `docs/TESTING.md`). The next session
 should start by asking the owner what they saw.

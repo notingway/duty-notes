@@ -57,6 +57,7 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 - **Phases:** the phase buttons under the overlay (also while the editor is open), Previous / Next greyed out at the ends with a tooltip.
 - **Sharing:** Export and Import through the paste window.
 - **Help tab:** the commands, the macro icons, and the copy icons.
+- **Startup and position:** the overlay starts hidden every time the game starts, and its position is remembered between sessions (by Dalamud).
 - **No encounters:** deleting every encounter, with the empty-state messages, Undo, Import into the empty list, and the list staying empty after a restart.
 
 ### Built, but not yet confirmed in game
@@ -66,7 +67,6 @@ Tested outside the game only. Confirm each, and then move it up to the list abov
 | Feature | What to check |
 | --- | --- |
 | **Overlay off the screen** | Move the overlay mostly off the top of the screen (or leave it there), close the game and start it again, then show the overlay: it comes back on the screen, with its title bar reachable. The Dalamud log has a line "The overlay was off the screen at ..., and was moved to ...". On a fresh install it first appears at the top left, a little in from the corner |
-| **The overlay starts hidden** | Close the game with the overlay showing (and **Show overlay** ticked), then start it again: the overlay is hidden and **Show overlay** in the editor is unticked, with or without encounters. `/dutynotes` and the tickbox show it. Entering a duty with a sheet for your job still brings it up by itself (auto-open) |
 | **Delete row label** | A note row's delete button now says **Delete row**, the same as a mechanic row's, and its undo entry says "Deleted row" |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.
