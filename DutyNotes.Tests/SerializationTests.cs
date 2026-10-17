@@ -1,5 +1,4 @@
-using Newtonsoft.Json;
-using static DutyNotes.Tests.T;
+﻿using Newtonsoft.Json;
 
 namespace DutyNotes.Tests;
 
@@ -8,7 +7,7 @@ namespace DutyNotes.Tests;
 /// That combination once doubled every nested list on each load, and renaming the plugin changed the recorded
 /// type names, so both are covered here.
 /// </summary>
-internal static class SerializationTests
+public sealed class SerializationTests : CheckBase
 {
     // How Dalamud reads and writes plugin settings.
     private static readonly JsonSerializerSettings Dalamud = new()
@@ -18,15 +17,8 @@ internal static class SerializationTests
         Formatting = Formatting.Indented,
     };
 
-    public static void Run()
-    {
-        RepeatedLoadsDontDuplicate();
-        LegacyNamesAreRewritten();
-        OldAndOddFilesStillLoad();
-        DeepTreesAreFlattened();
-    }
-
-    private static void RepeatedLoadsDontDuplicate()
+    [Fact]
+    public void RepeatedLoadsDontDuplicate()
     {
         var c = new Configuration { Roots = { new SheetNode { Name = "TEA" } } };
         c.Migrate();
@@ -46,7 +38,8 @@ internal static class SerializationTests
         }
     }
 
-    private static void LegacyNamesAreRewritten()
+    [Fact]
+    public void LegacyNamesAreRewritten()
     {
         // A trimmed settings file as the plugin wrote it under its old name, MitigationSheet.
         const string legacy = """
@@ -89,7 +82,8 @@ internal static class SerializationTests
         Check("rewriting an already current file changes nothing", Configuration.RenameLegacyTypes(rewritten) == rewritten);
     }
 
-    private static void OldAndOddFilesStillLoad()
+    [Fact]
+    public void FilesFromBeforeASettingExistedStillLoad()
     {
         // A file from before a setting existed: the missing setting takes its default.
         var older = (Configuration)JsonConvert.DeserializeObject(
@@ -109,7 +103,11 @@ internal static class SerializationTests
             "{ \"$type\": \"DutyNotes.Configuration, DutyNotes\", \"Roots\": [ { \"$type\": \"DutyNotes.SheetNode, DutyNotes\", \"Name\": \"x\", " +
             "\"FreeNotes\": \"old text\", \"FreeNotesBelow\": true, \"Rows\": [], \"Children\": [] } ] }", Dalamud)!;
         Check("fields the plugin no longer has are ignored", withRemoved.Roots.Count == 1 && withRemoved.Roots[0].Name == "x");
+    }
 
+    [Fact]
+    public void ConfigurationsWithNoEncountersAreValid()
+    {
         // A fresh install, or a file whose encounters were all deleted, has none, and that is fine: nothing is selected.
         var empty = new Configuration();
         empty.Migrate();
@@ -127,7 +125,8 @@ internal static class SerializationTests
         Check("a flat list of rows from the first version becomes one encounter", flat.Roots.Count == 1 && flat.Roots[0].Rows.Count == 1 && flat.Rows.Count == 0);
     }
 
-    private static void DeepTreesAreFlattened()
+    [Fact]
+    public void DeepTreesAreFlattened()
     {
         // Only two levels exist (encounter > phase). An older file with deeper nesting is hoisted up on load.
         var c = new Configuration();
@@ -139,7 +138,11 @@ internal static class SerializationTests
         c.Migrate();
         Check("anything nested deeper than a phase becomes a phase",
               c.Roots[0].Children.Select(n => n.Name).SequenceEqual(new[] { "Phase", "Too deep" }) && c.Roots[0].Children.All(n => n.Children.Count == 0));
+    }
 
+    [Fact]
+    public void TheSameNodeListedTwiceIsKeptOnce()
+    {
         // The old duplication bug left the same phase in a list twice; loading heals that.
         var dup = new Configuration();
         var e = new SheetNode { Name = "E" };
@@ -148,7 +151,11 @@ internal static class SerializationTests
         dup.Roots.Add(e); dup.Roots.Add(e);
         dup.Migrate();
         Check("the same node listed twice is kept once", dup.Roots.Count == 1 && dup.Roots[0].Children.Count == 1);
+    }
 
+    [Fact]
+    public void EarlierPerJobLimitBreaksAreFoldedIntoOne()
+    {
         // The plugin briefly offered each limit break as its own skill; they are folded into the one "Limit Break" entry.
         var lb = new Configuration();
         var lbEncounter = new SheetNode { Name = "LB" };

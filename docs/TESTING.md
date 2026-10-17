@@ -6,23 +6,29 @@ that does. The plugin draws with ImGui inside the game, so most of what you *see
 ## Automated tests
 
 ```powershell
-dotnet run --project DutyNotes.Tests -c Release
+dotnet test DutyNotes.Tests -c Release
 ```
 
-A plain console program. It needs **no NuGet packages**, but it does need the Dalamud files on disk: it references `Dalamud.dll` and
-`Newtonsoft.Json.dll` from your XIVLauncher install (`%APPDATA%\XIVLauncher\addon\Hooks\dev\`, or set `/p:DalamudLibPath=...`),
-because `Configuration.cs` implements Dalamud's `IPluginConfiguration`. It prints every check and a summary, and exits with 0 when
-all pass and 1 otherwise.
+The tests use **xunit**, so the first build downloads three NuGet packages (`Microsoft.NET.Test.Sdk`, `xunit` and `xunit.runner.visualstudio`).
+They also need the Dalamud files on disk: the project references `Dalamud.dll` and `Newtonsoft.Json.dll` from your XIVLauncher install
+(`%APPDATA%\XIVLauncher\addon\Hooks\dev\`, or set `/p:DalamudLibPath=...`), because `Configuration.cs` implements Dalamud's
+`IPluginConfiguration`. The command exits with 0 when everything passes and 1 otherwise. For a readable list of every test, add
+`--logger "console;verbosity=normal"`, and to run some of them, `--filter "FullyQualifiedName~Navigation"` (any part of a class or test name).
 
-At the time of writing: **189 passed, 0 failed.** (This is the one place the count is recorded; update it here when you add tests.)
+**How a test is written.** A test is a method marked `[Fact]`, in a class that inherits `CheckBase`. It calls `Check("what should be true", condition)`
+as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
+shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-| Suite | What it checks |
+At the time of writing: **41 tests, 191 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+`dotnet test` reports the tests; the checks are the `Check` calls.)
+
+| Test class | What it checks |
 | --- | --- |
-| Navigation between phases | Next, Previous and Reset (including the ends and encounters without phases), fallbacks for deleted ids, how the editor's selection drives the navigation, stepping from the encounter view |
-| Settings, defaults, reset and overlay visibility | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
-| Saving and loading settings | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
-| Help: the command list | The Help tab's list is well formed, matches the commands `Plugin.OnCommand` handles (it reads `Plugin.cs`), and matches the README |
-| Export and import | Round trip, what this game version doesn't know, broken text, which message each kind of header gets (a newer version versus not ours), and hostile text (a gzip bomb, type-name tricks, oversized counts, control characters) |
+| `NavigationTests` (stepping between phases) | Next, Previous and Reset (including the ends and encounters without phases), fallbacks for deleted ids, how the editor's selection drives the navigation, stepping from the encounter view |
+| `SettingsTests` (defaults, resets, overlay visibility) | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
+| `SerializationTests` (saving and loading settings) | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
+| `HelpTests` (the command list) | The Help tab's list is well formed, matches the commands `Plugin.OnCommand` handles (it reads `Plugin.cs`), and matches the README |
+| `SharingTests` (export and import) | Round trip, what this game version doesn't know, broken text, which message each kind of header gets (a newer version versus not ours), and hostile text (a gzip bomb, type-name tricks, oversized counts, control characters) |
 
 **Not covered, because it needs the game:** everything drawn with ImGui, Dalamud services (data, textures, client state), the game's
 data catalogs (`ActionCatalog`, `DutyCatalog`, `JobCatalog`, `FontCache`), the clipboard, and the file dialogs.
@@ -30,9 +36,9 @@ data catalogs (`ActionCatalog`, `DutyCatalog`, `JobCatalog`, `FontCache`), the c
 ### Adding a test
 
 Put new logic that is worth testing in a file with no Dalamud services or ImGui (`Configuration.cs`, `Sharing.cs`,
-or a new pure file added to `DutyNotes.Tests.csproj`), then add checks to a suite or a new file. A suite is a method called from
-`Program.cs` with `T.Suite("name", Run)`, and a check is `Check("what should be true", condition)`. For a bug that was found in
-game, reproduce it in a test first.
+or a new pure file added to `DutyNotes.Tests.csproj`), then add a `[Fact]` to a test class (or a new class that inherits `CheckBase`) and
+make its checks with `Check("what should be true", condition)`. Give each test its own data, never data left over from another test. For
+a bug that was found in game, reproduce it in a test first.
 
 ## Manual checklist (needs the game)
 

@@ -1,14 +1,13 @@
-using static DutyNotes.Tests.T;
-
-namespace DutyNotes.Tests;
+﻿namespace DutyNotes.Tests;
 
 /// <summary>
 /// The Help tab is drawn from <see cref="HelpCommands"/>. These checks keep that list honest: well formed, matching what the plugin
 /// actually handles, and matching the README, so a new command can't be added in one place and forgotten in the others.
 /// </summary>
-internal static class HelpTests
+public sealed class HelpTests : CheckBase
 {
-    public static void Run()
+    [Fact]
+    public void TheCommandListIsWellFormed()
     {
         var all = HelpCommands.All;
 
@@ -30,9 +29,16 @@ internal static class HelpTests
         Check("only next, prev and reset have a macro",
               all.Where(c => c.Macro is not null).Select(c => c.Command).OrderBy(x => x).SequenceEqual(new[] { "/dutynotes next", "/dutynotes prev", "/dutynotes reset" }));
         Check("commands with no macro have none to copy", all.Where(c => c.MacroName is null).All(c => c.Macro is null));
+    }
 
-        // The files next to the tests: found by walking up from the build folder (skipped if the tests run somewhere else).
+    [Fact]
+    public void TheCommandListMatchesThePluginAndTheReadme()
+    {
+        var all = HelpCommands.All;
+
+        // The files next to the tests: found by walking up from the build folder.
         var root = FindRoot();
+        Check("the README and Plugin.cs are found above the tests", root is not null);
         if (root is null) return;
 
         var plugin = File.ReadAllText(Path.Combine(root, "DutyNotes", "Plugin.cs"));

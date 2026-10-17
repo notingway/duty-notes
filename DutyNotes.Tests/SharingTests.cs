@@ -1,16 +1,14 @@
 using System.IO.Compression;
 using System.Text;
-using static DutyNotes.Tests.T;
 
 namespace DutyNotes.Tests;
 
-internal static class SharingTests
+public sealed class SharingTests : CheckBase
 {
     // Stand-ins for the game's data: every skill and job exists, and every duty id n is in zone n * 10.
     private static ImportResult Import(string text, Func<uint, bool>? skill = null, Func<uint, (uint, string)?>? duty = null, Func<uint, bool>? job = null)
         => Sharing.Import(text, skill ?? (_ => true), duty ?? (id => (id * 10, "Duty " + id)), job ?? (_ => true));
 
-    /// <summary>Wraps JSON the way an export does, so a test can hand-craft the contents.</summary>
     /// <summary>The JSON inside an export text.</summary>
     private static string Gunzip(string text)
     {
@@ -20,20 +18,13 @@ internal static class SharingTests
         return reader.ReadToEnd();
     }
 
+    /// <summary>Wraps JSON the way an export does, so a test can hand-craft the contents.</summary>
     private static string Pack(string json, string prefix = "DutyNotes:1:")
     {
         using var output = new MemoryStream();
         using (var gzip = new GZipStream(output, CompressionLevel.Optimal, leaveOpen: true))
             gzip.Write(Encoding.UTF8.GetBytes(json));
         return prefix + Convert.ToBase64String(output.ToArray());
-    }
-
-    public static void Run()
-    {
-        RoundTrip();
-        WhatThisGameDoesNotKnow();
-        BrokenText();
-        HostileText();
     }
 
     private static string Export(out SheetNode original)
@@ -51,7 +42,8 @@ internal static class SharingTests
         return Sharing.Export(original);
     }
 
-    private static void RoundTrip()
+    [Fact]
+    public void AnEncounterSurvivesExportAndImport()
     {
         var text = Export(out var original);
         Check("an export is short enough to paste anywhere", text.Length < 1000, text.Length + " characters");
@@ -71,6 +63,14 @@ internal static class SharingTests
         Check("the counts are reported", result.Phases == 4 && result.Rows == 10 && result.DroppedSkills == 0 && !result.DutyCleared);
         Check("every sheet gets a fresh id", e.Id != original.Id && !e.Children.Select(c => c.Id).Intersect(original.Children.Select(c => c.Id)).Any());
         Check("the import is a copy, nothing is shared with the original", !ReferenceEquals(e.Rows[0].Actions, original.Rows[0].Actions));
+
+    }
+
+    [Fact]
+    public void PhasesAndRowsThatAreOffStayOffThroughExportAndImport()
+    {
+        var text = Export(out var original);
+        var e = Import(text).Encounter!;
 
         // Which phases are switched off travels with the encounter. Text from before that existed has every phase on.
         Check("an encounter with every phase on imports with every phase on", e.Children.All(c => c.Enabled));
@@ -96,16 +96,29 @@ internal static class SharingTests
         Check("an export with every row on does not mention it",
               !Gunzip(Sharing.Export(new SheetNode { Name = "E", Rows = { new SheetRow { Mechanic = "A" } } })).Contains("\"x\""));
 
+    }
+
+    [Fact]
+    public void PastedTextOftenArrivesInOddShapes()
+    {
+        var text = Export(out _);
+
         // Pasted text often arrives with spaces around it, or wrapped onto several lines.
         var wrapped = string.Join("\r\n", Enumerable.Range(0, (text.Length + 59) / 60).Select(i => text.Substring(i * 60, Math.Min(60, text.Length - i * 60))));
         Check("text wrapped onto several lines still imports", Import(wrapped).Encounter?.Rows.Count == 2, Import(wrapped).Error ?? "");
         Check("spaces and blank lines around the text are ignored", Import("\n  " + text + "  \r\n\r\n").Encounter is not null);
         Check("a line break right after the prefix is accepted", Import("DutyNotes:1:\n" + text["DutyNotes:1:".Length..]).Encounter is not null);
 
+    }
+
+    [Fact]
+    public void TheSampleInTheSamplesFolderImports()
+    {
         // The sample in samples/ is real text people paste; it must keep importing.
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "samples", "example-encounter.txt"))) dir = dir.Parent;
-        if (dir is not null)
+        Check("the sample file is found in samples/", dir is not null);
+        if (dir is null) return;
         {
             var sample = Import(File.ReadAllText(Path.Combine(dir.FullName, "samples", "example-encounter.txt")));
             var s = sample.Encounter;
@@ -119,7 +132,8 @@ internal static class SharingTests
         }
     }
 
-    private static void WhatThisGameDoesNotKnow()
+    [Fact]
+    public void WhatThisGameVersionDoesNotKnowIsDroppedAndCounted()
     {
         var text = Export(out _);
         var r = Import(text, skill: id => id != 7535, duty: _ => null, job: _ => false);
@@ -128,7 +142,8 @@ internal static class SharingTests
         Check("an unknown job becomes any job", r.Encounter.JobId == 0);
     }
 
-    private static void BrokenText()
+    [Fact]
+    public void BrokenTextIsRefusedWithAMessage()
     {
         var text = Export(out _);
 
@@ -168,7 +183,8 @@ internal static class SharingTests
         Says("a lowercase header is not our text", "dutynotes:1:AAAA", "doesn't look like Duty Notes text");
     }
 
-    private static void HostileText()
+    [Fact]
+    public void HostileTextIsRefusedOrCutDown()
     {
         void Rejects(string label, string input)
         {

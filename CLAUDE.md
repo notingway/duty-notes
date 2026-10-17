@@ -37,8 +37,8 @@ as a dev plugin only. The plugin was originally called "Mitigation Sheet", which
 # build
 dotnet build DutyNotes\DutyNotes.csproj -c Release -p:Platform=x64
 
-# run the automated tests (exit code 0 when all pass; the current count is in docs/TESTING.md)
-dotnet run --project DutyNotes.Tests -c Release
+# run the automated tests (xunit; exit code 0 when all pass; the current count is in docs/TESTING.md)
+dotnet test DutyNotes.Tests -c Release
 
 # deploy to where the owner's dev plugin path points, then they reload it in game
 $dest = "$env:USERPROFILE\Documents\DalamudDev\DutyNotes"
@@ -58,8 +58,8 @@ record unverified behavior in [docs/TESTING.md](docs/TESTING.md).
 Everything is in `DutyNotes/`. Files marked **pure** make no use of Dalamud services (data, textures, client state) or ImGui,
 are compiled into the test project, and must stay that way. "Pure" does **not** mean free of Dalamud assemblies:
 `Configuration.cs` implements Dalamud's `IPluginConfiguration`, so the test project references `Dalamud.dll` and
-`Newtonsoft.Json.dll` from the XIVLauncher install (`DalamudLibPath`, the same as the plugin). The tests need no NuGet packages,
-but they do need the Dalamud files on disk.
+`Newtonsoft.Json.dll` from the XIVLauncher install (`DalamudLibPath`, the same as the plugin). The tests use xunit (NuGet packages, restored on the first build),
+and they need the Dalamud files on disk.
 
 | File | Responsibility |
 | --- | --- |
@@ -156,7 +156,7 @@ just a field: the places below are all required, and missing one fails quietly (
 | 4 | `Configuration.cs`, `ResetStyle()` | Add it to the `before` tuple, assign `Defaults.NoteRowScale`, and add it to the tuple in the returned undo closure. (Same pattern in `ResetBehavior` and `ResetLayout`.) |
 | 5 | `EditorWindow.cs`, `DrawStyleGroup` (or the matching `DrawLayoutGroup`, `DrawBehaviorGroup`) | A slider: `dirty \|= FloatControl("Note row text", ref cfg.NoteRowScale, Configuration.MinScale, Configuration.MaxScale, "%.2f", "tooltip");` A bool: `dirty \|= ImGui.Checkbox(...)` followed by `ImGui.SameLine(); HelpMarker("...")`. Always set `dirty`, or it won't be saved. |
 | 6 | `OverlayWindow.cs` (or wherever it takes effect) | Read it from `plugin.Config`. `NoteRowScale` is read in `SpanningTextRow` and clamped to `Configuration.MinScale`/`MaxScale`, because a typed value is unclamped while it is being typed. |
-| 7 | `DutyNotes.Tests` | `SettingsTests.cs`: in `Defaults()` assert the default; in `Resets()` give it a non-default value in the object initializer and assert the section's Reset restores it and its undo brings the old value back. `SerializationTests.cs`, `OldAndOddFilesStillLoad`: an older file without the key gets the default. |
+| 7 | `DutyNotes.Tests` | `SettingsTests.cs`: in `ADefaultConfigurationIsAtItsDefaults` assert the default; in the `Changed()` helper give it a non-default value, and assert in the section's reset test (`StyleResetAndItsUndo`, `LayoutResetAndItsUndo` or `BehaviorResetAndItsUndo`) that the Reset restores it and its undo brings the old value back. `SerializationTests.cs`, `FilesFromBeforeASettingExistedStillLoad`: an older file without the key gets the default. |
 | 8 | Docs | `CHANGELOG.md`, `docs/TESTING.md` (a row under "Built, but not yet confirmed in game", and the test count), and `docs/DECISIONS.md` if the setting embodies a decision. |
 
 A setting saved inside a sheet (`SheetNode` or `SheetRow`) is a different job: it also needs `Sharing.cs` (the export format, its limits and
@@ -169,11 +169,11 @@ A default is written once (`Defaults`), but many things repeat or pin its value.
 **talk to the owner first**: several defaults were chosen deliberately with them (see [docs/DECISIONS.md](docs/DECISIONS.md), "Settings").
 
 - **Tests that assert the old value** (they will fail, and that is the signal). By method:
-  - `SettingsTests.Defaults()`: column headers on, auto-size off, icon size 32; auto-select, auto open and auto hide on, and
+  - `SettingsTests.ADefaultConfigurationIsAtItsDefaults`: column headers on, auto-size off, icon size 32; auto-select, auto open and auto hide on, and
     cutscene hiding off (`HideDuringCutscenes`); note row size equals notes size.
-  - `SettingsTests.Resets()`: what each Reset restores. Style: icon size 32 and note row size 1. Layout: headers on, auto-size
+  - `SettingsTests` (the `Changed()` helper and the three `...ResetAndItsUndo` tests): what each Reset restores. Style: icon size 32 and note row size 1. Layout: headers on, auto-size
     off, column spacing 10, every column left and top. Behavior: auto-select and auto hide on, **cutscene hiding off**.
-  - `SerializationTests.OldAndOddFilesStillLoad`: what an older file without the key gets, but only for `AutoShowOverlay`,
+  - `SerializationTests.FilesFromBeforeASettingExistedStillLoad`: what an older file without the key gets, but only for `AutoShowOverlay`,
     `AutoHideOverlay` and `NoteRowScale`.
 - **Docs that repeat the value:** the defaults paragraph in `docs/DECISIONS.md`
   ("Settings") and the entry that explains the setting, plus `CHANGELOG.md`.

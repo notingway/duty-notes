@@ -1,17 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <!--
     Tests for the parts of Duty Notes that don't need the game: settings, navigation, and import/export.
-    A plain console program, so it needs no NuGet packages. Run it from the repository root with the dotnet run command, giving it the DutyNotes.Tests project.
-    The exit code is 0 when every check passes, 1 otherwise.
+    They use xunit, so they run with the dotnet test command, given this project (or the repository root).
+    Each test makes any number of checks, each with a label that says what should be true; see CheckBase.cs.
   -->
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
 
     <!-- Same assembly name as the plugin on purpose: saved settings record "DutyNotes.Configuration, DutyNotes",
          and the serialization tests need those type names to resolve. -->
@@ -25,11 +26,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Only the files that don't depend on the game. Anything that touches Dalamud services or ImGui can't run here. -->
     <Compile Include="..\DutyNotes\Configuration.cs" Link="Plugin\Configuration.cs" />
     <Compile Include="..\DutyNotes\Sharing.cs" Link="Plugin\Sharing.cs" />
     <Compile Include="..\DutyNotes\HelpCommands.cs" Link="Plugin\HelpCommands.cs" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>

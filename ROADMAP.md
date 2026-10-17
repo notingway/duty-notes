@@ -11,19 +11,16 @@ the items below.
 
 ## Open
 
-1. **Proper tests** (xunit, run with `dotnet test`). Before the repository goes public. Same checks and the same labels, one
-   independent test per scenario, with a before and after comparison of the check list so nothing is lost. It adds NuGet packages to the
-   test project, which today needs none.
-2. **Continuous integration** (a GitHub Actions workflow). **On hold for a while**, but to be done before the repository goes public, and after
-   the proper tests. The plan: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; the build points at them
-   with `DalamudLibPath`, which both projects already support), build the plugin, and run the tests. Check what the distribution contains
+1. **Continuous integration** (a GitHub Actions workflow). **On hold for a while**, but to be done before the repository goes public
+   (the tests are now xunit, so it is ready for this). The plan: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; the build points at them
+   with `DalamudLibPath`, which both projects already support), build the plugin, and run `dotnet test`. Check what the distribution contains
    before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
-3. **Publishing.** Needed only if it is released:
+2. **Publishing.** Needed only if it is released:
    - the repository exists (`notingway/duty-notes`, private for now); its address still has to go in the manifest (`RepoUrl`), and it has to be made public;
    - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
    - decide whether to test through a testing channel first.
-4. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
-5. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
+3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
+4. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
 ## Small things noticed and left
 

@@ -28,7 +28,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
   right-click menu on the overlay (Ctrl + right-click when locked).
 - **Settings.** Defaults live in one place, with a Reset button per section.
 - **Commands.** `/dutynotes` with `edit`, `lock`, `next`, `prev`, `reset` and `full`.
-- **Tests.** A test project for the logic that doesn't need the game (see [docs/TESTING.md](docs/TESTING.md)).
+- **Tests.** An xunit test project for the logic that doesn't need the game, run with `dotnet test` (see [docs/TESTING.md](docs/TESTING.md)).
 - **Switch phases and rows on and off.** Each phase in the Sheets tree and each row in the editor has a tick. An off phase is dimmed in the tree and skipped by the overlay, the full encounter view and Previous, Next and Reset (and the matching commands); while the editor is open, a phase you have selected still shows so you can edit it. An off row is dimmed in the editor and always left out of the overlay, including its note in the Notes column; a sheet whose rows are all off shows nothing. Both travel with export and import.
 - **Column alignment.** Each column (Mechanic, Mitigation, Notes) can be aligned left, center or right, and top, center or bottom, under Settings > Layout, by picking a dot on a 3 x 3 grid per column (the same control as Anchor). Left and top are the defaults, which is how the overlay always looked. Column headers follow the column's left, center or right setting. Up and down only shows when a row is taller than a cell's content.
 - **Limit Break in the skill picker.** One skill called "Limit Break" can be added to any row, for any job (it counts as defensive). It is one entry, not one per job and tier, because a plan only needs to say "use the limit break here".

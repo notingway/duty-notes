@@ -87,10 +87,10 @@ path points at.
 
 ### Tests
 
-The logic that doesn't need the game has a test project. It is a plain console program and needs no NuGet packages (it does use the Dalamud files from your XIVLauncher install, as the plugin does):
+The logic that doesn't need the game has an xunit test project (it downloads its NuGet packages on the first build, and uses the Dalamud files from your XIVLauncher install, as the plugin does):
 
 ```powershell
-dotnet run --project DutyNotes.Tests -c Release
+dotnet test DutyNotes.Tests -c Release
 ```
 
 It exits with 0 when everything passes. What it covers, and what it can't, is in [docs/TESTING.md](docs/TESTING.md).
