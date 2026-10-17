@@ -6,9 +6,12 @@ when you enter the duty, and you can step through the phases of a fight with but
 
 It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people who rehearse hard encounters.
 
-> **Status: in development, not published.** It runs as a dev plugin. Nothing is released, and the plugin is not in any
-> repository yet. See [ROADMAP.md](ROADMAP.md) for what is left and [docs/TESTING.md](docs/TESTING.md) for what has
+> **Status: in development, not yet released.** It runs as a dev plugin and has not been published to any plugin
+> repository. See [ROADMAP.md](ROADMAP.md) for what is left and [docs/TESTING.md](docs/TESTING.md) for what has
 > and hasn't been verified in game.
+
+> **Made with AI.** This plugin was written by an AI (Claude, by Anthropic), not by a human programmer. The owner directed the work
+> and tested it in game. See [AI disclosure](#ai-disclosure) below.
 
 ## What it does
 
@@ -102,13 +105,30 @@ It exits with 0 when everything passes. What it covers, and what it can't, is in
 
 | File | For |
 | --- | --- |
-| [CLAUDE.md](CLAUDE.md) | Anyone (or any AI session) continuing development: architecture, commands, pitfalls |
+| [CLAUDE.md](CLAUDE.md) | Anyone (or any AI session) continuing development: architecture, commands, pitfalls. Written for AI sessions |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Why the plugin works the way it does |
 | [docs/FORMATS.md](docs/FORMATS.md) | The export text and settings file formats |
 | [docs/GAME-DATA.md](docs/GAME-DATA.md) | What the game's data tables contain and how to look at them |
 | [docs/TESTING.md](docs/TESTING.md) | Automated tests, and the checklist for what needs the game |
 | [ROADMAP.md](ROADMAP.md) | What is planned and what was deliberately left out |
 | [CHANGELOG.md](CHANGELOG.md) | What changed |
+
+## AI disclosure
+
+This project was written with AI, and we want that to be clear to anyone who reads, installs or reuses it.
+
+- **Who wrote what.** The source code, the automated tests and the documentation were written by **Claude**, an AI model made by Anthropic,
+  working through Claude Code. The repository owner, [notingway](https://github.com/notingway), did not type the code. Their part was
+  deciding what the plugin should do and how it should look and behave, giving feedback on every iteration, and testing each feature in
+  the game (the checklist of what they confirmed is in [docs/TESTING.md](docs/TESTING.md)).
+- **What has been checked.** The logic that doesn't need the game has automated tests (`dotnet test`). Everything that needs the game was
+  checked by hand in game by the owner. It has not been independently reviewed by another developer.
+- **What that means for you.** It may contain mistakes that a human author would not have made, as well as ones they would. Bug reports
+  are welcome (open an issue), and so are corrections.
+- **`CLAUDE.md`** is a file written for AI coding sessions, so that work can continue in a new session. It is part of the repository on
+  purpose, and not hidden.
+
+This is written to be accurate about how the project was made. It is not a claim of quality in either direction.
 
 ## License
 

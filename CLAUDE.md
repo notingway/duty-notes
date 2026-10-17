@@ -251,6 +251,7 @@ The same trick works for testing logic outside the game: a temp console project 
 
 ## Working with the owner
 
+- **Be open that this project is AI-written.** The README carries an AI disclosure (a banner and a section). Keep it true: if the way the project is made changes, update it, and never describe AI-written work as human-written, in the README, commit messages, changelog or any submission text. For a submission to Dalamud's official repository, the owner has to write their own disclosure.
 - They **decide**; you advise. For a feature or a design change, answer "what do you think?" with a recommendation, the
   trade-offs and any decisions they need to make, then build once they agree. They often reply with a short
   "lets try your suggestion first" and then refine from screenshots. A message like "do not implement" means exactly that.
