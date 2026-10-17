@@ -126,6 +126,7 @@ This project was written with AI, and we want that to be clear to anyone who rea
   checked by hand in game by the owner. It has not been independently reviewed by another developer.
 - **What that means for you.** It may contain mistakes that a human author would not have made, as well as ones they would. Bug reports
   are welcome (open an issue), and so are corrections.
+- **The icon** (`images/icon.png`) was generated with ChatGPT (OpenAI) from a prompt written by the owner, then cropped and resized to 512 pixels.
 - **`CLAUDE.md`** is a file written for AI coding sessions, so that work can continue in a new session. It is part of the repository on
   purpose, and not hidden.
 

@@ -10,6 +10,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 
 ### Added
 
+- **An icon** (`images/icon.png`, 512 x 512): a clipboard with a shield, generated with ChatGPT and credited in the README.
 - **Sheets.** Encounters hold phases (two levels only), and phases hold rows. Mechanic rows have a name, skills shown
   as icons, and notes. Note rows are free text across the full width of the table.
 - **Skill picker.** Searchable, offers the skill versions that exist at the encounter's level, finds any version by
