@@ -31,6 +31,9 @@ the items below.
 
 ## Declined or deferred (don't redo without a reason)
 
+- **Caching the overlay's per-frame layout** (found by the publishing review: lists, LINQ and text wrapping are rebuilt every frame). Deferred by the owner. The cost is small for a normal sheet and nothing has been measured, while a stale cache would be a worse bug than the allocations it saves. Do it only if someone sees stutter, a reviewer asks, or a measurement (a stopwatch around `OverlayWindow.Draw`) shows it matters, and then fix only what the measurement points at.
+- **A guard for a failed settings load** (the review worried that an unreadable settings file would start empty and be overwritten by the next save). Deferred by the owner. Dalamud already writes plugin settings through `ReliableFileStorage` (atomic writes, plus a copy in an internal database it recovers from if the file is corrupt), which covers the case. What is not confirmed is what the plugin sees if both copies fail; at most, log it and show a message.
+
 - **A job-aware overlay** (dim or hide the skills your job doesn't have). Abandoned by the owner. It would have been small: the job matching exists for the skill picker (`ActionCatalog.UsableBy`), with a three-way setting (show all, dim, hide).
 - **Live cooldowns on the icons** (greyed with a timer). Abandoned by the owner. It was the biggest and riskiest idea: it needs the game's action manager and internal structures that change between patches.
 - **Importing a single phase** into an existing encounter. Abandoned by the owner. Import and export take whole encounters only, so a phase has no Export button.
