@@ -34,6 +34,10 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 - **Limit Break in the skill picker.** One skill called "Limit Break" can be added to any row, for any job (it counts as defensive). It is one entry, not one per job and tier, because a plan only needs to say "use the limit break here".
 - **Help tab.** A new tab in the editor lists every chat command. Next, prev and reset have a suggested macro: the suggested macro icon drawn next to it (right arrow, left arrow and the loop from the game's macro Icons window), a name, and a copy icon (the macro text is the command, shown when you hover the icon). The tab also explains how to make a macro.
 - **A sample.** `samples/example-encounter.txt` is an import text for a made-up "Example Encounter" with three phases. It shows a note row, a row and a phase switched off, and Limit Break. It names no real duty or job.
+### Changed
+
+- **Build.** The plugin now builds with `Dalamud.NET.Sdk` (the official way), which finds Dalamud itself and generates the manifest from `DutyNotes.csproj`. The hand-written `DutyNotes.json` is gone. A Release build also makes `latest.zip`. The output moved from `bin\x64\Release` to `bin\Release`. The assembly name, namespace and `InternalName` are unchanged, so saved settings still load. The unused `AllowUnsafeBlocks` setting was dropped.
+
 ### Removed
 
 - **Backups.** A backup and restore feature (files you choose, plus automatic dated copies) was built and then removed as overkill. Export and import of encounters covers keeping and sharing them. Settings it left in older files are ignored.

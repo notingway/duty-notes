@@ -23,11 +23,14 @@ as a dev plugin only. The plugin was originally called "Mitigation Sheet", which
 
 - Windows. **.NET 10 SDK** (10.0.402, installed with `winget install Microsoft.DotNet.SDK.10`). In a shell started before
   the install, `dotnet` may not be on PATH: use `C:\Program Files\dotnet\dotnet.exe`.
-- **Dalamud 15** (API 15, .NET 10, ImGui through `Dalamud.Bindings.ImGui`). The project does **not** use the
-  `Dalamud.NET.Sdk`; it references the DLLs in `%APPDATA%\XIVLauncher\addon\Hooks\dev\` by `HintPath` (property
-  `DalamudLibPath`). The reference set is Dalamud, Dalamud.Bindings.ImGui, Newtonsoft.Json, Lumina and Lumina.Excel.
-- The game is a Steam install: `C:\Program Files (x86)\Steam\steamapps\common\FINAL FANTASY XIV Online\game\sqpack`
-  (used by the game-data probes).
+- **Dalamud 15** (API 15, .NET 10, ImGui through `Dalamud.Bindings.ImGui`). The plugin project uses **`Dalamud.NET.Sdk/15.0.0`**
+  (see `DutyNotes.csproj`). The SDK finds Dalamud, ImGui, Lumina and Newtonsoft.Json in the XIVLauncher install by itself, and is itself
+  restored from NuGet, so the first build needs internet. It also **generates the manifest** from the properties in the csproj
+  (Author, Name, Punchline, Description, RepoUrl, Tags, Version): there is no hand-written `DutyNotes.json` any more. A Release build writes
+  `DutyNotes.dll`, `DutyNotes.json` (generated) and `DutyNotes.deps.json` to `DutyNotes\bin\Release\`, and a release package,
+  `DutyNotes\bin\Release\DutyNotes\latest.zip`. The **test project does not use the SDK**: it references `Dalamud.dll` and `Newtonsoft.Json.dll`
+  by `HintPath` from `%APPDATA%\XIVLauncher\addon\Hooks\dev\` (property `DalamudLibPath`).
+- The game-data probes (below) need the game's `sqpack` folder: `<game install>\game\sqpack`. Ask the owner where the game is installed.
 - Settings file: `%APPDATA%\XIVLauncher\pluginConfigs\DutyNotes.json`. Dalamud log: `%APPDATA%\XIVLauncher\dalamud.log`
   (search it for `DutyNotes`, `Switched to`, and `ImGui assertion failed`).
 
@@ -35,20 +38,19 @@ as a dev plugin only. The plugin was originally called "Mitigation Sheet", which
 
 ```powershell
 # build
-dotnet build DutyNotes\DutyNotes.csproj -c Release -p:Platform=x64
+dotnet build DutyNotes\DutyNotes.csproj -c Release
 
 # run the automated tests (xunit; exit code 0 when all pass; the current count is in docs/TESTING.md)
 dotnet test DutyNotes.Tests -c Release
 
-# deploy to where the owner's dev plugin path points, then they reload it in game
-$dest = "$env:USERPROFILE\Documents\DalamudDev\DutyNotes"
-Copy-Item DutyNotes\bin\x64\Release\* $dest -Force
-Copy-Item DutyNotes\DutyNotes.json $dest -Force
+# deploy to the folder the owner's dev plugin path points at (ask them which), then they reload it in game
+$dest = "<the dev plugin folder>"
+Get-ChildItem DutyNotes\bin\Release -File | Copy-Item -Destination $dest -Force
 ```
 
-The dev folder is **not** the repository. The owner added `...\DalamudDev\DutyNotes\DutyNotes.dll` under
+The dev folder is **not** the repository. The owner added the full path to `DutyNotes.dll` in it under
 `/xlsettings > Experimental > Dev Plugin Locations` (it must be an absolute path) and reloads the plugin from
-`/xlplugins > Dev Tools > Installed Dev Plugins`. `...\DalamudDev\MitigationSheet` is the stale pre-rename copy.
+`/xlplugins > Dev Tools > Installed Dev Plugins`. (Their folder also holds a stale `.pdb` from before the SDK switch, which can be deleted.)
 
 You cannot run the game, so **never claim something works in game.** Say "built, tests pass, not checked in game" and
 record unverified behavior in [docs/TESTING.md](docs/TESTING.md).
@@ -112,7 +114,7 @@ See [docs/DECISIONS.md](docs/DECISIONS.md).
 1. **Never rename the namespace, the assembly or a saved type without a migration.** Settings are saved with type names
    (`"$type": "DutyNotes.SheetNode, DutyNotes"`) because Dalamud uses `TypeNameHandling.Objects`. The rename from
    MitigationSheet needed `Configuration.RenameLegacyTypes` plus a copy of the old file. The same applies to the
-   manifest `InternalName`, which also names the settings file.
+   manifest `InternalName`, which is the `AssemblyName` in `DutyNotes.csproj` and also names the settings file.
 2. **Every list in a saved class needs `[JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]`.**
    Dalamud loads with `Auto`, which fills the list that already exists, and that once doubled every nested list on each load.
    A regression test covers it.

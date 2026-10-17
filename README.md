@@ -34,7 +34,7 @@ It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people 
 You need the XIVLauncher with Dalamud installed, and the game.
 
 1. Build the plugin (see [Build](#build)), or get a folder containing `DutyNotes.dll`, `DutyNotes.json` and
-   `DutyNotes.deps.json`.
+   `DutyNotes.deps.json` (that is what a build writes).
 2. In game, open `/xlsettings`, go to **Experimental** and add the full path to `DutyNotes.dll` under **Dev Plugin
    Locations**. Use an absolute path. Save.
 3. Open `/xlplugins`, then **Dev Tools > Installed Dev Plugins**, and enable **Duty Notes**.
@@ -75,15 +75,17 @@ The editor's **Help** tab lists these commands, with a copy icon for a suggested
 
 ## Build
 
-Requirements: Windows, the **.NET 10 SDK**, and a XIVLauncher with Dalamud installed. The project references Dalamud
-from `%APPDATA%\XIVLauncher\addon\Hooks\dev\`. Override the location with `/p:DalamudLibPath=...`.
+Requirements: Windows, the **.NET 10 SDK**, a XIVLauncher with Dalamud installed, and internet for the first build (the
+plugin uses the [Dalamud.NET.Sdk](https://github.com/goatcorp/Dalamud.NET.Sdk), which finds Dalamud and its libraries and
+generates the plugin manifest from `DutyNotes\DutyNotes.csproj`).
 
 ```powershell
-dotnet build DutyNotes\DutyNotes.csproj -c Release -p:Platform=x64
+dotnet build DutyNotes\DutyNotes.csproj -c Release
 ```
 
-The output is in `DutyNotes\bin\x64\Release\`. Copy it, with `DutyNotes\DutyNotes.json`, to the folder your dev plugin
-path points at.
+The output is in `DutyNotes\bin\Release\`: `DutyNotes.dll`, `DutyNotes.json` (the generated manifest) and `DutyNotes.deps.json`. Copy
+those to the folder your dev plugin path points at. A Release build also writes `DutyNotes\bin\Release\DutyNotes\latest.zip`, the package
+a plugin repository would serve.
 
 ### Tests
 

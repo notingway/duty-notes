@@ -16,7 +16,8 @@ the items below.
    with `DalamudLibPath`, which both projects already support), build the plugin, and run `dotnet test`. Check what the distribution contains
    before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
 2. **Publishing.** Needed only if it is released:
-   - the repository exists (`notingway/duty-notes`, private for now); its address still has to go in the manifest (`RepoUrl`), and it has to be made public;
+   - the repository exists (`notingway/duty-notes`, private for now) and is already the manifest's `RepoUrl`; it has to be made public;
+   - already done: the build uses `Dalamud.NET.Sdk` and generates the manifest and `latest.zip`;
    - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
    - decide whether to test through a testing channel first.
 3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.

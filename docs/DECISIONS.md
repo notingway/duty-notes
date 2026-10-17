@@ -43,6 +43,12 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
   to use + Encounter or Import, and the overlay says to use `/dutynotes edit`. An early rule (always keep one, and re-create "Encounter 1" on load) was dropped: it
   only got in the way of importing a shared encounter without a leftover empty one. Undo brings a deleted encounter back.
 
+## Build and packaging
+
+- **Dalamud.NET.Sdk, with the manifest generated from the csproj.** It is the official, supported way (the Dalamud sample plugin uses it), and what the official plugin
+  repository's build expects. The names stay `DutyNotes` (assembly, namespace, InternalName) because saved settings record them. The test project deliberately does
+  not use the SDK: it compiles a few source files directly and references Dalamud by path, which is simpler than letting a plugin SDK shape a test project.
+
 ## Selection versus navigation
 
 The editor's tree selection and the overlay's position are separate things (`SelectedId` versus `ActiveEncounterId` and

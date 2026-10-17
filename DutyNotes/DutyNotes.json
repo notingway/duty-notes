@@ -1,9 +1,0 @@
-{
-  "Author": "notingway",
-  "Name": "Duty Notes",
-  "InternalName": "DutyNotes",
-  "Punchline": "Per-duty overlay for mechanics, mitigation and notes.",
-  "Description": "An in-game overlay that holds your notes for a duty: a table of mechanics, the mitigation and healing skills to use for each (shown as icons), notes, and free text. Encounters can be tied to a duty and a job so the right one appears when you enter, with phases you can step through from buttons or macros.",
-  "Tags": ["duty", "notes", "raid", "mitigation", "overlay"],
-  "ApplicableVersion": "any"
-}
