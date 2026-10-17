@@ -57,16 +57,15 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 - **Phases:** the phase buttons under the overlay (also while the editor is open), Previous / Next greyed out at the ends with a tooltip.
 - **Sharing:** Export and Import through the paste window.
 - **Help tab:** the commands, the macro icons, and the copy icons.
-- **Startup and position:** the overlay starts hidden every time the game starts, and its position is remembered between sessions (by Dalamud).
+- **Startup and position:** the overlay starts hidden every time the game starts, its position is remembered between sessions (by Dalamud), and a saved position that is off the screen is moved back on it when the overlay opens (the log says so).
+- **Delete row:** a note row's delete button says Delete row, the same as a mechanic row's.
 - **No encounters:** deleting every encounter, with the empty-state messages, Undo, Import into the empty list, and the list staying empty after a restart.
 
 ### Built, but not yet confirmed in game
 
-Tested outside the game only. Confirm each, and then move it up to the list above.
+Nothing at the moment: everything in the plugin has been run in game and passed. When something new is built, add it here as a row (the feature and what to check), and move it up to the list above once the owner has confirmed it.
 
 | Feature | What to check |
 | --- | --- |
-| **Overlay off the screen** | Move the overlay mostly off the top of the screen (or leave it there), close the game and start it again, then show the overlay: it comes back on the screen, with its title bar reachable. The Dalamud log has a line "The overlay was off the screen at ..., and was moved to ...". On a fresh install it first appears at the top left, a little in from the corner |
-| **Delete row label** | A note row's delete button now says **Delete row**, the same as a mechanic row's, and its undo entry says "Deleted row" |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.

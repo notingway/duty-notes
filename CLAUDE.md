@@ -267,7 +267,8 @@ The same trick works for testing logic outside the game: a temp console project 
 
 ## Where things stand
 
-See [ROADMAP.md](ROADMAP.md) for the open work and [docs/TESTING.md](docs/TESTING.md) for what is confirmed in game. At
-the time of writing, the owner had run everything in `docs/TESTING.md` in game and confirmed it, except the two newest changes (the overlay being moved back on the screen when its saved position is off it, and the Delete row label). The overlay starting hidden and keeping its position are confirmed. Older notes below may still list items that are now confirmed: switching rows off, column alignment, the Help tab with its macro icons, the
-Ctrl + right-click menu on a locked overlay and several visual changes (the full list is in `docs/TESTING.md`). The next session
-should start by asking the owner what they saw.
+See [ROADMAP.md](ROADMAP.md) for the open work and [docs/TESTING.md](docs/TESTING.md) for what is confirmed in game. At the time
+of writing (18 October 2026) the owner had run everything in `docs/TESTING.md` in game and it all passed, with nothing outstanding.
+The repository (`notingway/duty-notes`) is private. The plugin builds with `Dalamud.NET.Sdk`, the tests are xunit, and the publishing
+steps still to do are in the roadmap. Anything built after that date is unconfirmed until the owner says otherwise: add it to the
+"Built, but not yet confirmed" table in `docs/TESTING.md`, and start the next session by asking the owner what they saw.
