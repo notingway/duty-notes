@@ -69,6 +69,11 @@ you clicked in the tree.
 
 - **Ctrl + click on Delete skips the confirmation.** Deleting always asks first, but Undo brings a sheet back, so the owner can hold Ctrl to skip the question. (Same habit as Ctrl + right-click on a locked overlay.)
 
+## The overlay window
+
+- **No fade in or out.** Dalamud fades windows in and out, and draws a stand-in copy of a window to fade it out when it is closed with the X button. The overlay switches that off (`DisableFadeInFadeOut`): a HUD gains nothing from a fade, and the stand-in is the suspected cause of the overlay coming back at the wrong place after closing it with X. The editor and the phase buttons still fade.
+- **The first frames after opening are left alone by the anchor logic.** ImGui re-fits an auto-sized window over its first couple of frames after it was hidden; `KeepAnchorFixed` used to read that as the content growing and moved the window to compensate.
+
 ## What the overlay shows
 
 - **Show full encounter** (setting): the encounter's own rows, then every phase, one shared table. Off: the encounter's own

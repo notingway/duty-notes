@@ -21,6 +21,12 @@ public sealed class OverlayWindow : Window, IDisposable
         // Dalamud closes a focused window when Escape is pressed. The overlay stays up during play, and Escape is
         // what you press for the game's own menus, so it must not close (and switch "Show overlay" off) by accident.
         RespectCloseHotkey = false;
+
+        // Closing with the X button moved the overlay when it was opened again, while closing it from the editor's "Show overlay" tickbox did not.
+        // In Dalamud's WindowHost, the X button is the path that draws a fade-out stand-in for the window, under the same ImGui window name,
+        // without our flags and at a size Dalamud remembers; code closing the window never does. That is the suspected cause (not
+        // confirmed in game), and a HUD has no use for the fade anyway, so it is switched off for this window.
+        DisableFadeInFadeOut = true;
     }
 
     public override void PreDraw()
@@ -45,7 +51,11 @@ public sealed class OverlayWindow : Window, IDisposable
     internal (Vector2 Position, Vector2 Size) Bounds { get; private set; }
     internal bool HasBounds { get; private set; }
 
-    public override void OnOpen() => lastSize = null;
+    public override void OnOpen()
+    {
+        lastSize = null;
+        settleFrames = SettleFramesAfterOpen;
+    }
 
     public override void OnClose()
     {
@@ -58,6 +68,11 @@ public sealed class OverlayWindow : Window, IDisposable
     private Vector2? lastPos;
     private Vector2? lastSize;
 
+    // When the window is opened again, ImGui re-fits an auto-sized window over its first couple of frames. That settling is not the content
+    // growing, and moving the window to compensate for it threw it off the screen, so the first frames after opening are left alone.
+    private const int SettleFramesAfterOpen = 4;
+    private int settleFrames;
+
     /// <summary>
     /// When the auto-sized window changes size, shift it so the chosen anchor point (e.g. the bottom-right corner)
     /// stays where it was. A window the user dragged this frame is left alone.
@@ -66,6 +81,14 @@ public sealed class OverlayWindow : Window, IDisposable
     {
         var pos = ImGui.GetWindowPos();
         var size = ImGui.GetWindowSize();
+
+        if (settleFrames > 0)
+        {
+            settleFrames--;
+            lastPos = pos;
+            lastSize = size;
+            return;
+        }
 
         if (lastPos is { } lp && lastSize is { } ls && size != ls && pos == lp)
         {

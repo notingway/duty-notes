@@ -214,6 +214,7 @@ A default is written once (`Defaults`), but many things repeat or pin its value.
   height (`SpanningTextRow`), so it can't stretch the first column.
 - `TextWrapped` inside an auto-sizing window has no width to wrap at; wrap at an explicit maximum with `PushTextWrapPos`.
 - Setting the cursor beyond the last item needs a `Dummy()` after it, or ImGui asserts.
+- Dalamud's `WindowHost` (goatcorp/Dalamud, `Dalamud/Interface/Windowing/WindowHost.cs`) fades a window out after it is closed **with its X button or Escape** by drawing a stand-in window under the same ImGui name; closing it from code (`IsOpen = false`) does not. If a window behaves differently after X than after a code close, look there first. The overlay has `DisableFadeInFadeOut = true`.
 - Dalamud closes a focused window on **Escape**: the overlay sets `RespectCloseHotkey = false`.
 - Dalamud hides plugin windows in **cutscenes** unless `UiBuilder.DisableCutsceneUiHide` is set. The plugin sets it every
   frame from the setting. It applies to all of the plugin's windows.
