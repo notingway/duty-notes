@@ -11,16 +11,20 @@ the items below.
 
 ## Open
 
-1. **Publishing.** Needed only if it is released:
+1. **Proper tests** (xunit, run with `dotnet test`). Before the repository goes public. Same checks and the same labels, one
+   independent test per scenario, with a before and after comparison of the check list so nothing is lost. It adds NuGet packages to the
+   test project, which today needs none.
+2. **Continuous integration** (a GitHub Actions workflow). **On hold for a while**, but to be done before the repository goes public, and after
+   the proper tests. The plan: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; the build points at them
+   with `DalamudLibPath`, which both projects already support), build the plugin, and run the tests. Check what the distribution contains
+   before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
+3. **Publishing.** Needed only if it is released:
    - the repository exists (`notingway/duty-notes`, private for now); its address still has to go in the manifest (`RepoUrl`), and it has to be made public;
    - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
    - decide whether to test through a testing channel first.
-2. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
-3. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
+4. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
+5. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
-4. **Turn the console tests into a proper test framework** (xunit) and, if a repository is set up, run them in CI. CI needs
-   the Dalamud assemblies, which come from a Dalamud distribution, not from NuGet.
-
 ## Small things noticed and left
 
 - **The Help tab's macro name.** Next, prev and reset show a suggested name ("DN Next"). Copying it would need its own copy icon: putting the name in the copied macro text is not safe, because a line that is not a command is sent as chat. Proposed, not decided.
