@@ -17,7 +17,8 @@ the items below.
    before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
 2. **Publishing.** Needed only if it is released:
    - the repository exists (`notingway/duty-notes`, private for now) and is already the manifest's `RepoUrl`; it has to be made public;
-   - already done: the build uses `Dalamud.NET.Sdk` and generates the manifest and `latest.zip`;
+   - already done: the build uses `Dalamud.NET.Sdk` and generates the manifest and `latest.zip`; the custom repository `notingway/plogonway` exists (private) with an empty `plogonway.json`; `scripts\release.ps1` and `docs/RELEASING.md` are written (the script has been dry-run only);
+   - still to do for a first experimental release: an icon (and screenshots), making `duty-notes` and `plogonway` public, the first real `scripts\release.ps1` run, and a test install (see `docs/RELEASING.md`);
    - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
    - decide whether to test through a testing channel first.
 3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.

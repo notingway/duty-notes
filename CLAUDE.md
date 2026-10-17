@@ -17,6 +17,7 @@ as a dev plugin only. The plugin was originally called "Mitigation Sheet", which
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Why things work the way they do. **Read before changing behavior.** |
 | [docs/FORMATS.md](docs/FORMATS.md) | Export text and settings file. Versioned; don't break old text. |
 | [docs/GAME-DATA.md](docs/GAME-DATA.md) | What the game's tables contain, and how to inspect them |
+| [docs/RELEASING.md](docs/RELEASING.md) | How a release is made (`scripts\release.ps1`), the custom plugin repository `plogonway`, and testing the install |
 | [docs/TESTING.md](docs/TESTING.md) | Automated tests, and which behaviors have only been checked by hand in game |
 
 ## Environment

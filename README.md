@@ -110,6 +110,7 @@ It exits with 0 when everything passes. What it covers, and what it can't, is in
 | [docs/FORMATS.md](docs/FORMATS.md) | The export text and settings file formats |
 | [docs/GAME-DATA.md](docs/GAME-DATA.md) | What the game's data tables contain and how to look at them |
 | [docs/TESTING.md](docs/TESTING.md) | Automated tests, and the checklist for what needs the game |
+| [docs/RELEASING.md](docs/RELEASING.md) | How a version is released to players (the custom plugin repository) |
 | [ROADMAP.md](ROADMAP.md) | What is planned and what was deliberately left out |
 | [CHANGELOG.md](CHANGELOG.md) | What changed |
 

@@ -36,6 +36,8 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 - **A sample.** `samples/example-encounter.txt` is an import text for a made-up "Example Encounter" with three phases. It shows a note row, a row and a phase switched off, and Limit Break. It names no real duty or job.
 ### Changed
 
+- **Release tooling.** `scripts\release.ps1` builds, tests, checks the package and publishes a release to the custom plugin repository `plogonway`, and `docs/RELEASING.md` describes the process. (The script has been dry-run only: nothing has been released.)
+
 - **The overlay opens on the screen.** If its remembered position is off the screen (it could be left partly above the top after the earlier close-with-X bug, or after a change of resolution), it is moved back so its title bar can be reached. On a fresh install it starts near the top left.
 
 - **The overlay starts hidden** every time the game starts, with or without encounters (it used to come back as it was left). Show it with `/dutynotes`, the editor's "Show overlay" tickbox, or let auto-select open it when you enter a duty with a sheet for your job.
