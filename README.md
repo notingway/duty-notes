@@ -13,6 +13,8 @@ It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people 
 > **Made with AI.** This plugin was written by an AI (Claude, by Anthropic), not by a human programmer. The owner directed the work
 > and tested it in game. See [AI disclosure](#ai-disclosure) below.
 
+![The overlay showing one phase: three mechanics, the skills to use as icons, and a note for each](images/image1.png)
+
 ## What it does
 
 - **Sheets of rows.** An *encounter* holds *phases*, and each holds rows. A **mechanic row** has the mechanic's name, the

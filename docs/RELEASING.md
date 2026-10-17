@@ -20,7 +20,7 @@ cannot redirect.
 ## Before the first release (once)
 
 - [ ] **Both repositories are public.** Players can't download from a private repository, and Dalamud's custom repositories have no sign-in. (`duty-notes` and `plogonway` are both private until the owner decides.)
-- [x] **An icon** at `images/icon.png` in this repository: square, 64 to 512 pixels, PNG (done: generated with ChatGPT and credited in the README). Still optional: screenshots at `images/image1.png` to `image5.png`. The release script adds their addresses to the index if the files exist. Not enforced by Dalamud for custom repositories, but the plugin looks bare without them.
+- [x] **An icon** at `images/icon.png` in this repository: square, 64 to 512 pixels, PNG (done: generated with ChatGPT and credited in the README). One screenshot is in (`images/image1.png`, the overlay on a sheet); up to four more are optional (`image2.png` to `image5.png`, at most 730 x 380 pixels each). The release script adds their addresses to the index if the files exist. Not enforced by Dalamud for custom repositories, but the plugin looks bare without them.
 - [ ] **`plogonway` is cloned next to this repository** (`C:\dev\github\notingway\plogonway`), and `gh` is signed in (`gh auth status`).
 - [ ] **A test install** on the owner's machine, before telling anyone (see below).
 
