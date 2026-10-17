@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <!--
     Tests for the parts of Duty Notes that don't need the game: settings, navigation, and import/export.
@@ -36,6 +36,7 @@
     <Compile Include="..\DutyNotes\Configuration.cs" Link="Plugin\Configuration.cs" />
     <Compile Include="..\DutyNotes\Sharing.cs" Link="Plugin\Sharing.cs" />
     <Compile Include="..\DutyNotes\HelpCommands.cs" Link="Plugin\HelpCommands.cs" />
+    <Compile Include="..\DutyNotes\SaveScheduler.cs" Link="Plugin\SaveScheduler.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -49,6 +49,12 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
   repository's build expects. The names stay `DutyNotes` (assembly, namespace, InternalName) because saved settings record them. The test project deliberately does
   not use the SDK: it compiles a few source files directly and references Dalamud by path, which is simpler than letting a plugin SDK shape a test project.
 
+## Saving
+
+- **Settings are saved after a short pause while you drag or type, and at once after a click.** Writing the whole settings file every frame during a slider drag was wasteful. The rule is in
+  `SaveScheduler` (pure and tested): a quiet half second, or five seconds at most. A crash within that window can lose the last edit, which is accepted. The editor tells the two cases apart with
+  `ImGui.IsAnyItemActive()`, and the pending save is also written when the editor or overlay closes and when the plugin unloads.
+
 ## Selection versus navigation
 
 The editor's tree selection and the overlay's position are separate things (`SelectedId` versus `ActiveEncounterId` and

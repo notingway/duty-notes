@@ -26,6 +26,9 @@ public sealed class EditorWindow : Window
         SizeCondition = ImGuiCond.FirstUseEver;
     }
 
+    /// <summary>Closing the editor writes any edit that was still waiting for its quiet moment.</summary>
+    public override void OnClose() => plugin.FlushPendingSave();
+
     public override void Draw()
     {
         var cfg = plugin.Config;
@@ -68,7 +71,13 @@ public sealed class EditorWindow : Window
         }
         lastSelectedId = cfg.SelectedId;
 
-        if (dirty) plugin.Save();
+        // A change made while an item is being dragged or typed into arrives every frame, so it waits for a quiet moment. A click is a
+        // single deliberate change, and is saved at once.
+        if (dirty)
+        {
+            if (ImGui.IsAnyItemActive()) plugin.SaveSoon();
+            else plugin.Save();
+        }
     }
 
     private Guid? lastSelectedId;

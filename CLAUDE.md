@@ -69,6 +69,7 @@ and they need the Dalamud files on disk.
 | `Configuration.cs` **pure** | The saved data: `SheetRow`, `SheetNode`, `Configuration`, the `Defaults` class, enums. Also the navigation state, per-section reset methods (each returns an undo closure), and tree helpers. |
 | `Sharing.cs` **pure** | Export/import text. `Sharing.Converter` turns untrusted data into real sheets (clamps, caps, drops unknown ids). |
 | `OverlayWindow.cs` | The overlay: one shared table for all sections, title rows, optional header rows, `SpanningTextRow` for note rows, the right-click menu, auto-size anchoring. |
+| `SaveScheduler.cs` **pure** | Decides when a pending save is due (after a quiet moment, never later than a longest wait). `Plugin.Save()` writes now; `Plugin.SaveSoon()` is for changes that arrive every frame (a dragged slider, typing). |
 | `HelpCommands.cs` **pure** | The list of chat commands, what each does, and which get a suggested macro. The Help tab is drawn from it (`HelpTab.cs`). |
 | `HelpTab.cs` | The Help tab: how to make a macro, and the commands with Copy buttons. |
 | `ControlsWindow.cs` | Reset / Previous / Next strip, a separate window under the overlay. |
@@ -137,6 +138,14 @@ See [docs/DECISIONS.md](docs/DECISIONS.md).
 - Window IDs `###mitsheet-overlay`, `###mitsheet-editor`, `###mitsheet-controls` and the table id `##mitsheet-table`:
   ImGui saves window positions under them. The visible titles say "Duty Notes".
 - `MITSHEET_ROW` and `MITSHEET_SKILL` drag and drop payload names (internal only).
+
+## Saving settings
+
+- **A deliberate change** (a click, a command, a menu item): call `plugin.Save()`, which writes the settings file at once.
+- **A change that arrives every frame** (dragging a slider, typing in a box): call `plugin.SaveSoon()`, which waits for a quiet half second (and never longer than five
+  seconds). The editor does this by itself: it uses `SaveSoon` while an item is being dragged or typed into (`ImGui.IsAnyItemActive()`), and `Save` otherwise.
+- A pending `SaveSoon` is written when the editor closes, when the overlay closes and when the plugin unloads (`Plugin.FlushPendingSave`, `Plugin.Dispose`). Any
+  `Save()` also covers it. Don't save from a window's `Draw` every frame.
 
 ## Adding a chat command
 

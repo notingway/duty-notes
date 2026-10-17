@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
@@ -97,6 +98,8 @@ public sealed class Plugin : IDalamudPlugin
     /// </summary>
     private void OnFrameworkUpdate(IFramework framework)
     {
+        if (pendingSave.IsDue(Now)) Save();
+
         // Dalamud hides plugin windows in cutscenes unless told not to. Follow the setting every frame, so a
         // change in the settings takes effect at once.
         PluginInterface.UiBuilder.DisableCutsceneUiHide = !Config.HideDuringCutscenes;
@@ -149,7 +152,27 @@ public sealed class Plugin : IDalamudPlugin
         return inZone.FirstOrDefault(r => r.JobId == job) ?? inZone.FirstOrDefault(r => r.JobId == 0);
     }
 
-    internal void Save() => PluginInterface.SavePluginConfig(Config);
+    /// <summary>Writes the settings now. Use it for a deliberate action (a click, a command); it also covers any save that was waiting.</summary>
+    internal void Save()
+    {
+        pendingSave.Saved();
+        PluginInterface.SavePluginConfig(Config);
+    }
+
+    /// <summary>
+    /// For changes that arrive continuously (dragging a slider, typing): the save happens after a short quiet moment, not once per frame.
+    /// <see cref="FlushPendingSave"/> writes it at once, and the editor closing and the plugin unloading both do.
+    /// </summary>
+    internal void SaveSoon() => pendingSave.MarkChanged(Now);
+
+    /// <summary>Writes the settings now if a <see cref="SaveSoon"/> is still waiting.</summary>
+    internal void FlushPendingSave()
+    {
+        if (pendingSave.Pending) Save();
+    }
+
+    private readonly SaveScheduler pendingSave = new();
+    private static double Now => Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
 
     internal void SetOverlayOpen(bool open)
     {
@@ -243,6 +266,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+        FlushPendingSave();
         Framework.Update -= OnFrameworkUpdate;
         PluginInterface.UiBuilder.Draw -= windows.Draw;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleOverlay;
