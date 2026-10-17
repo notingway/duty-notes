@@ -40,7 +40,7 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
 - **A Help tab, drawn from one list of commands** (`HelpCommands`). It lists every chat command and gives a copy-ready macro under the ones worth binding to a hotbar key (next, prev and reset only; not show/hide, edit, lock or full). A macro line is just the command, so the macro text is the command itself; it is not shown, only a copy icon (the hover text shows it). Commands with no macro have no copy icon. The macro's icon cannot be set by the macro text (the game's /micon only takes names of actions, items and so on), so the tab draws the suggested icon (right arrow, left arrow, loop; ids in GAME-DATA.md) and the steps tell you to pick it in the macro's Icons window. A test keeps the list, the plugin's command handling and the README in step.
 
 - **There can be no encounters.** The last encounter can be deleted, and a fresh install starts with none. The editor then says "No encounters yet" with a hint
-  to use + Encounter or Import, and the overlay says to use `/dutynotes edit`. An early rule (always keep one, and re-create "Encounter 1" on load) was dropped: it
+  to use + Encounter or Import, and the overlay says to use `/dutynotes edit` (when you have chosen to show it). An early rule (always keep one, and re-create "Encounter 1" on load) was dropped: it
   only got in the way of importing a shared encounter without a leftover empty one. Undo brings a deleted encounter back.
 
 ## Build and packaging
@@ -73,6 +73,8 @@ you clicked in the tree.
 
 - **No fade in or out.** Dalamud fades windows in and out, and draws a stand-in copy of a window to fade it out when it is closed with the X button. The overlay switches that off (`DisableFadeInFadeOut`): a HUD gains nothing from a fade, and the stand-in was the suspected cause of the overlay coming back at the wrong place after closing it with X (fixed in game together with the settle frames below, which were not tried apart). The editor and the phase buttons still fade.
 - **The first frames after opening are left alone by the anchor logic.** ImGui re-fits an auto-sized window over its first couple of frames after it was hidden; `KeepAnchorFixed` used to read that as the content growing and moved the window to compensate.
+
+- **The overlay starts hidden every time the game starts.** Whether it was showing when the game last closed is not remembered (`OverlayVisible` is reset at startup). It comes up through `/dutynotes`, the "Show overlay" tickbox, or auto-select (auto open) when you enter a duty with a sheet for your job. A fresh install, or an empty list, therefore never greets you with a window. If a "show at start" setting is ever wanted, it belongs in Settings > Behavior.
 
 ## What the overlay shows
 

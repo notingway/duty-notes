@@ -47,7 +47,10 @@ public sealed class Plugin : IDalamudPlugin
         windows.AddWindow(overlay);
         windows.AddWindow(controls);
         windows.AddWindow(editor);
-        overlay.IsOpen = Config.OverlayVisible;
+        // The overlay starts hidden every time the game starts, whatever it was when the game was closed. It comes up through /dutynotes, the
+        // editor's "Show overlay" tickbox, or auto-select when you enter a duty that has a sheet for your job.
+        overlay.IsOpen = false;
+        Config.OverlayVisible = false;
 
         CommandManager.AddHandler(Command, new CommandInfo(OnCommand)
         {

@@ -1059,7 +1059,7 @@ public sealed class EditorWindow : Window
 
             if (ImGui.Button("Duplicate")) duplicate = i;
             ImGui.SameLine();
-            if (ImGui.Button(row.IsNote ? "Delete note" : "Delete row")) remove = i;
+            if (ImGui.Button("Delete row")) remove = i;
 
             if (!row.Enabled) ImGui.PopStyleVar();
             ImGui.EndGroup();
@@ -1095,7 +1095,7 @@ public sealed class EditorWindow : Window
         {
             var removed = node.Rows[r];
             node.Rows.RemoveAt(r);
-            PushUndo(DescribeRow(removed.IsNote ? "Deleted note" : "Deleted row", removed), () => node.Rows.Insert(Math.Min(r, node.Rows.Count), removed));
+            PushUndo(DescribeRow("Deleted row", removed), () => node.Rows.Insert(Math.Min(r, node.Rows.Count), removed));
             dirty = true;
         }
         else if (duplicate is { } d)

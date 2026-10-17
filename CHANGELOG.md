@@ -36,6 +36,9 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 - **A sample.** `samples/example-encounter.txt` is an import text for a made-up "Example Encounter" with three phases. It shows a note row, a row and a phase switched off, and Limit Break. It names no real duty or job.
 ### Changed
 
+- **The overlay starts hidden** every time the game starts, with or without encounters (it used to come back as it was left). Show it with `/dutynotes`, the editor's "Show overlay" tickbox, or let auto-select open it when you enter a duty with a sheet for your job.
+- **A note row's delete button says "Delete row"**, like a mechanic row's.
+
 - **Saving.** While you drag a slider or type, the settings are no longer written on every frame. They are written after a short pause (half a second, and never later than five seconds), and at once when the editor closes, when the plugin unloads, or after a click.
 
 - **Build.** The plugin now builds with `Dalamud.NET.Sdk` (the official way), which finds Dalamud itself and generates the manifest from `DutyNotes.csproj`. The hand-written `DutyNotes.json` is gone. A Release build also makes `latest.zip`. The output moved from `bin\x64\Release` to `bin\Release`. The assembly name, namespace and `InternalName` are unchanged, so saved settings still load. The unused `AllowUnsafeBlocks` setting was dropped.

@@ -50,6 +50,7 @@ Open the editor with `/dutynotes edit`.
 2. **Settings tab:** behavior (auto-select, auto open, auto hide, cutscenes), layout (including how each column is aligned) and style. Each section
    has a **Reset** button that can be undone.
 3. **Help tab:** the chat commands, and macros to copy.
+   The overlay starts hidden each time the game starts. Show it with `/dutynotes`, with **Show overlay** in the editor, or let auto-select open it when you enter a duty with a sheet for your job.
 4. The overlay itself: right-click it for a menu. Hold **Ctrl** while right-clicking if it is locked.
 
 ### Commands
