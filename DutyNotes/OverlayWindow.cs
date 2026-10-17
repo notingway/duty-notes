@@ -24,8 +24,9 @@ public sealed class OverlayWindow : Window, IDisposable
 
         // Closing with the X button moved the overlay when it was opened again, while closing it from the editor's "Show overlay" tickbox did not.
         // In Dalamud's WindowHost, the X button is the path that draws a fade-out stand-in for the window, under the same ImGui window name,
-        // without our flags and at a size Dalamud remembers; code closing the window never does. That is the suspected cause (not
-        // confirmed in game), and a HUD has no use for the fade anyway, so it is switched off for this window.
+        // without our flags and at a size Dalamud remembers; code closing the window never does. That was the suspected cause. The
+        // problem is gone with this and the settle frames in KeepAnchorFixed together (the two were not tried apart), and a HUD has no use
+        // for the fade anyway, so it is switched off for this window.
         DisableFadeInFadeOut = true;
     }
 

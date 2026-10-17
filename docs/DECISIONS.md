@@ -71,7 +71,7 @@ you clicked in the tree.
 
 ## The overlay window
 
-- **No fade in or out.** Dalamud fades windows in and out, and draws a stand-in copy of a window to fade it out when it is closed with the X button. The overlay switches that off (`DisableFadeInFadeOut`): a HUD gains nothing from a fade, and the stand-in is the suspected cause of the overlay coming back at the wrong place after closing it with X. The editor and the phase buttons still fade.
+- **No fade in or out.** Dalamud fades windows in and out, and draws a stand-in copy of a window to fade it out when it is closed with the X button. The overlay switches that off (`DisableFadeInFadeOut`): a HUD gains nothing from a fade, and the stand-in was the suspected cause of the overlay coming back at the wrong place after closing it with X (fixed in game together with the settle frames below, which were not tried apart). The editor and the phase buttons still fade.
 - **The first frames after opening are left alone by the anchor logic.** ImGui re-fits an auto-sized window over its first couple of frames after it was hidden; `KeepAnchorFixed` used to read that as the content growing and moved the window to compensate.
 
 ## What the overlay shows
