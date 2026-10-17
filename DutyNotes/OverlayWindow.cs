@@ -50,6 +50,89 @@ public sealed class OverlayWindow : Window, IDisposable
         }
         if (cfg.AutoSize) flags |= ImGuiWindowFlags.AlwaysAutoResize;
         Flags = flags;
+
+        // An auto-sizing window catches up with new content a frame late (ImGui sizes it from the previous frame, and the table's columns lag the
+        // same way), which showed as a flicker when stepping between phases. While it catches up, the whole window is hidden: see HiddenThisFrame.
+        if (!cfg.AutoSize)
+        {
+            settler.Cancel();
+        }
+        else if (CurrentView(cfg) is var view && view != lastView)
+        {
+            lastView = view;
+
+            // Measured in game: after the content changes, the window size is stale for exactly one frame (the new content in the old frame), and
+            // final from the next. In that second frame the anchor adjustment (KeepAnchorFixed) moves the window, so it is hidden too: hide, swap,
+            // scale, anchor, show. Opening the overlay is slower (ImGui hides a new window for a frame, and re-fits it over two), so it waits longer.
+            if (opening) settler.Restart(OpeningHiddenFrames, 1);
+            else settler.Restart(HiddenFramesPerChange, 0);
+
+            opening = false;
+        }
+
+        HiddenThisFrame = settler.Hidden;
+
+        // The style alpha below hides everything except the window background: Window.BgAlpha becomes SetNextWindowBgAlpha, and ImGui then
+        // overwrites the background's alpha channel with that value and ignores the style alpha (imgui.cpp, RenderWindowDecorations). Left alone, the
+        // dark panel stayed on screen while the window was "hidden", resizing and moving with it: that was the flicker. So the background alpha is
+        // 0 for the hidden frames too. (That also stops Dalamud's blurred backdrop, which is only drawn for a window that has a background.)
+        BgAlpha = HiddenThisFrame ? 0f : cfg.BackgroundAlpha;
+
+        settler.Tick(); // counts this frame, and enforces the safety limit even if the window is not drawn
+        if (HiddenThisFrame)
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, HiddenAlpha);
+            pushedAlpha = true;
+        }
+    }
+
+    /// <summary>
+    /// The style alpha of a window that is being kept off the screen. NOT 0: while the style alpha is exactly 0, ImGui does not draw the window
+    /// at all (it never calls Draw, so the window does not even lay itself out), see "Don't render if style alpha is 0.0" in imgui.cpp.
+    /// This is small enough that every colour rounds to fully transparent.
+    /// </summary>
+    internal const float HiddenAlpha = 0.001f;
+
+    public override void PostDraw()
+    {
+        if (!pushedAlpha) return;
+
+        ImGui.PopStyleVar();
+        pushedAlpha = false;
+    }
+
+    private readonly LayoutSettler settler = new();
+    private (Guid Encounter, Guid Phase, bool Full)? lastView;
+    private bool pushedAlpha;
+    private bool opening;
+    private const int OpeningHiddenFrames = 3;
+    private const int HiddenFramesPerChange = 2;
+
+    /// <summary>True while this frame is drawn transparent, because the window is catching up with new content. The phase buttons follow it.</summary>
+    internal bool HiddenThisFrame { get; private set; }
+
+    /// <summary>What the overlay is showing, as ids: when it changes, the content (and so the size) is about to change.</summary>
+    private (Guid Encounter, Guid Phase, bool Full) CurrentView(Configuration cfg)
+    {
+        if (plugin.EditorOpen)
+        {
+            // Editing: the overlay shows the editor's selection.
+            if (cfg.Selected is not { } selected) return (Guid.Empty, Guid.Empty, cfg.ShowFullEncounter);
+
+            SheetNode? owner = null;
+            foreach (var root in cfg.Roots)
+            {
+                if (root != selected && !root.Children.Contains(selected)) continue;
+                owner = root;
+                break;
+            }
+
+            var phase = cfg.ShowFullEncounter || owner == selected ? Guid.Empty : selected.Id;
+            return (owner?.Id ?? Guid.Empty, phase, cfg.ShowFullEncounter);
+        }
+
+        var encounter = cfg.ActiveEncounter;
+        return (encounter?.Id ?? Guid.Empty, cfg.ShowFullEncounter ? Guid.Empty : cfg.ActivePhase?.Id ?? Guid.Empty, cfg.ShowFullEncounter);
     }
 
     /// <summary>Where the overlay was drawn last frame; valid only while <see cref="HasBounds"/> is true.</summary>
@@ -58,6 +141,8 @@ public sealed class OverlayWindow : Window, IDisposable
 
     public override void OnOpen()
     {
+        lastView = null; // opening shows new content too: hide the first, settling frames
+        opening = true;
         lastSize = null;
         settleFrames = SettleFramesAfterOpen;
         placeOnScreen = true;
@@ -136,6 +221,8 @@ public sealed class OverlayWindow : Window, IDisposable
         baseFontSize = ImGui.GetFontSize(); // the unscaled size, before any font is pushed
 
         if (placeOnScreen) KeepWindowOnScreen();
+
+        settler.Observe(ImGui.GetWindowSize());
 
         if (cfg.AutoSize) KeepAnchorFixed(cfg);
         else lastSize = null;

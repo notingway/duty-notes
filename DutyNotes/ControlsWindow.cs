@@ -43,7 +43,25 @@ public sealed class ControlsWindow : Window
     {
         // Left edge of the overlay, just under its bottom edge. Follows it when it moves or resizes.
         Position = new Vector2(overlay.Bounds.Position.X, overlay.Bounds.Position.Y + overlay.Bounds.Size.Y + Gap * ImGuiHelpers.GlobalScale);
+
+        // The overlay above is transparent while it catches up with new content, and is changing size. The buttons are tied to its bottom
+        // edge, so they would jump around under it: they wait too.
+        if (overlay.HiddenThisFrame)
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, OverlayWindow.HiddenAlpha);
+            pushedAlpha = true;
+        }
     }
+
+    public override void PostDraw()
+    {
+        if (!pushedAlpha) return;
+
+        ImGui.PopStyleVar();
+        pushedAlpha = false;
+    }
+
+    private bool pushedAlpha;
 
     public override void Draw()
     {

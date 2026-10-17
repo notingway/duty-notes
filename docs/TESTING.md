@@ -19,7 +19,7 @@ They also need the Dalamud files on disk: the project references `Dalamud.dll` a
 as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
 shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-At the time of writing: **54 tests, 225 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+At the time of writing: **65 tests, 253 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
 `dotnet test` reports the tests; the checks are the `Check` calls.)
 
 | Test class | What it checks |
@@ -28,6 +28,7 @@ At the time of writing: **54 tests, 225 checks, all passing.** (This is the one 
 | `SettingsTests` (defaults, resets, overlay visibility) | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
 | `SerializationTests` (saving and loading settings) | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
 | `SaveSchedulerTests` (when a pending save is written) | Nothing is pending until something changes; a change is due after the quiet time; a burst of changes is one save; a run of changes that never pauses is still saved at the longest wait; a save clears what was pending and the next change starts a fresh wait |
+| `LayoutSettlerTests` (the overlay catching up with new content) | A window is shown by default; a restart hides it for a minimum number of frames and until its size repeats (or not at all, for the quick kind); a width that arrives a frame late does not show it too early; a size that never settles, or a window that is never drawn, is shown after at most 12 frames; a restart starts a fresh count |
 | `ScreenPlacementTests` (keeping a window reachable) | A window that is already reachable is left alone; one above the top, or too far off any side, is moved back so its title bar is on the screen and 80 pixels of it show; a second screen keeps its own origin; tiny, huge and unknown-size cases are handled |
 | `HelpTests` (the command list) | The Help tab's list is well formed, matches the commands `Plugin.OnCommand` handles (it reads `Plugin.cs`), and matches the README |
 | `SharingTests` (export and import) | Round trip, what this game version doesn't know, broken text, which message each kind of header gets (a newer version versus not ours), and hostile text (a gzip bomb, type-name tricks, oversized counts, control characters) |
@@ -57,6 +58,7 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 - **Phases:** the phase buttons under the overlay (also while the editor is open), Previous / Next greyed out at the ends with a tooltip.
 - **Sharing:** Export and Import through the paste window.
 - **Help tab:** the commands, the macro icons, and the copy icons.
+- **Stepping between phases:** with auto-size on, Next and Previous swap the phase with no visible flicker (the overlay is hidden, background included, for the two frames it takes to settle).
 - **Startup and position:** the overlay starts hidden every time the game starts, its position is remembered between sessions (by Dalamud), and a saved position that is off the screen is moved back on it when the overlay opens (the log says so).
 - **Delete row:** a note row's delete button says Delete row, the same as a mechanic row's.
 - **No encounters:** deleting every encounter, with the empty-state messages, Undo, Import into the empty list, and the list staying empty after a restart.

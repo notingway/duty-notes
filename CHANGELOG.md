@@ -54,6 +54,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 
 ### Fixed
 
+- Stepping between phases with Next and Previous made the overlay flicker: it showed the new phase in the old-sized frame, resized a frame later, and then moved. An auto-sizing window is now hidden, background included, for the two frames it takes to catch up, and appears complete (the phase buttons under it wait too). Confirmed fixed in game.
 - Closing the overlay with its X button and opening it again could put it back in the wrong place, partly off the screen, while the "Show overlay" tickbox in the editor did not. Two suspected causes were fixed together: the overlay no longer uses Dalamud's fade-out (the one code path only the X button takes), and the anchor logic leaves the first frames after opening alone, while ImGui re-fits an auto-sized window. Confirmed fixed in game.
 - The last encounter could not be deleted, and "Encounter 1" came back on every load. There can now be no encounters: a fresh install starts with none, and the editor and the overlay show a short message.
 - Deleting the last phase of an encounter selected the top encounter in the list instead of the encounter the phase was in. The selection now stays in that encounter. (Found by the owner using Ctrl + click on Delete; the logic is now `Configuration.RemoveNode`, with tests.)
