@@ -86,8 +86,8 @@ public class SheetNode
         return row;
     }
 
-    /// <summary>Whether there is anything to show: a mechanic row, or a note row with text in it. Rows that are switched off don't count.</summary>
-    public bool HasContent() => Rows.Any(r => r.Enabled && (!r.IsNote || !string.IsNullOrWhiteSpace(r.Text)));
+    /// <summary>Whether there is anything to show: any row that is switched on, however empty it is. Whether a row shows is decided by its tick alone.</summary>
+    public bool HasContent() => Rows.Any(r => r.Enabled);
 
     /// <summary>A deep copy with fresh ids, so the copy can be edited without touching the original.</summary>
     public SheetNode Clone(string? name = null) => new()

@@ -136,14 +136,16 @@ public sealed class SettingsTests : CheckBase
     }
 
     [Fact]
-    public void ASheetWithNothingToShowHasNoContent()
+    public void AnyRowThatIsOnIsContent()
     {
+        // Whether a row shows is decided by its tick alone, not by whether it has anything written in it.
         var node = new SheetNode { Name = "t" };
+        Check("a sheet with no rows has no content", !node.HasContent() && !new SheetNode().HasContent());
         node.Rows.Add(new SheetRow { IsNote = true, Text = "  " });
-        Check("a sheet with only an empty note row has nothing to show", !node.HasContent());
+        Check("an empty note row that is on counts as content", node.HasContent());
+        Check("an empty mechanic row that is on counts as content", new SheetNode { Rows = { new SheetRow() } }.HasContent());
         node.Rows.Add(new SheetRow { IsNote = true, Text = "Stack on the marker" });
         Check("a filled note row counts as content", node.HasContent());
-        Check("a sheet with no rows has no content", !new SheetNode().HasContent());
     }
 
     [Fact]

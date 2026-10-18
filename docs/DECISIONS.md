@@ -33,7 +33,9 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
 
 - **Rows can be switched off** (a tick per row; `SheetRow.Enabled`, mechanic and note rows). An off row is always left out of the overlay, even
   while editing: unlike a phase, which you must be able to see to edit, a row is edited in the editor's own list, where it stays, dimmed. A sheet whose
-  rows are all off counts as empty. It is part of export and import. A row is copied in one place, `SheetRow.Clone`.
+  rows are all off counts as empty. The tick is the only thing that decides whether a row shows: a row that is on is drawn even when nothing is written in it
+  (an empty mechanic row keeps a line's height, and so does an empty note row), so a blank row can be used as a spacer. The Notes column is the exception: it only
+  exists while at least one visible row has a note. It is part of export and import. A row is copied in one place, `SheetRow.Clone`.
 
 ## Help
 

@@ -302,7 +302,7 @@ public sealed class OverlayWindow : Window, IDisposable
             else if (phase is not null) sections.Add(phase);
         }
 
-        // A table with nothing to show (no rows, or only empty note rows) is skipped.
+        // A table with nothing to show (no rows, or none that are switched on) is skipped.
         sections.RemoveAll(n => !n.HasContent());
 
         if (sections.Count == 0)
@@ -441,10 +441,10 @@ public sealed class OverlayWindow : Window, IDisposable
 
             foreach (var row in sheet.Rows.Where(r => r.Enabled))
             {
-                // A note row is free text across the whole table. An empty one shows nothing.
+                // A note row is free text across the whole table. An empty one still takes a line: only the row's tick decides whether it shows.
                 if (row.IsNote)
                 {
-                    if (!string.IsNullOrWhiteSpace(row.Text)) SpanningTextRow(row.Text, columns);
+                    SpanningTextRow(row.Text, columns);
                     continue;
                 }
 
