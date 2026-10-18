@@ -754,19 +754,29 @@ public sealed class EditorWindow : Window
         }
         ImGui.Separator();
 
-        // Everything that acts on this sheet, on one line under the line.
-        if (isEncounter)
+        // Everything that acts on this sheet, on one line under the line. A phase starts with its tick, the same one as in the list.
+        var list = cfg.ContainingList(node);
+        if (!isEncounter)
         {
-            if (ImGuiComponents.IconButton(FontAwesomeIcon.Clone))
-            {
-                var copy = node.Clone(node.Name + " (copy)");
-                cfg.Roots.Insert(cfg.Roots.IndexOf(node) + 1, copy);
-                cfg.SelectedId = copy.Id;
-                dirty = true;
-            }
+            dirty |= ImGui.Checkbox("##on", ref node.Enabled);
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Duplicate this encounter, with all its phases and rows,\nfor example to make a version for another job.");
+                ImGui.SetTooltip(node.Enabled ? "On: shown in the overlay.\nUntick to skip this phase." : "Off: skipped by the overlay, the full encounter and the Previous / Next buttons.\nStill shown here, and in the overlay while you are editing it.");
+
+            ImGui.SameLine();
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextDisabled("|");
+            ImGui.SameLine();
         }
+
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Clone) && list is not null)
+        {
+            var copy = node.Clone(node.Name + " (copy)");
+            list.Insert(list.IndexOf(node) + 1, copy);
+            cfg.SelectedId = copy.Id;
+            dirty = true;
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(isEncounter ? "Duplicate this encounter, with all its phases and rows,\nfor example to make a version for another job." : "Duplicate this phase, with all its rows.");
 
         // Export copies a whole encounter, so only an encounter has the button.
         if (isEncounter)
@@ -777,17 +787,16 @@ public sealed class EditorWindow : Window
                 ImGui.SetTooltip("Export: copy this encounter, with all its phases and rows,\nto the clipboard as text you can share.");
         }
 
-        if (isEncounter) ImGui.SameLine(); // a phase has only Delete, which goes straight under its name
+        ImGui.SameLine();
         if (ImGuiComponents.IconButton(FontAwesomeIcon.Trash, null, null, new Vector4(0.75f, 0.2f, 0.2f, 1f)))
         {
-            // Ctrl + click skips the question (Undo still brings it back).
+            // Ctrl + click skips the question.
             if (ImGui.GetIO().KeyCtrl) DeleteNode(cfg, node);
             else ImGui.OpenPopup("##confirm-delete");
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Delete this sheet, with everything in it. Undo brings it back.\nCtrl + click deletes without asking.");
+            ImGui.SetTooltip((isEncounter ? "Delete this encounter, with all its phases and rows." : "Delete this phase, with all its rows.") + "\nCtrl + click deletes without asking.");
         DrawDeleteConfirm(cfg);
-
         // The result of the last import or export.
         DrawStatus();
 
