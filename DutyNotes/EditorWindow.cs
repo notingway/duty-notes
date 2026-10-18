@@ -1076,14 +1076,14 @@ public sealed class EditorWindow : Window
             draw.ChannelsSetCurrent(0);
             var scale = ImGuiHelpers.GlobalScale;
             var padY = Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + RowSpacer * scale - RowBandGap * scale) / 2f);
-            draw.AddRectFilled(rowMin - new Vector2(inset, padY), rowMax + new Vector2(inset, padY), ImGui.GetColorU32(RowBand), 3f * scale);
+            draw.AddRectFilled(rowMin - new Vector2(0, padY), rowMax + new Vector2(inset, padY), ImGui.GetColorU32(RowBand), 3f * scale);
             draw.ChannelsMerge();
 
             // The row's background is a button over the whole band, the handle for dragging the row and the target of its right-click menu. It is
             // submitted AFTER the row's content: ImGui gives a hovered item to the first one under the pointer, so the boxes and buttons on top
             // still get their own clicks (and dragging inside a text box still selects text), and the button only gets the bare background.
             var afterRow = ImGui.GetCursorScreenPos();
-            var bandMin = rowMin - new Vector2(inset, padY);
+            var bandMin = rowMin - new Vector2(0, padY);
             ImGui.SetCursorScreenPos(bandMin);
             ImGui.InvisibleButton("##band", rowMax + new Vector2(inset, padY) - bandMin);
 
@@ -1112,7 +1112,7 @@ public sealed class EditorWindow : Window
 
             // The row being dragged is outlined in the same yellow as the insertion line, drawn just inside the band: the band's left edge is the edge of\n            // the scrolling area, so a line centred on it would be half cut off.
             if (dragging)
-                draw.AddRect(bandMin + new Vector2(3f * scale, 2f * scale), rowMax + new Vector2(inset - 3f * scale, padY - 2f * scale), ImGui.GetColorU32(new Vector4(1f, 0.85f, 0.2f, 1f)), 3f * scale, ImDrawFlags.None, 2f);
+                draw.AddRect(bandMin + new Vector2(scale, scale), rowMax + new Vector2(inset - scale, padY - scale), ImGui.GetColorU32(new Vector4(1f, 0.85f, 0.2f, 1f)), 3f * scale, ImDrawFlags.None, 2f);
 
             // The content went first, so the cursor goes back to where it was after it.
             ImGui.SetCursorScreenPos(afterRow);
