@@ -995,6 +995,8 @@ public sealed class EditorWindow : Window
     // Each row's height in the last frame, for the button behind it (which has to be submitted before the row's content is drawn).
 
     private static readonly Vector4 RowBand = new(1f, 1f, 1f, 0.08f); // the lighter band behind every row
+    private static readonly Vector4 DragYellow = new(1f, 0.85f, 0.2f, 1f); // the outline of what is dragged and the line where it will land
+
     private const float RowSpacer = 8f;   // the height of the spacer item between two rows, before scaling
     private const float RowBandGap = 4f;  // the gap left between one row's band and the next, before scaling
     private const float RowInset = 6f;    // how far a row's content sits inside its band at the left and right, before scaling
@@ -1112,7 +1114,7 @@ public sealed class EditorWindow : Window
 
             // The row being dragged is outlined in the same yellow as the insertion line, drawn just inside the band: the band's left edge is the edge of\n            // the scrolling area, so a line centred on it would be half cut off.
             if (dragging)
-                draw.AddRect(bandMin + new Vector2(scale, scale), rowMax + new Vector2(inset - scale, padY - scale), ImGui.GetColorU32(new Vector4(1f, 0.85f, 0.2f, 1f)), 3f * scale, ImDrawFlags.None, 2f);
+                draw.AddRect(bandMin + new Vector2(scale, scale), rowMax + new Vector2(inset - scale, padY - scale), ImGui.GetColorU32(DragYellow), 3f * scale, ImDrawFlags.None, 2f);
 
             // The content went first, so the cursor goes back to where it was after it.
             ImGui.SetCursorScreenPos(afterRow);
@@ -1128,7 +1130,7 @@ public sealed class EditorWindow : Window
                 {
                     var y = dragRowIndex > i ? rowMin.Y - 2 : rowMax.Y + 2;
                     ImGui.GetWindowDrawList().AddLine(new Vector2(rowMin.X, y), new Vector2(rowMax.X, y),
-                                                      ImGui.GetColorU32(new Vector4(1f, 0.85f, 0.2f, 1f)), 3f);
+                                                      ImGui.GetColorU32(DragYellow), 3f);
 
                     if (payload.IsDelivery()) move = (dragRowIndex, i);
                 }
@@ -1241,8 +1243,15 @@ public sealed class EditorWindow : Window
             var hovered = ImGui.IsItemHovered();
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) removeAt = a;
 
+            // Taken now: inside the drag source and target, the last item is no longer this button.
+            var iconMin = ImGui.GetItemRectMin();
+            var iconMax = ImGui.GetItemRectMax();
+            var draw = ImGui.GetWindowDrawList();
+
             if (ImGui.BeginDragDropSource())
             {
+                // The icon being dragged is outlined where it sits, the yellow of the row's insertion line.
+                draw.AddRect(iconMin, iconMax, ImGui.GetColorU32(DragYellow), 0f, ImDrawFlags.None, 2f);
                 dragSkillRow = row;
                 dragSkillIndex = a;
                 ImGui.SetDragDropPayload(SkillPayload, new byte[] { 1 });
@@ -1257,9 +1266,17 @@ public sealed class EditorWindow : Window
             // Dropping on an icon puts the dragged skill in that position, in this row or from another one.
             if (ImGui.BeginDragDropTarget())
             {
-                var payload = ImGui.AcceptDragDropPayload(SkillPayload);
+                var payload = ImGui.AcceptDragDropPayload(SkillPayload,
+                    ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoDrawDefaultRect);
                 if (!payload.IsNull && dragSkillRow is { } src && !(ReferenceEquals(src, row) && dragSkillIndex == a))
-                    moveTo = (src, dragSkillIndex, a);
+                {
+                    // A line where the skill will end up: after this icon when moving it later in the same row, before it otherwise.
+                    var gap = ImGui.GetStyle().ItemSpacing.X / 2f;
+                    var x = ReferenceEquals(src, row) && dragSkillIndex < a ? iconMax.X + gap : iconMin.X - gap;
+                    draw.AddLine(new Vector2(x, iconMin.Y), new Vector2(x, iconMax.Y), ImGui.GetColorU32(DragYellow), 3f);
+
+                    if (payload.IsDelivery()) moveTo = (src, dragSkillIndex, a);
+                }
                 ImGui.EndDragDropTarget();
             }
 
@@ -1285,14 +1302,22 @@ public sealed class EditorWindow : Window
             ImGui.OpenPopup("##picker");
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add skills");
+        var plusMin = ImGui.GetItemRectMin();
+        var plusMax = ImGui.GetItemRectMax();
 
         // Dropping on the button appends the dragged skill to the end of this row, which also
         // lets you move a skill into a row that has none yet.
         if (ImGui.BeginDragDropTarget())
         {
-            var payload = ImGui.AcceptDragDropPayload(SkillPayload);
+            var payload = ImGui.AcceptDragDropPayload(SkillPayload,
+                ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoDrawDefaultRect);
             if (!payload.IsNull && dragSkillRow is { } src)
-                moveTo = (src, dragSkillIndex, row.Actions.Count);
+            {
+                var x = plusMin.X - ImGui.GetStyle().ItemSpacing.X / 2f;
+                ImGui.GetWindowDrawList().AddLine(new Vector2(x, plusMin.Y), new Vector2(x, plusMax.Y), ImGui.GetColorU32(DragYellow), 3f);
+
+                if (payload.IsDelivery()) moveTo = (src, dragSkillIndex, row.Actions.Count);
+            }
             ImGui.EndDragDropTarget();
         }
 
