@@ -37,6 +37,23 @@ public sealed partial class ActionCatalog
     private const string LimitBreakName = "Limit Break";
     private const ushort LimitBreakIcon = 103;
 
+    // Some actions are the second form of another one, put on the hotbar by the game while something is active (Eukrasia, a summoned Seraph, a dance
+    // step), and the game does not mark them as player actions, so the filter below would drop them. They are listed here by row id and expected name
+    // (a row whose name is not the expected one, after a patch moved things, is left out rather than offered as something else). Found by listing the
+    // rows that fail only the IsPlayerAction test; see docs/GAME-DATA.md.
+    private static readonly Dictionary<uint, string> SecondForms = new()
+    {
+        [24291] = "Eukrasian Diagnosis", [24292] = "Eukrasian Prognosis", [37034] = "Eukrasian Prognosis II", // Sage
+        [25789] = "Improvised Finish", // Dancer
+        [16548] = "Seraphic Veil", [16550] = "Angel's Whisper", [16551] = "Seraphic Illumination", [37015] = "Manifestation", [37016] = "Accession", // Scholar
+    };
+
+    // The jobs the picker offers, to tell which one an action belongs to when the game gives it no job of its own.
+    private static readonly string[] JobAbbreviations =
+    {
+        "PLD", "WAR", "DRK", "GNB", "WHM", "SCH", "AST", "SGE", "MNK", "DRG", "NIN", "SAM", "RPR", "VPR", "BRD", "MCH", "DNC", "BLM", "SMN", "RDM", "PCT",
+    };
+
     public IReadOnlyList<SkillFamily> Families { get; }
 
     public ActionCatalog(IDataManager data)
@@ -49,7 +66,8 @@ public sealed partial class ActionCatalog
             // The sheet is full of unused/legacy rows with the same names. The real, usable
             // skills are the ones that have an unlock level and a class category.
             if (a.IsPvP || a.Icon == 0) continue;
-            if (!a.IsPlayerAction && !a.IsRoleAction) continue;
+            var isSecondForm = SecondForms.TryGetValue(a.RowId, out var expectedName) && expectedName == a.Name.ToString();
+            if (!a.IsPlayerAction && !a.IsRoleAction && !isSecondForm) continue;
             if (a.ClassJobLevel == 0 || a.ClassJobCategory.RowId == 0) continue;
 
             var name = a.Name.ToString();
@@ -59,6 +77,10 @@ public sealed partial class ActionCatalog
             var job = a.IsRoleAction || a.ClassJob.ValueNullable is not { } cj
                 ? "Role"
                 : cj.Abbreviation.ToString();
+
+            // A second form has no job of its own (it points at the "adventurer" row): take it from its class category, which names one job.
+            if (isSecondForm && job.Length == 0)
+                job = JobAbbreviations.Where(j => categories.Includes(a.ClassJobCategory.RowId, j)).DefaultIfEmpty("Role").First();
 
             var info = new ActionInfo(a.RowId, name, a.Icon, job, a.ClassJobLevel, a.ClassJobCategory.RowId);
             list.Add(info);

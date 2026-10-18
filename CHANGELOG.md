@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [Unreleased]
+
+### Fixed
+
+- **Second forms of some actions were missing from the picker.** The game puts some actions on the hotbar in place of another while something is active, and does not mark them as player actions, so they were left out: Sage's **Eukrasian Diagnosis**, **Eukrasian Prognosis** and **Eukrasian Prognosis II**, Dancer's **Improvised Finish**, and Scholar's Seraph actions (**Seraphic Veil**, **Angel's Whisper**, **Seraphic Illumination**, **Manifestation**, **Accession**). They are listed by id in the action catalog and are part of the defensive and healing filter. Not yet checked in game.
+
 ## [0.1.2] - 2026-10-18 (experimental)
 
 ### Fixed

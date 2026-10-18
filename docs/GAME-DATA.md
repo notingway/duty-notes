@@ -15,6 +15,7 @@ The sheet is full of rows that look like skills and aren't (many unused or legac
 
 Facts:
 
+- **Second forms are not player actions.** The game puts some actions on the hotbar in place of another while something is active (Eukrasia, a summoned Seraph, a dance step). They are separate rows with `IsPlayerAction` **false**, but a level, a job category and an icon, so they fail only that one test. `ActionCatalog.SecondForms` lists the ones worth offering, by row id and expected name: Sage's Eukrasian Diagnosis 24291, Eukrasian Prognosis 24292 and Eukrasian Prognosis II 37034; Dancer's Improvised Finish 25789; Scholar's Seraphic Veil 16548, Angel's Whisper 16550, Seraphic Illumination 16551, Manifestation 37015 and Accession 37016. They have no job of their own (`ClassJob` is the empty first row), so the job comes from the class category. Most other rows that fail only that test are not worth offering (damage combos, pet and Blue Mage actions, status rows); rows with the same name as a normal action are merged with it anyway. Found by listing every row that fails only `IsPlayerAction` (257 of them) and checking the curated names in `DefensiveSkills.cs` against the sheet: every curated name has a normal row, so only the second forms were missing.
 - **Role actions** (Rampart 7531, Reprisal 7535, Addle 7560...) have `ClassJob` = `uint.MaxValue` and a role category (for
   example 113 for tanks), not a job. Which jobs can use a skill is decided by `ClassJobCategory`.
 - **`ClassJobCategory`** has one boolean column per job, named by its abbreviation (`WAR`, `PLD`...). `ActionCatalog` reads them by
@@ -28,7 +29,7 @@ Facts:
   duration or power was not built.
 - **There is no "is this defensive" flag.** Hand-written lists in `DefensiveSkills.cs` decide it (`Names` for mitigation,
   `Healing` for heals). Names are matched in English; a name that is not a real player action simply never matches (a test of
-  this once removed `Eukrasian Diagnosis`, which is `Diagnosis` while Eukrasia is active, and `Seraphic Illumination`).
+  this once removed `Eukrasian Diagnosis`, which is `Diagnosis` while Eukrasia is active, and `Seraphic Illumination`; they are offered again now that the catalog has those second forms).
 - `Action.ActionCategory` 4 is an oGCD ability; 3 is a weaponskill; **9 is a limit break**.
 - **Limit breaks fail every filter above** (level 0, no real class category, `IsPlayerAction` false, one generic icon, 103), and
   which one you have depends on your job and the tier. The plugin therefore offers **one** skill, "Limit Break", with an id of its

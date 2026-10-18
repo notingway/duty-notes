@@ -14,7 +14,7 @@ public static class DefensiveSkills
     {
         // Role / tanks / damage jobs
         "Second Wind", "Bloodbath", "Equilibrium", "Clemency", "Curing Waltz", "Improvisation",
-        "Vercure", "Star Prism", "Lux Solaris",
+        "Vercure", "Star Prism", "Lux Solaris", "Improvised Finish",
 
         // White Mage (and Conjurer)
         "Cure", "Cure II", "Cure III", "Medica", "Medica II", "Medica III", "Regen",
@@ -24,13 +24,14 @@ public static class DefensiveSkills
         // Scholar (and Arcanist)
         "Physick", "Adloquium", "Succor", "Concitation", "Lustrate", "Indomitability",
         "Aetherpact", "Whispering Dawn", "Fey Blessing", "Seraphism",
+        "Seraphic Veil", "Angel's Whisper", "Manifestation", "Accession",
 
         // Astrologian
         "Benefic", "Benefic II", "Aspected Benefic", "Helios", "Aspected Helios", "Helios Conjunction",
         "Essential Dignity", "Earthly Star", "Celestial Opposition", "Horoscope", "Synastry",
 
-        // Sage
-        "Diagnosis", "Prognosis",
+        // Sage (the Eukrasian forms are the ones used while Eukrasia is on)
+        "Diagnosis", "Prognosis", "Eukrasian Diagnosis", "Eukrasian Prognosis", "Eukrasian Prognosis II",
         "Physis", "Physis II", "Soteria", "Druochole", "Ixochole", "Pepsis", "Pneuma", "Krasis",
         "Zoe", "Philosophia",
     };
@@ -53,7 +54,7 @@ public static class DefensiveSkills
         // Healers
         "Temperance", "Divine Benison", "Aquaveil", "Plenary Indulgence", "Asylum",
         "Sacred Soil", "Fey Illumination", "Expedient", "Consolation",
-        "Excogitation", "Protraction",
+        "Excogitation", "Protraction", "Seraphic Illumination",
         "Collective Unconscious", "Celestial Intersection", "Exaltation", "Neutral Sect", "Sun Sign",
         "Macrocosmos", "Microcosmos",
         "Kerachole", "Taurochole", "Haima", "Holos", "Panhaima",
