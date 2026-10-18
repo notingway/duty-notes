@@ -1161,19 +1161,28 @@ public sealed class EditorWindow : Window
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextWithHint("##mech", "Mechanic", ref row.Mechanic, 128);
 
-                // The editor lists mechanic, notes, then skills, even though the notes column comes last in the overlay.
+                // The same order as the overlay's columns: mechanic, skills, notes. The skills sit on a backdrop like the boxes, so they read as a field too.
+                var rowLeft = ImGui.GetCursorScreenPos().X;
+                var spacing = ImGui.GetStyle().ItemSpacing.Y;
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextUnformatted("Skills");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(fieldX);
+                var backdropMin = ImGui.GetCursorScreenPos();
+                var gap = 3f * ImGuiHelpers.GlobalScale;
+                var iconSide = Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon) + ImGui.GetStyle().FramePadding.Y * 2; // an icon button is the picture plus its frame
+                var backdropSize = new Vector2(ImGui.GetContentRegionAvail().X - inset, iconSide + gap * 2);
+                ImGui.GetWindowDrawList().AddRectFilled(backdropMin, backdropMin + backdropSize, ImGui.GetColorU32(ImGuiCol.FrameBg), ImGui.GetStyle().FrameRounding);
+                ImGui.SetCursorScreenPos(backdropMin + new Vector2(gap, gap));
+                DrawActionRow(node, i, row);
+                ImGui.SetCursorScreenPos(new Vector2(rowLeft, backdropMin.Y + backdropSize.Y + spacing));
+
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextUnformatted("Notes");
                 ImGui.SameLine();
                 ImGui.SetCursorPosX(fieldX);
                 ImGui.SetNextItemWidth(-inset);
                 dirty |= ImGui.InputTextWithHint("##notes", "Notes", ref row.Notes, 256);
-
-                ImGui.AlignTextToFramePadding();
-                ImGui.TextUnformatted("Skills");
-                ImGui.SameLine();
-                ImGui.SetCursorPosX(fieldX);
-                DrawActionRow(node, i, row);
             }
 
             if (!row.Enabled) ImGui.PopStyleVar();
