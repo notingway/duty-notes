@@ -24,6 +24,10 @@ the items below.
 3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
 4. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
+## Ideas considered and left
+
+- **Reset to the first phase on a wipe.** Nothing watches combat, wipes or death today: Reset is the button or `/dutynotes reset` only (it goes to the first phase that is on). Automatic reset would use Dalamud's `ICondition` (combat state, death) but a wipe has no single signal, so it could misfire. If it is ever built: a setting, off by default, and a decision on the trigger first. Left as it is for now (the owner, 2026-10-18).
+
 ## Small things noticed and left
 
 - **The Help tab's macro name.** Next, prev and reset show a suggested name ("DN Next"). Copying it would need its own copy icon: putting the name in the copied macro text is not safe, because a line that is not a command is sent as chat. Proposed, not decided.
