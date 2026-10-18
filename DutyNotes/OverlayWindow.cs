@@ -198,7 +198,7 @@ public sealed class OverlayWindow : Window, IDisposable
             return;
         }
 
-        var target = anchorTracker.Place(pos, size, index);
+        var target = anchorTracker.Place(pos, size, index, ImGui.IsMouseDown(ImGuiMouseButton.Left));
         if (target != pos) ImGui.SetWindowPos(target);
     }
     private readonly FontCache fonts = new();

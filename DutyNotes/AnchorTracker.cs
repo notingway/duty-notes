@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace DutyNotes;
 
@@ -31,14 +31,15 @@ internal sealed class AnchorTracker
     }
 
     /// <summary>
-    /// Where the window's top-left corner should be this frame, given where it is and how big it is. A window that is not where it was put (the
-    /// user dragged it) or a changed anchor setting makes the window's current place the new one, and it stays where it is.
+    /// Where the window's top-left corner should be this frame, given where it is and how big it is. A window that is not where it was put
+    /// because the user is dragging it (<paramref name="mouseDown"/>), or a changed anchor setting, makes the window's current place the new
+    /// one, and it stays where it is. A window that is somewhere else with no mouse button held was moved by ImGui itself, which pushes a window
+    /// back onto the screen when it shrinks while mostly off it: that is not a choice of a new place, and the window goes back to the anchor.
     /// </summary>
-    public Vector2 Place(Vector2 pos, Vector2 size, int anchorIndex)
+    public Vector2 Place(Vector2 pos, Vector2 size, int anchorIndex, bool mouseDown)
     {
-        var moved = anchor is null || anchorIndex != index
-                    || MathF.Abs(pos.X - expected.X) > 0.5f || MathF.Abs(pos.Y - expected.Y) > 0.5f;
-        if (moved) return Hold(pos, size, anchorIndex);
+        var displaced = MathF.Abs(pos.X - expected.X) > 0.5f || MathF.Abs(pos.Y - expected.Y) > 0.5f;
+        if (anchor is null || anchorIndex != index || (displaced && mouseDown)) return Hold(pos, size, anchorIndex);
 
         // ImGui keeps whole pixels, so the position is cut the same way here and then compared with what comes back.
         var target = anchor!.Value - size * Fraction(anchorIndex);

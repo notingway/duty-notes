@@ -7,7 +7,7 @@ The first release is 0.1.0, an experimental one through the custom plugin reposi
 
 ### Fixed
 
-- **Switching the full encounter off moved the overlay off the screen.** With auto-size on, the overlay keeps its anchor point (Settings > Layout > Anchor) fixed while it changes size. It did this by adding up the shift from each frame, and ImGui keeps window positions as whole pixels, so a position set from fractions of a pixel came back slightly different and was taken for the window having been dragged; the next size change (the table's columns catch up over a few frames) was then not corrected. The overlay now remembers where the anchor point is and, each frame, puts the window where that point stays put, so it cannot drift however many frames the size takes. A dragged window's new place becomes the anchor. Not yet checked in game.
+- **Switching the full encounter off moved the overlay off the screen.** With auto-size on, the overlay keeps its anchor point (Settings > Layout > Anchor) fixed while it changes size. With the full encounter showing, the window can be taller than the screen (1434 pixels with a long encounter), so with a bottom anchor its top is above the screen. When it shrank again, ImGui itself moved it down until part of it showed, and the overlay took that for you dragging it and moved the anchor there, which pinned the window to the top of the screen. The overlay now only takes a new anchor when a mouse button is held (a real drag), otherwise it puts the window back at its anchor. It also remembers the anchor point and places the window from it every frame, instead of adding up the shift of each frame. Found with a trace of the window's position in the game's log; confirmed in game.
 
 ## [0.1.1] - 2026-10-18 (experimental)
 

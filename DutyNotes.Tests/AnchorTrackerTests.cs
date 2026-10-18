@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace DutyNotes.Tests;
 
@@ -34,7 +34,7 @@ public sealed class AnchorTrackerTests : CheckBase
             var worst = 0f;
             foreach (var s in sizes)
             {
-                pos = Imgui(tracker.Place(pos, s, index));
+                pos = Imgui(tracker.Place(pos, s, index, false));
                 var offset = Corner(pos, s, index) - anchor;
                 worst = Math.Max(worst, Math.Max(MathF.Abs(offset.X), MathF.Abs(offset.Y)));
             }
@@ -50,7 +50,7 @@ public sealed class AnchorTrackerTests : CheckBase
         tracker.Hold(pos, new Vector2(200, 100), 0);
         var moved = false;
         foreach (var size in new[] { new Vector2(500, 300), new Vector2(210.5f, 99.5f), new Vector2(900, 700) })
-            moved |= tracker.Place(pos, size, 0) != pos;
+            moved |= tracker.Place(pos, size, 0, false) != pos;
         Check("the corner that does not move with a size change keeps the window where it is", !moved);
     }
 
@@ -61,16 +61,16 @@ public sealed class AnchorTrackerTests : CheckBase
         var size = new Vector2(400, 200);
         var pos = new Vector2(1000, 600);
         tracker.Hold(pos, size, 8);
-        pos = Imgui(tracker.Place(pos, size, 8));
+        pos = Imgui(tracker.Place(pos, size, 8, false));
 
         // The user drags it somewhere else: it is left there, and the anchor is now at its new bottom-right.
         pos = new Vector2(700, 300);
-        var afterDrag = tracker.Place(pos, size, 8);
+        var afterDrag = tracker.Place(pos, size, 8, true);
         Check("a dragged window is left where it was dropped", afterDrag == pos);
         var anchor = Corner(pos, size, 8);
 
         var bigger = new Vector2(600, 350);
-        pos = Imgui(tracker.Place(pos, bigger, 8));
+        pos = Imgui(tracker.Place(pos, bigger, 8, false));
         Check("the next size change keeps the new anchor point", Near(Corner(pos, bigger, 8), anchor));
     }
 
@@ -81,10 +81,10 @@ public sealed class AnchorTrackerTests : CheckBase
         var size = new Vector2(400, 200);
         var pos = new Vector2(500, 400);
         tracker.Hold(pos, size, 8);
-        Check("choosing another anchor leaves the window where it is", tracker.Place(pos, size, 0) == pos);
+        Check("choosing another anchor leaves the window where it is", tracker.Place(pos, size, 0, false) == pos);
 
         var bigger = new Vector2(700, 500);
-        Check("and the new anchor is the one kept from then on", tracker.Place(pos, bigger, 0) == pos);
+        Check("and the new anchor is the one kept from then on", tracker.Place(pos, bigger, 0, false) == pos);
     }
 
     [Fact]
@@ -97,12 +97,34 @@ public sealed class AnchorTrackerTests : CheckBase
         // The window then settles at its real size, and is placed by that.
         var real = new Vector2(480f, 240f);
         var held = tracker.Hold(pos, real, 8);
-        var next = tracker.Place(held, new Vector2(480f, 240f), 8);
+        var next = tracker.Place(held, new Vector2(480f, 240f), 8, false);
         Check("once it has settled, the same size leaves it where it is", Near(next, pos));
 
         var fresh = new AnchorTracker();
-        Check("a tracker that has seen nothing takes the window as it is", fresh.Place(pos, real, 4) == pos);
+        Check("a tracker that has seen nothing takes the window as it is", fresh.Place(pos, real, 4, false) == pos);
         fresh.Reset();
-        Check("after a reset the next frame is taken as it is again", fresh.Place(new Vector2(5, 6), real, 4) == new Vector2(5, 6));
+        Check("after a reset the next frame is taken as it is again", fresh.Place(new Vector2(5, 6), real, 4, false) == new Vector2(5, 6));
+    }
+
+    [Fact]
+    public void AWindowPushedBackOntoTheScreenByImguiGoesBackToItsAnchor()
+    {
+        // What the game's log showed: bottom-left anchor, the full encounter makes the window 1434 high, taller than the screen, so its top is
+        // above the screen. Switched off again, the window is small, and ImGui moves it so that part of it is on the screen (no mouse button held).
+        var tracker = new AnchorTracker();
+        var small = new Vector2(288, 256);
+        var tall = new Vector2(718, 1434);
+        var pos = new Vector2(107, 755);
+        tracker.Hold(pos, small, 6);
+        var anchor = Corner(pos, small, 6);
+
+        pos = Imgui(tracker.Place(pos, tall, 6, false));
+        Check("the tall window goes up from the bottom-left anchor", Near(Corner(pos, tall, 6), anchor) && pos.Y < 0);
+
+        // ImGui keeps 19 pixels of the window on the screen when it is smaller than where it sits.
+        pos = new Vector2(pos.X, 19 - small.Y);
+        pos = Imgui(tracker.Place(pos, small, 6, false));
+        Check("after ImGui moved it, the window is put back so the anchor is where it was", Near(Corner(pos, small, 6), anchor));
+        Check("and it is fully on the screen", pos.Y > 0 && pos.Y + small.Y < 1080);
     }
 }

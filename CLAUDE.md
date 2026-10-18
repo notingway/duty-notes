@@ -214,6 +214,7 @@ A default is written once (`Defaults`), but many things repeat or pin its value.
   edge land off screen. Use `SameLine()` then `SetCursorPosX(...)`.
 - After `BeginCombo` returns true, `GetItemRectMin/Max` describe the popup, not the combo box. Measure before opening.
 - A hand-drawn row (`InvisibleButton` plus draw list) does not close its popup the way `Selectable` does; call `CloseCurrentPopup()`.
+- **ImGui moves a window by itself** when it shrinks while mostly off the screen (it keeps about 19 pixels visible), with no mouse button held. Code that watches a window's position to tell whether the user dragged it must not treat that as a drag: the overlay's `AnchorTracker` only takes a new anchor while the mouse is down. A trace of position and size per frame in the log was what found it.
 - `SameLine()` carries the previous item's text baseline to the next one: a plain image button after a label made with `AlignTextToFramePadding` is pushed down by the frame padding, out of line with a text button beside it. Place such a line by `SetCursorScreenPos` instead (the Actions line of a row does).
 - ImGui tables have no merged cells. A full-width row is drawn with the draw list into a zero-width `Dummy` of the right
   height (`SpanningTextRow`), so it can't stretch the first column.
