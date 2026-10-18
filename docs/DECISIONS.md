@@ -23,7 +23,7 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
   "free notes" text above or below each table; note rows replaced it because they can sit anywhere, there can be several, and
   they reuse dragging, duplicating, deleting and undo.
 - **The level is set once, on the encounter.** Phases use it. Choosing a duty sets the level to the level that duty is played
-  at; changing it by hand overrides that and a **Use duty level** button goes back (it is always shown, greyed out until a duty is chosen, so a level set with **Use job level** can be put back at any time).
+  at; changing it by hand overrides that and a **Sync duty** button goes back. It sits left of **Sync job** (your character's level on the encounter's job). Both are always shown, greyed out until there is a duty or a job to sync with, so a level can be put back at any time.
 - **One duty and one job per encounter.** To cover another job, use **Duplicate**. Several jobs per encounter was considered and
   rejected as more complicated for little gain. If several encounters match, **the top one in the list wins**.
 

@@ -470,7 +470,11 @@ public sealed class EditorWindow : Window
         // The list scrolls in its own area, so the hint under it stays at the bottom of the pane.
         var hintHeight = ImGui.GetTextLineHeightWithSpacing() + ImGui.GetStyle().ItemSpacing.Y;
         if (ImGui.BeginChild("##tree-list", new Vector2(0, -hintHeight)))
+        {
+            // A little room above the first item, so the line shown above it while dragging is not cut off by the top of the list.
+            ImGui.Dummy(new Vector2(0, 3 * ImGuiHelpers.GlobalScale));
             DrawTree(cfg, cfg.Roots);
+        }
         ImGui.EndChild();
 
         // Releasing the mouse over a block drops the dragged item there.
@@ -1070,15 +1074,29 @@ public sealed class EditorWindow : Window
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Only actions unlocked at this level are offered in the action picker, for this encounter and all of its phases.\nChoosing a duty sets it to the level that duty is played at; change it here to override that.");
 
+        // Two buttons set the level from what the encounter is tied to. Each is greyed out until there is something to sync with.
+        var duty = plugin.Duties.Get(node.DutyId);
         ImGui.SameLine();
-        // The level your character has on the encounter's job. Greyed out until a job is chosen, and while there is no character to ask.
+        ImGui.BeginDisabled(duty is null);
+        if (ImGui.Button("Sync duty") && duty is not null)
+        {
+            node.Level = Math.Clamp(duty.Level, 1, MaxLevel);
+            dirty = true;
+        }
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(duty is null ? "Choose a duty first. Then this sets the level that duty is played at."
+                           : $"Set the level to {duty.Level}, the level {duty.Name} is played at.");
+
+        // The level your character has on the encounter's job: greyed out until a job is chosen, and while there is no character to ask.
         var jobLevel = 0;
         if (node.JobId != 0 && Plugin.PlayerState.IsLoaded
             && Plugin.DataManager.GetExcelSheet<Lumina.Excel.Sheets.ClassJob>().TryGetRow(node.JobId, out var classJob))
             jobLevel = Plugin.PlayerState.GetClassJobLevel(classJob);
 
+        ImGui.SameLine();
         ImGui.BeginDisabled(jobLevel <= 0);
-        if (ImGui.Button(jobLevel > 0 ? $"Use job level ({jobLevel})" : "Use job level") && jobLevel > 0)
+        if (ImGui.Button("Sync job") && jobLevel > 0)
         {
             node.Level = Math.Clamp(jobLevel, 1, MaxLevel);
             dirty = true;
@@ -1086,24 +1104,9 @@ public sealed class EditorWindow : Window
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip(node.JobId == 0 ? "Choose a job first. Then this sets the level your character has on that job."
-                           : jobLevel > 0 ? $"Your character is level {jobLevel} on {plugin.Jobs.Abbreviation(node.JobId)}; click to use that level."
+                           : jobLevel > 0 ? $"Set the level to {jobLevel}, the level your character has on {plugin.Jobs.Abbreviation(node.JobId)}."
                            : "No level to use: log in with a character that has this job unlocked.");
-
-        // The level follows the chosen duty by default. Changing it by hand overrides that, and this goes back to it. It is always there,
-        // greyed out until a duty is chosen, so a level set with "Use my level" can be put back without hunting for the button.
-        var duty = plugin.Duties.Get(node.DutyId);
-        ImGui.SameLine();
-        ImGui.BeginDisabled(duty is null);
-        if (ImGui.Button(duty is null ? "Use duty level" : $"Use duty level ({duty.Level})") && duty is not null)
-        {
-            node.Level = Math.Clamp(duty.Level, 1, MaxLevel);
-            dirty = true;
-        }
-        ImGui.EndDisabled();
-        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(duty is null ? "Choose a duty first. Then this sets the level that duty is played at." : $"{duty.Name} is played at level {duty.Level}; click to use that level.");
     }
-
     private const string RowPayload = "MITSHEET_ROW";
     private const string SkillPayload = "MITSHEET_SKILL";
 
