@@ -213,6 +213,7 @@ A default is written once (`Defaults`), but many things repeat or pin its value.
   edge land off screen. Use `SameLine()` then `SetCursorPosX(...)`.
 - After `BeginCombo` returns true, `GetItemRectMin/Max` describe the popup, not the combo box. Measure before opening.
 - A hand-drawn row (`InvisibleButton` plus draw list) does not close its popup the way `Selectable` does; call `CloseCurrentPopup()`.
+- `SameLine()` carries the previous item's text baseline to the next one: a plain image button after a label made with `AlignTextToFramePadding` is pushed down by the frame padding, out of line with a text button beside it. Place such a line by `SetCursorScreenPos` instead (the Actions line of a row does).
 - ImGui tables have no merged cells. A full-width row is drawn with the draw list into a zero-width `Dummy` of the right
   height (`SpanningTextRow`), so it can't stretch the first column.
 - `TextWrapped` inside an auto-sizing window has no width to wrap at; wrap at an explicit maximum with `PushTextWrapPos`.

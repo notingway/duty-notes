@@ -1163,12 +1163,14 @@ public sealed class EditorWindow : Window
 
                 // The same order as the overlay's columns: mechanic, skills, notes. The skills sit on a backdrop like the boxes, so they read as a field too.
                 var rowLeft = ImGui.GetCursorScreenPos().X;
+                var labelTop = ImGui.GetCursorScreenPos().Y;
                 var spacing = ImGui.GetStyle().ItemSpacing.Y;
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextUnformatted("Actions");
-                ImGui.SameLine();
-                ImGui.SetCursorPosX(fieldX);
-                var backdropMin = ImGui.GetCursorScreenPos();
+
+                // No SameLine here: it would carry the label's text baseline over to the icon buttons and push them down by the frame padding,
+                // out of line with the + button (which has a baseline of its own). The backdrop is placed by position instead.
+                var backdropMin = new Vector2(rowLeft + RowLabelX * ImGuiHelpers.GlobalScale, labelTop);
                 var gap = 3f * ImGuiHelpers.GlobalScale;
                 var iconSide = ActionButtonSide(Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
                 var backdropSize = new Vector2(ImGui.GetContentRegionAvail().X - inset, iconSide + gap * 2);
