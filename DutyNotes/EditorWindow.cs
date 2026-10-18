@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
@@ -992,6 +993,9 @@ public sealed class EditorWindow : Window
     private SheetRow? dragSkillRow;
     private int dragSkillIndex;
 
+    // Each row's height in the last frame, for the button behind it (which has to be submitted before the row's content is drawn).
+    private readonly ConditionalWeakTable<SheetRow, StrongBox<float>> rowHeights = new();
+
     private static readonly Vector4 RowBand = new(1f, 1f, 1f, 0.08f); // the lighter band behind every row
     private const float RowSpacer = 8f;   // the height of the spacer item between two rows, before scaling
     private const float RowBandGap = 4f;  // the gap left between one row's band and the next, before scaling
@@ -1014,6 +1018,40 @@ public sealed class EditorWindow : Window
             var row = node.Rows[i];
             ImGui.PushID(i);
 
+            // The row's background is a button, the handle for dragging the row and the target of its right-click menu. It is submitted BEFORE the
+            // row's content, and allows overlap, so the boxes and buttons on top of it still get their own clicks (and dragging inside a text box
+            // still selects text). Its height is the row's height from the last frame, so it is missing for the first frame of a new row.
+            var rowTop = ImGui.GetCursorScreenPos();
+            if (rowHeights.TryGetValue(row, out var knownHeight) && knownHeight.Value > 1f)
+            {
+                ImGui.InvisibleButton("##band", new Vector2(ImGui.GetContentRegionAvail().X, knownHeight.Value));
+                ImGui.SetItemAllowOverlap();
+
+                if (ImGui.BeginDragDropSource())
+                {
+                    dragRowNode = node;
+                    dragRowIndex = i;
+                    ImGui.SetDragDropPayload(RowPayload, new byte[] { 1 });
+                    ImGui.TextUnformatted(RowLabel(row, i));
+                    ImGui.EndDragDropSource();
+                }
+
+                // Right-clicking the row's background (not a text box or a button on it) opens its menu.
+                if (ImGui.BeginPopupContextItem("##rowmenu"))
+                {
+                    if (ImGui.MenuItem("Add mechanic row above")) insertAt = (i, false);
+                    if (ImGui.MenuItem("Add mechanic row below")) insertAt = (i + 1, false);
+                    if (ImGui.MenuItem("Add note row above")) insertAt = (i, true);
+                    if (ImGui.MenuItem("Add note row below")) insertAt = (i + 1, true);
+                    ImGui.Separator();
+                    if (ImGui.MenuItem("Duplicate")) duplicate = i;
+                    if (ImGui.MenuItem("Delete")) remove = i;
+                    ImGui.EndPopup();
+                }
+
+                ImGui.SetCursorScreenPos(rowTop); // the content goes on top of the button, from the same place
+            }
+
             // The whole row is one group, so it can be the drop target for a dragged row. Its content is drawn on the upper of two layers, so a
             // background can go behind it once its size is known.
             var draw = ImGui.GetWindowDrawList();
@@ -1025,23 +1063,7 @@ public sealed class EditorWindow : Window
             ImGui.Dummy(Vector2.Zero);
             ImGui.Indent(inset);
 
-            // A grip icon is the drag handle for reordering rows. Its click does nothing.
-            ImGuiComponents.IconButton(FontAwesomeIcon.GripVertical);
-            if (ImGui.BeginDragDropSource())
-            {
-                dragRowNode = node;
-                dragRowIndex = i;
-                ImGui.SetDragDropPayload(RowPayload, new byte[] { 1 });
-                ImGui.TextUnformatted(RowLabel(row, i));
-                ImGui.EndDragDropSource();
-            }
-            else if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip("Drag to reorder this row.\nRight-click the row for more options.");
-            }
-
             // A tick: unticked, the row is left out of the overlay. It stays here, dimmed, so it can be ticked again.
-            ImGui.SameLine();
             dirty |= ImGui.Checkbox("##on", ref row.Enabled);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(row.Enabled ? "On: shown in the overlay.\nUntick to leave this row out." : "Off: left out of the overlay.\nTick to show it again.");
@@ -1087,6 +1109,8 @@ public sealed class EditorWindow : Window
             // item spacing above and below the gap item, so the band grows past the row by enough for exactly RowBandGap to be left over.
             var rowMin = ImGui.GetItemRectMin();
             var rowMax = ImGui.GetItemRectMax();
+            if (!rowHeights.TryGetValue(row, out var heightBox)) rowHeights.Add(row, heightBox = new StrongBox<float>());
+            heightBox.Value = rowMax.Y - rowMin.Y;
             draw.ChannelsSetCurrent(0);
             var scale = ImGuiHelpers.GlobalScale;
             var padY = Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + RowSpacer * scale - RowBandGap * scale) / 2f);
@@ -1109,19 +1133,6 @@ public sealed class EditorWindow : Window
                     if (payload.IsDelivery()) move = (dragRowIndex, i);
                 }
                 ImGui.EndDragDropTarget();
-            }
-
-            // Right-clicking the row's background (not a text box or a button on it) opens its menu.
-            if (ImGui.BeginPopupContextItem("##rowmenu"))
-            {
-                if (ImGui.MenuItem("Add mechanic row above")) insertAt = (i, false);
-                if (ImGui.MenuItem("Add mechanic row below")) insertAt = (i + 1, false);
-                if (ImGui.MenuItem("Add note row above")) insertAt = (i, true);
-                if (ImGui.MenuItem("Add note row below")) insertAt = (i + 1, true);
-                ImGui.Separator();
-                if (ImGui.MenuItem("Duplicate")) duplicate = i;
-                if (ImGui.MenuItem("Delete")) remove = i;
-                ImGui.EndPopup();
             }
 
             // The bands tell the rows apart, so there is no line between them, only the gap.
@@ -1180,8 +1191,8 @@ public sealed class EditorWindow : Window
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("A row of free text across the full width of the table.");
 
-        // Rows can also be added above or below a row, and duplicated or deleted, from the menu on a right-click of its background.
-        if (node.Rows.Count > 0) ImGui.TextDisabled("Right-click a row for more options.");
+        // Rows are dragged by their background, and can also be added above or below a row, duplicated or deleted, from the menu on a right-click of it.
+        if (node.Rows.Count > 0) ImGui.TextDisabled("Drag a row to reorder it. Right-click a row for more options.");
     }
 
     /// <summary>The icons beside a row's tick, after a small divider: duplicate it, or delete it (red when hovered, so it is not hit by accident).</summary>
