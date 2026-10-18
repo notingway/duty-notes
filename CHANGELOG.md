@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [Unreleased]
+
+### Changed
+
+- **Less blur while a text size is being built.** A new text size takes a moment to build (longer on a slow machine), and until it is ready the text is stretched from another font. It is now stretched from the closest font that is already built, not from the normal one, so while a size slider is dragged the stretch is only a step and the text stays much sharper. The exact-size font replaces it as soon as it is ready. Not yet checked in game.
+
 ## [0.1.4] - 2026-10-18 (experimental)
 
 ### Fixed

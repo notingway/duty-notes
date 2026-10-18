@@ -1,4 +1,4 @@
-﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.ManagedFontAtlas;
 using Dalamud.Interface.Utility;
 
@@ -56,12 +56,38 @@ public sealed class FontCache : IDisposable
             return pushed;
         }
 
-        // Not ready (still building, or it failed): the current font, stretched. Blurry, but it still follows the slider.
-        var factor = baseSizePx > 0f ? sizePx / baseSizePx : 1f;
-        if (MathF.Abs(factor - 1f) < 0.01f) return NoScope.Instance;
+        // Not ready (still building, or it failed): the closest font that is ready, stretched to the size. Blurry, but it still follows the
+        // slider, and while a slider is dragged the closest one is only a step away, so the stretch is small.
+        var closest = ClosestReady(sizePx, baseSizePx);
+        IDisposable? pushedClosest = null;
+        var from = baseSizePx;
+        if (closest is { } near)
+        {
+            pushedClosest = near.Entry.Handle.Push();
+            from = near.Key;
+        }
+
+        var factor = from > 0f ? sizePx / from : 1f;
+        if (MathF.Abs(factor - 1f) < 0.01f) return pushedClosest ?? NoScope.Instance;
 
         ImGui.SetWindowFontScale(factor);
-        return new ResetScale();
+        return new ResetScale(pushedClosest);
+    }
+
+    /// <summary>The font that is ready and nearest to this size, if it is nearer than the normal font; null means use the normal font.</summary>
+    private (int Key, Entry Entry)? ClosestReady(float sizePx, float baseSizePx)
+    {
+        (int Key, Entry Entry)? best = null;
+        var bestDistance = baseSizePx > 0f ? MathF.Abs(MathF.Log(sizePx / baseSizePx)) : float.MaxValue;
+        foreach (var (key, entry) in fonts)
+        {
+            if (!entry.Handle.Available) continue;
+            var distance = MathF.Abs(MathF.Log(sizePx / key));
+            if (distance >= bestDistance) continue;
+            bestDistance = distance;
+            best = (key, entry);
+        }
+        return best;
     }
 
     private Entry? GetReady(int key)
@@ -118,6 +144,13 @@ public sealed class FontCache : IDisposable
 
     private sealed class ResetScale : IDisposable
     {
-        public void Dispose() => ImGui.SetWindowFontScale(1f);
+        private readonly IDisposable? pushedFont;
+        public ResetScale(IDisposable? pushedFont) => this.pushedFont = pushedFont;
+
+        public void Dispose()
+        {
+            pushedFont?.Dispose();
+            ImGui.SetWindowFontScale(1f);
+        }
     }
 }
