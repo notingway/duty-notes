@@ -47,10 +47,14 @@ public sealed class Plugin : IDalamudPlugin
         windows.AddWindow(overlay);
         windows.AddWindow(controls);
         windows.AddWindow(editor);
-        // The overlay starts hidden every time the game starts, whatever it was when the game was closed. It comes up through /dutynotes, the
-        // editor's "Show overlay" tickbox, or auto-select when you enter a duty that has a sheet for your job.
-        overlay.IsOpen = false;
-        Config.OverlayVisible = false;
+        // The overlay starts hidden every time the GAME starts, whatever it was when the game was closed. It comes up through /dutynotes, the
+        // editor's "Show overlay" tickbox, or auto-select when you enter a duty that has a sheet for your job. A plugin reload (a Dalamud update,
+        // or a dev reload) runs this constructor again in the same game session, and must not hide it: so the first load of a session leaves a
+        // marker in the process environment, which a reload finds.
+        var newGameSession = Environment.GetEnvironmentVariable(SessionMarker) is null;
+        Environment.SetEnvironmentVariable(SessionMarker, "1");
+        if (newGameSession) Config.OverlayVisible = false;
+        overlay.IsOpen = Config.OverlayVisible;
 
         CommandManager.AddHandler(Command, new CommandInfo(OnCommand)
         {
@@ -267,9 +271,16 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
+    // Set (in this process only) by the first load of the plugin in a game session; see the constructor.
+    private const string SessionMarker = "DUTYNOTES_GAME_SESSION_STARTED";
+
     public void Dispose()
     {
-        FlushPendingSave();
+        // What the overlay is doing now, so a reload in the same game session (see the constructor) brings it back as it was. Auto-select
+        // shows and hides it without saving.
+        Config.OverlayVisible = overlay.IsOpen;
+        Save();
+
         Framework.Update -= OnFrameworkUpdate;
         PluginInterface.UiBuilder.Draw -= windows.Draw;
         PluginInterface.UiBuilder.OpenMainUi -= ToggleOverlay;

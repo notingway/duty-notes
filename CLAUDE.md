@@ -51,7 +51,7 @@ Get-ChildItem DutyNotes\bin\Release -File | Copy-Item -Destination $dest -Force
 
 The dev folder is **not** the repository. The owner added the full path to `DutyNotes.dll` in it under
 `/xlsettings > Experimental > Dev Plugin Locations` (it must be an absolute path) and reloads the plugin from
-`/xlplugins > Dev Tools > Installed Dev Plugins`. (Their folder also holds a stale `.pdb` from before the SDK switch, which can be deleted.)
+`/xlplugins > Dev Tools > Installed Dev Plugins`. (Their folder also holds a stale `.pdb` from before the SDK switch, which can be deleted.) A reload keeps the overlay as it was; only the first load of a game session hides it (`Plugin` constructor, `SessionMarker`).
 
 You cannot run the game, so **never claim something works in game.** Say "built, tests pass, not checked in game" and
 record unverified behavior in [docs/TESTING.md](docs/TESTING.md).

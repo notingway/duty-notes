@@ -70,6 +70,7 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
+| **Reload keeps the overlay** | With the overlay showing, reload the plugin (Installed Dev Plugins): it is still showing, where it was. With it hidden, reload: it stays hidden. Quit the game and start it again: it is hidden, as before. (The first reload after installing this build hides it once, because the build already running did not leave the marker.) |
 | **Add row below** | Every row has an **Add row below** button between **Duplicate** and **Delete row**. Clicking it inserts an empty mechanic row directly under that row, and the cursor is in its Mechanic box. **Ctrl + click** inserts a note row (the cursor goes into its text box). Do it on the first, a middle and the last row, and on a note row. **Undo** (Ctrl+Z) removes the inserted row. The overlay shows the new row in the right place once it has text |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.
