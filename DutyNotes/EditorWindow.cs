@@ -1071,14 +1071,23 @@ public sealed class EditorWindow : Window
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Only actions unlocked at this level are offered in the action picker, for this encounter and all of its phases.\nChoosing a duty sets it to the level that duty is played at; change it here to override that.");
 
         ImGui.SameLine();
-        var player = Plugin.ObjectTable.LocalPlayer;
-        ImGui.BeginDisabled(player is null);
-        if (ImGui.Button("Use my level") && player is not null)
+        // The level your character has on the encounter's job. Greyed out until a job is chosen, and while there is no character to ask.
+        var jobLevel = 0;
+        if (node.JobId != 0 && Plugin.PlayerState.IsLoaded
+            && Plugin.DataManager.GetExcelSheet<Lumina.Excel.Sheets.ClassJob>().TryGetRow(node.JobId, out var classJob))
+            jobLevel = Plugin.PlayerState.GetClassJobLevel(classJob);
+
+        ImGui.BeginDisabled(jobLevel <= 0);
+        if (ImGui.Button(jobLevel > 0 ? $"Use job level ({jobLevel})" : "Use job level") && jobLevel > 0)
         {
-            node.Level = Math.Clamp((int)player.Level, 1, MaxLevel);
+            node.Level = Math.Clamp(jobLevel, 1, MaxLevel);
             dirty = true;
         }
         ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(node.JobId == 0 ? "Choose a job first. Then this sets the level your character has on that job."
+                           : jobLevel > 0 ? $"Your character is level {jobLevel} on {plugin.Jobs.Abbreviation(node.JobId)}; click to use that level."
+                           : "No level to use: log in with a character that has this job unlocked.");
 
         // The level follows the chosen duty by default. Changing it by hand overrides that, and this goes back to it. It is always there,
         // greyed out until a duty is chosen, so a level set with "Use my level" can be put back without hunting for the button.
