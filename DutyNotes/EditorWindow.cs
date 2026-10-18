@@ -36,6 +36,9 @@ public sealed class EditorWindow : Window
 
         DrawQuickToggles(cfg);
 
+        // A little space above the tabs, so they do not sit right under the toggles.
+        ImGui.Dummy(new Vector2(0, 2 * ImGuiHelpers.GlobalScale));
+
         // Editing sheets and tweaking the overlay's look are separate jobs, so they get a tab each
         // instead of sharing (and squeezing) one window.
         if (ImGui.BeginTabBar("##editor-tabs"))
