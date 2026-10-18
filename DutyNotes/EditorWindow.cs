@@ -626,7 +626,17 @@ public sealed class EditorWindow : Window
 
             // A phase that is off looks dim, so it is clear it is skipped.
             if (isPhase && !node.Enabled) ImGui.PushStyleColor(ImGuiCol.Text, ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled]);
-            var open = ImGui.TreeNodeEx(node.Name + "###node", flags);
+            // A phase has nothing below it, so it is a plain selectable line: a tree node would keep room for an arrow, and the text would sit far from the tick.
+            bool open;
+            if (isPhase)
+            {
+                ImGui.Selectable(node.Name + "###node", node.Id == cfg.SelectedId);
+                open = false;
+            }
+            else
+            {
+                open = ImGui.TreeNodeEx(node.Name + "###node", flags);
+            }
             if (isPhase && !node.Enabled) ImGui.PopStyleColor();
             if (ImGui.IsItemClicked() && !ImGui.IsItemToggledOpen())
             {
