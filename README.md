@@ -6,8 +6,8 @@ when you enter the duty, and you can step through the phases of a fight with but
 
 It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people who rehearse hard encounters.
 
-> **Status: in development, not yet released.** It runs as a dev plugin and has not been published to any plugin
-> repository. See [ROADMAP.md](ROADMAP.md) for what is left and [docs/TESTING.md](docs/TESTING.md) for what has
+> **Status: experimental (0.1.0).** It is distributed through a custom plugin repository, not the official Dalamud one: it is a third-party plugin that
+> Dalamud's team has not reviewed. See [Install](#install) below, [ROADMAP.md](ROADMAP.md) for what is left and [docs/TESTING.md](docs/TESTING.md) for what has
 > and hasn't been verified in game.
 
 > **Made with AI.** This plugin was written by an AI (Claude, by Anthropic), not by a human programmer. The owner directed the work
@@ -34,9 +34,24 @@ It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people 
   how each column is aligned, and a right-click menu on the overlay.
 - **Help built in.** A Help tab lists the chat commands, with macros and icons to copy for next, prev and reset.
 
-## Install (as a dev plugin)
+## Install
 
 You need the XIVLauncher with Dalamud installed, and the game.
+
+### From the custom plugin repository (recommended)
+
+1. In game, open `/xlsettings` and go to the **Experimental** tab.
+2. Under **Custom Plugin Repositories**, add this address and save:
+
+   ```
+   https://raw.githubusercontent.com/notingway/plogonway/main/plogonway.json
+   ```
+
+3. Open `/xlplugins`, find **Duty Notes** under All Plugins and install it. Updates then arrive like any other plugin's.
+
+Dalamud shows its usual warning for third-party repositories. The plugin is experimental: report problems in this repository's issues.
+
+### As a dev plugin (to build it yourself)
 
 1. Build the plugin (see [Build](#build)), or get a folder containing `DutyNotes.dll`, `DutyNotes.json` and
    `DutyNotes.deps.json` (that is what a build writes).

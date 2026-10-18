@@ -1,9 +1,9 @@
 # Changelog
 
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-Nothing has been released yet, so everything is under Unreleased.
+The first release is 0.1.0, an experimental one through the custom plugin repository.
 
-## [Unreleased] (0.1.0, in development)
+## [0.1.0] - 2026-10-18 (experimental)
 
 The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its scope grew. Its internal name is now
 `DutyNotes`; settings from the old name are copied over once on first start.
