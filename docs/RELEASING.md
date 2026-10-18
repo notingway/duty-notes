@@ -56,7 +56,7 @@ index fails after the release was created, it says so: fix the problem in the in
 
 The icon and screenshot addresses are in `DutyNotes.csproj` (`IconUrl`, `ImageUrls`) and also written into the index entry by the script. Both are needed: an installed plugin shows the icon named in the manifest inside `latest.zip`, while the plugin list before installing shows the one in the index.
 
-- **v0.1.1** (2026-10-18), a pre-release: the icon in the package's manifest (see CHANGELOG). Not yet confirmed that the icon now shows once installed.
+- **v0.1.1** (2026-10-18), a pre-release: the icon in the package's manifest (see CHANGELOG). Confirmed by the owner: the icon shows once installed, **after restarting the game** (Dalamud kept the missing icon from 0.1.0 until then, so an icon change is only visible after a game restart).
 - **v0.1.0** (2026-10-18), a pre-release. Installed from the repository and confirmed working by the owner. (The first attempt failed because the address pasted was the browser page, `github.com/.../blob/main/plogonway.json`, which serves HTML. The address has to be the raw one, `raw.githubusercontent.com/...`.)
 
 ## Testing the install path
@@ -66,7 +66,8 @@ The plugin installed from a repository is a different copy from the dev plugin: 
 1. In `/xlplugins > Dev Tools > Installed Dev Plugins`, **disable** the dev plugin (or remove its path under `/xlsettings > Experimental > Dev Plugin Locations`).
 2. Add the repository address above in `/xlsettings > Experimental > Custom Plugin Repositories`, save, and open `/xlplugins`.
 3. Find **Duty Notes** under All Plugins, install it, and run through the basics: `/dutynotes edit`, import `samples/example-encounter.txt`, show the overlay.
-4. Settings carry over: both copies use `pluginConfigs\DutyNotes.json`.
+4. **Restart the game to judge the icon**: the plugin list remembers a missing icon until Dalamud is restarted.
+5. Settings carry over: both copies use `pluginConfigs\DutyNotes.json`.
 
 ## If something goes wrong
 
