@@ -1384,11 +1384,15 @@ public sealed class EditorWindow : Window
         var size = new Vector2(Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
         int? removeAt = null;
         (SheetRow src, int from, int to)? moveTo = null;
+        var drawn = 0;
 
         for (var a = 0; a < row.Actions.Count; a++)
         {
             var info = plugin.Catalog.Get(row.Actions[a]);
             if (info is null) continue;
+
+            // The icons sit close together; the usual gap is kept before the + button, which is a different kind of thing.
+            if (drawn++ > 0) ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
 
             ImGui.PushID(a);
             var wrap = Plugin.TextureProvider.GetFromGameIcon(new GameIconLookup(info.Icon)).GetWrapOrEmpty();
@@ -1437,8 +1441,9 @@ public sealed class EditorWindow : Window
             }
 
             ImGui.PopID();
-            ImGui.SameLine();
         }
+
+        if (drawn > 0) ImGui.SameLine();
 
         if (removeAt is { } ra)
         {

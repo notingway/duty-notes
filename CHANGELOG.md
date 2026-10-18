@@ -10,6 +10,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 
 ### Added
 
+- **Closer action icons.** The icons in a row's Actions line are closer together; the gap before the + button is unchanged.
 - **Empty rows show.** A row that is switched on is drawn in the overlay even with nothing written in it (an empty note row takes a line, as an empty mechanic row already did), and a phase with only empty rows is no longer skipped; the tick alone decides. The Notes column still only appears when a visible row has a note.
 - **Use job level.** The level button next to the level box uses the level your character has on the encounter's job (it was your current level), greyed out until a job is chosen. **Use duty level** stays next to it.
 - **Skills are called actions** everywhere you read text: the editor (the Actions label, the action picker, its search box and tooltips, the "Add actions" button, the import message), the overlay's column title (it was Mitigation) and the matching labels in Settings, the README and the docs. Code names (such as `DroppedSkills`, `DefensiveSkills.cs` and the saved settings `MitigationHAlign` and `MitigationVAlign`), the export format's keys and docs/GAME-DATA.md are unchanged.
