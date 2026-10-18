@@ -723,12 +723,22 @@ public sealed class EditorWindow : Window
 
     private void DrawSheetPane(Configuration cfg, SheetNode node)
     {
-        ImGui.SetNextItemWidth(220);
-        dirty |= ImGui.InputText("Name", ref node.Name, 64);
-
-        // Everything that acts on this sheet, on one line under its name.
         var isEncounter = cfg.Roots.Contains(node);
+        var scale = ImGuiHelpers.GlobalScale;
 
+        // The name, with its label to the left, lined up with the Duty and Job rows under it.
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextUnformatted(isEncounter ? "Encounter" : "Phase");
+        ImGui.SameLine(FormLabelX * scale);
+        ImGui.SetNextItemWidth(220 * scale);
+        dirty |= ImGui.InputText("##name", ref node.Name, 64);
+
+        if (isEncounter) DrawEncounterLinks(node);
+
+        if (isEncounter) DrawLevelAndFilter(cfg, node);
+        ImGui.Separator();
+
+        // Everything that acts on this sheet, on one line under the line.
         if (isEncounter)
         {
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Clone))
@@ -765,23 +775,22 @@ public sealed class EditorWindow : Window
         // The result of the last import or export.
         DrawStatus();
 
-        if (isEncounter) DrawEncounterLinks(node);
 
-        if (isEncounter) DrawLevelAndFilter(cfg, node);
-        ImGui.Separator();
-
-        // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
         if (isEncounter)
         {
+            // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
             ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
             return;
         }
 
+        ImGui.Separator();
         if (ImGui.BeginChild("##rows", new Vector2(0, 0)))
             DrawRows(node);
         ImGui.EndChild();
     }
 
+    /// <summary>Where the controls start in the sheet pane's labelled rows (Encounter or Phase, Duty, Job), before scaling.</summary>
+    private const float FormLabelX = 76f;
     // ---- Duty and job of an encounter ----------------------------------------------------------
 
     private string dutyFilter = string.Empty;
@@ -792,7 +801,7 @@ public sealed class EditorWindow : Window
     private void DrawEncounterLinks(SheetNode node)
     {
         var scale = ImGuiHelpers.GlobalScale;
-        const float labelX = 48f;
+        const float labelX = FormLabelX;
 
         ImGui.AlignTextToFramePadding();
         ImGui.TextUnformatted("Duty");
