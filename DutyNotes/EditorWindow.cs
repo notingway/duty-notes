@@ -743,18 +743,34 @@ public sealed class EditorWindow : Window
         ImGui.SetNextItemWidth(220 * scale);
         dirty |= ImGui.InputText("##name", ref node.Name, 64);
 
-        if (isEncounter) DrawEncounterLinks(node);
-
-        if (isEncounter)
+        // A phase has its controls on the name's line, to the right of the box.
+        if (!isEncounter)
         {
-            DrawLevelAndFilter(cfg, node);
+            ImGui.SameLine();
+            DrawSheetActions(cfg, node, isEncounter);
+            ImGui.Separator();
 
-            // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
-            ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
+            if (ImGui.BeginChild("##rows", new Vector2(0, 0)))
+                DrawRows(node);
+            ImGui.EndChild();
+            return;
         }
+
+        DrawEncounterLinks(node);
+        DrawLevelAndFilter(cfg, node);
+
+        // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
+        ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
         ImGui.Separator();
 
-        // Everything that acts on this sheet, on one line under the line. A phase starts with its tick, the same one as in the list.
+        // Everything that acts on an encounter, on one line under the line, and then the result of the last import or export.
+        DrawSheetActions(cfg, node, isEncounter);
+        DrawStatus();
+    }
+
+    /// <summary>What acts on the selected sheet: for a phase its tick, Duplicate and Delete; for an encounter Duplicate, Export and Delete.</summary>
+    private void DrawSheetActions(Configuration cfg, SheetNode node, bool isEncounter)
+    {
         var list = cfg.ContainingList(node);
         if (!isEncounter)
         {
@@ -797,18 +813,7 @@ public sealed class EditorWindow : Window
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip((isEncounter ? "Delete this encounter, with all its phases and rows." : "Delete this phase, with all its rows.") + "\nCtrl + click deletes without asking.");
         DrawDeleteConfirm(cfg);
-        // The result of the last import or export.
-        DrawStatus();
-
-
-        if (isEncounter) return;
-
-        ImGui.Separator();
-        if (ImGui.BeginChild("##rows", new Vector2(0, 0)))
-            DrawRows(node);
-        ImGui.EndChild();
     }
-
     /// <summary>Where the controls start in the sheet pane's labelled rows (Encounter or Phase, Duty, Job), before scaling.</summary>
     private const float FormLabelX = 76f;
     // ---- Duty and job of an encounter ----------------------------------------------------------
