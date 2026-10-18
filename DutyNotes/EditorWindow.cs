@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
@@ -994,7 +993,6 @@ public sealed class EditorWindow : Window
     private int dragSkillIndex;
 
     // Each row's height in the last frame, for the button behind it (which has to be submitted before the row's content is drawn).
-    private readonly ConditionalWeakTable<SheetRow, StrongBox<float>> rowHeights = new();
 
     private static readonly Vector4 RowBand = new(1f, 1f, 1f, 0.08f); // the lighter band behind every row
     private const float RowSpacer = 8f;   // the height of the spacer item between two rows, before scaling
@@ -1018,41 +1016,7 @@ public sealed class EditorWindow : Window
             var row = node.Rows[i];
             ImGui.PushID(i);
 
-            // The row's background is a button, the handle for dragging the row and the target of its right-click menu. It is submitted BEFORE the
-            // row's content, and allows overlap, so the boxes and buttons on top of it still get their own clicks (and dragging inside a text box
-            // still selects text). Its height is the row's height from the last frame, so it is missing for the first frame of a new row.
-            var rowTop = ImGui.GetCursorScreenPos();
-            if (rowHeights.TryGetValue(row, out var knownHeight) && knownHeight.Value > 1f)
-            {
-                ImGui.InvisibleButton("##band", new Vector2(ImGui.GetContentRegionAvail().X, knownHeight.Value));
-                ImGui.SetItemAllowOverlap();
-
-                if (ImGui.BeginDragDropSource())
-                {
-                    dragRowNode = node;
-                    dragRowIndex = i;
-                    ImGui.SetDragDropPayload(RowPayload, new byte[] { 1 });
-                    ImGui.TextUnformatted(RowLabel(row, i));
-                    ImGui.EndDragDropSource();
-                }
-
-                // Right-clicking the row's background (not a text box or a button on it) opens its menu.
-                if (ImGui.BeginPopupContextItem("##rowmenu"))
-                {
-                    if (ImGui.MenuItem("Add mechanic row above")) insertAt = (i, false);
-                    if (ImGui.MenuItem("Add mechanic row below")) insertAt = (i + 1, false);
-                    if (ImGui.MenuItem("Add note row above")) insertAt = (i, true);
-                    if (ImGui.MenuItem("Add note row below")) insertAt = (i + 1, true);
-                    ImGui.Separator();
-                    if (ImGui.MenuItem("Duplicate")) duplicate = i;
-                    if (ImGui.MenuItem("Delete")) remove = i;
-                    ImGui.EndPopup();
-                }
-
-                ImGui.SetCursorScreenPos(rowTop); // the content goes on top of the button, from the same place
-            }
-
-            // The whole row is one group, so it can be the drop target for a dragged row. Its content is drawn on the upper of two layers, so a
+                        // The whole row is one group, so it can be the drop target for a dragged row. Its content is drawn on the upper of two layers, so a
             // background can go behind it once its size is known.
             var draw = ImGui.GetWindowDrawList();
             draw.ChannelsSplit(2);
@@ -1109,13 +1073,49 @@ public sealed class EditorWindow : Window
             // item spacing above and below the gap item, so the band grows past the row by enough for exactly RowBandGap to be left over.
             var rowMin = ImGui.GetItemRectMin();
             var rowMax = ImGui.GetItemRectMax();
-            if (!rowHeights.TryGetValue(row, out var heightBox)) rowHeights.Add(row, heightBox = new StrongBox<float>());
-            heightBox.Value = rowMax.Y - rowMin.Y;
             draw.ChannelsSetCurrent(0);
             var scale = ImGuiHelpers.GlobalScale;
             var padY = Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + RowSpacer * scale - RowBandGap * scale) / 2f);
             draw.AddRectFilled(rowMin - new Vector2(inset, padY), rowMax + new Vector2(inset, padY), ImGui.GetColorU32(RowBand), 3f * scale);
             draw.ChannelsMerge();
+
+            // The row's background is a button over the whole band, the handle for dragging the row and the target of its right-click menu. It is
+            // submitted AFTER the row's content: ImGui gives a hovered item to the first one under the pointer, so the boxes and buttons on top
+            // still get their own clicks (and dragging inside a text box still selects text), and the button only gets the bare background.
+            var afterRow = ImGui.GetCursorScreenPos();
+            var bandMin = rowMin - new Vector2(inset, padY);
+            ImGui.SetCursorScreenPos(bandMin);
+            ImGui.InvisibleButton("##band", rowMax + new Vector2(inset, padY) - bandMin);
+
+            var dragging = false;
+            if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+            {
+                dragging = true;
+                dragRowNode = node;
+                dragRowIndex = i;
+                ImGui.SetDragDropPayload(RowPayload, new byte[] { 1 });
+                ImGui.EndDragDropSource();
+            }
+
+            // Right-clicking the row's background (not a text box or a button on it) opens its menu.
+            if (ImGui.BeginPopupContextItem("##rowmenu"))
+            {
+                if (ImGui.MenuItem("Add mechanic row above")) insertAt = (i, false);
+                if (ImGui.MenuItem("Add mechanic row below")) insertAt = (i + 1, false);
+                if (ImGui.MenuItem("Add note row above")) insertAt = (i, true);
+                if (ImGui.MenuItem("Add note row below")) insertAt = (i + 1, true);
+                ImGui.Separator();
+                if (ImGui.MenuItem("Duplicate")) duplicate = i;
+                if (ImGui.MenuItem("Delete")) remove = i;
+                ImGui.EndPopup();
+            }
+
+            // The row being dragged is outlined in the same yellow as the insertion line.
+            if (dragging)
+                draw.AddRect(bandMin, rowMax + new Vector2(inset, padY), ImGui.GetColorU32(new Vector4(1f, 0.85f, 0.2f, 1f)), 3f * scale, ImDrawFlags.None, 2f);
+
+            // The content went first, so the cursor goes back to where it was after it.
+            ImGui.SetCursorScreenPos(afterRow);
 
             // Dropping a dragged row anywhere on this row (not just on its grip) moves it here.
             // Instead of ImGui's default outline, show an insertion line where the row will end up:
@@ -1218,9 +1218,6 @@ public sealed class EditorWindow : Window
         var firstLine = text.Split('\n')[0].Trim();
         return firstLine.Length > 28 ? firstLine[..28] + "..." : firstLine;
     }
-
-    private static string RowLabel(SheetRow row, int index)
-        => RowText(row) is { Length: > 0 } text ? text : (row.IsNote ? $"Note {index + 1}" : $"Row {index + 1}");
 
     private static string DescribeRow(string verb, SheetRow row)
         => RowText(row) is { Length: > 0 } text ? $"{verb} \"{text}\"" : verb;
