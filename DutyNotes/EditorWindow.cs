@@ -735,7 +735,13 @@ public sealed class EditorWindow : Window
 
         if (isEncounter) DrawEncounterLinks(node);
 
-        if (isEncounter) DrawLevelAndFilter(cfg, node);
+        if (isEncounter)
+        {
+            DrawLevelAndFilter(cfg, node);
+
+            // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
+            ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
+        }
         ImGui.Separator();
 
         // Everything that acts on this sheet, on one line under the line.
@@ -776,12 +782,7 @@ public sealed class EditorWindow : Window
         DrawStatus();
 
 
-        if (isEncounter)
-        {
-            // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
-            ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
-            return;
-        }
+        if (isEncounter) return;
 
         ImGui.Separator();
         if (ImGui.BeginChild("##rows", new Vector2(0, 0)))
