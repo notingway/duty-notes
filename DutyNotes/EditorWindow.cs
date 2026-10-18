@@ -1104,6 +1104,10 @@ public sealed class EditorWindow : Window
     private const float RowLabelX = 72f;  // where a row's fields start, from its left edge, before scaling
     private const float RowInset = 6f;    // how far a row's content sits inside its band at the left and right, before scaling
 
+    /// <summary>How far a row's band reaches past its content, above and below: what leaves exactly <see cref="RowBandGap"/> between one band and the next.
+    /// The space between two rows is the item spacing above and below the gap item.</summary>
+    private static float BandPadY() => Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + (RowSpacer - RowBandGap) * ImGuiHelpers.GlobalScale) / 2f);
+
     private void DrawRows(SheetNode node)
     {
         var inset = RowInset * ImGuiHelpers.GlobalScale;
@@ -1189,7 +1193,8 @@ public sealed class EditorWindow : Window
 
             if (!row.Enabled) ImGui.PopStyleVar();
 
-            // The row's own controls close it: whether it shows, and duplicate and delete.
+            // The row's own controls close it: whether it shows, and duplicate and delete. They get the same space above as the band leaves below them.
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + BandPadY());
             dirty |= ImGui.Checkbox("Show row##on", ref row.Enabled);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(row.Enabled ? "Show row\nUntick to leave this row out of the overlay." : "Show row\nOff: left out of the overlay. Tick to show it again.");
@@ -1204,7 +1209,7 @@ public sealed class EditorWindow : Window
             var rowMax = ImGui.GetItemRectMax();
             draw.ChannelsSetCurrent(0);
             var scale = ImGuiHelpers.GlobalScale;
-            var padY = Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + RowSpacer * scale - RowBandGap * scale) / 2f);
+            var padY = BandPadY();
             draw.AddRectFilled(rowMin - new Vector2(0, padY), rowMax + new Vector2(inset, padY), ImGui.GetColorU32(RowBand), 3f * scale);
             draw.ChannelsMerge();
 
