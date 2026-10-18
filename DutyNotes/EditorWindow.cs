@@ -729,7 +729,7 @@ public sealed class EditorWindow : Window
 
         if (isEncounter)
         {
-            if (ImGui.Button("Duplicate"))
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.Clone))
             {
                 var copy = node.Clone(node.Name + " (copy)");
                 cfg.Roots.Insert(cfg.Roots.IndexOf(node) + 1, copy);
@@ -737,20 +737,20 @@ public sealed class EditorWindow : Window
                 dirty = true;
             }
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Copy this encounter with all its phases and rows,\nfor example to make a version for another job.");
+                ImGui.SetTooltip("Duplicate this encounter, with all its phases and rows,\nfor example to make a version for another job.");
         }
 
         // Export copies a whole encounter, so only an encounter has the button.
         if (isEncounter)
         {
             ImGui.SameLine();
-            if (ImGui.Button("Export")) ExportToClipboard(node);
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.FileExport)) ExportToClipboard(node);
             if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Copy this encounter, with all its phases and rows, to the clipboard as text you can share.");
+                ImGui.SetTooltip("Export: copy this encounter, with all its phases and rows,\nto the clipboard as text you can share.");
         }
 
         if (isEncounter) ImGui.SameLine(); // a phase has only Delete, which goes straight under its name
-        if (ImGui.Button("Delete"))
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Trash, null, null, new Vector4(0.75f, 0.2f, 0.2f, 1f)))
         {
             // Ctrl + click skips the question (Undo still brings it back).
             if (ImGui.GetIO().KeyCtrl) DeleteNode(cfg, node);

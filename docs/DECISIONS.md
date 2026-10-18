@@ -68,7 +68,7 @@ navigation, and the buttons and commands move the selection while editing. Mergi
 you clicked in the tree.
 
 - **The editor's buttons split by what they do.** The left pane has the ones that add something (+ Encounter, + Phase, Import). The right pane has one line under the
-  sheet's name for the ones that act on the selected sheet (Duplicate, Export, Delete; there are no Move up / Move down buttons: sheets are reordered by dragging them in the tree, an encounter among encounters and a phase inside its own encounter, with a yellow outline and an insertion line like rows and skills; a phase can't change encounter because the level lives on the encounter), and the result of the last import or export is shown
+  sheet's name for the ones that act on the selected sheet (Duplicate, Export, Delete: icons, the same Duplicate and Delete icons as a row has, with tooltips; there are no Move up / Move down buttons: sheets are reordered by dragging them in the tree, an encounter among encounters and a phase inside its own encounter, with a yellow outline and an insertion line like rows and skills; a phase can't change encounter because the level lives on the encounter), and the result of the last import or export is shown
   there too. Export copies a whole encounter, so only an encounter has the button; a phase does not show one (exporting or importing a single phase was considered and dropped; see the roadmap).
 
 - **Ctrl + click on Delete skips the confirmation.** Deleting always asks first, but Undo brings a sheet back, so the owner can hold Ctrl to skip the question. (Same habit as Ctrl + right-click on a locked overlay.)
