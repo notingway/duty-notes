@@ -127,7 +127,8 @@ public sealed class OverlayWindow : Window, IDisposable
                 break;
             }
 
-            var phase = cfg.ShowFullEncounter || owner == selected ? Guid.Empty : selected.Id;
+            // An encounter has no rows of its own: with it selected, the overlay shows its first phase (or all of them, with the full encounter on).
+            var phase = cfg.ShowFullEncounter ? Guid.Empty : owner == selected ? owner.Children.FirstOrDefault(c => c.Enabled)?.Id ?? Guid.Empty : selected.Id;
             return (owner?.Id ?? Guid.Empty, phase, cfg.ShowFullEncounter);
         }
 
@@ -270,8 +271,8 @@ public sealed class OverlayWindow : Window, IDisposable
         if (plugin.EditorOpen)
         {
             // Editing: show what is selected in the editor, the same way it shows while playing. With
-            // "Show full encounter" on that is the whole encounter the selection belongs to. With it off it is
-            // the selected phase under the encounter's own table, or just that table if the encounter is selected.
+            // "Show full encounter" on that is every phase of the encounter the selection belongs to. With it off it is
+            // the selected phase, or the first phase if the encounter itself is selected (an encounter has no rows of its own).
             var selected = cfg.Selected;
             if (selected is null) return;
 
@@ -279,26 +280,24 @@ public sealed class OverlayWindow : Window, IDisposable
             if (cfg.ShowFullEncounter && owner is not null)
             {
                 // A phase that is switched off stays out, unless it is the one being edited.
-                sections.Add(owner);
                 sections.AddRange(owner.Children.Where(c => c.Enabled || c == selected));
+            }
+            else if (owner is not null && owner == selected)
+            {
+                if (owner.Children.FirstOrDefault(c => c.Enabled) is { } first) sections.Add(first);
             }
             else
             {
-                if (owner is not null && owner != selected) sections.Add(owner);
                 sections.Add(selected);
             }
         }
         else
         {
-            // Playing: follow the navigation. The setting decides between the whole encounter and just the
-            // phase you are on. The encounter's own table comes first either way, so whatever is written at
-            // that level (raid-wide mechanics, general notes) stays on screen through every phase. Leave it
-            // empty and nothing extra shows.
+            // Playing: follow the navigation. The setting decides between every phase of the encounter and just the phase you are on.
             var encounter = cfg.ActiveEncounter;
             if (encounter is null) return;
 
             var phase = cfg.ActivePhase;
-            sections.Add(encounter);
             if (cfg.ShowFullEncounter) sections.AddRange(encounter.Children.Where(c => c.Enabled));
             else if (phase is not null) sections.Add(phase);
         }
