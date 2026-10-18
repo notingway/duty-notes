@@ -27,7 +27,7 @@ The base64 is the **gzip** of a compact UTF-8 JSON document:
     "l": 80,                  // level (1-100)
     "d": 694,                 // duty: ContentFinderCondition row, 0 for none
     "j": 21,                  // job: ClassJob row, 0 for any job
-    "r": [                    // rows of the encounter itself
+    "r": [                    // rows of the encounter itself: no longer written; on import they become a first phase named after the encounter
       { "m": "Raidwide", "s": [7531, 7535], "o": "Every pull" },   // mechanic row: mechanic, skill ids, notes
       { "t": "Stack on the marker" },                               // note row: its text
       { "m": "Spread", "x": true }                                  // "x": true is a row that is switched off

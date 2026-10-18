@@ -19,7 +19,7 @@ They also need the Dalamud files on disk: the project references `Dalamud.dll` a
 as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
 shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-At the time of writing: **68 tests, 275 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+At the time of writing: **68 tests, 277 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
 `dotnet test` reports the tests; the checks are the `Check` calls.)
 
 | Test class | What it checks |
@@ -72,6 +72,7 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
+| **Rows in phases only** | **+ Encounter** creates an encounter with `Phase 1` and selects that phase, so you can add rows at once. Selecting an encounter shows only its settings (name, icons, duty, job, level) and a line saying to pick a phase; there is no row list or Add row buttons. A phase still has the row list. Importing samples/example-encounter.txt gives 3 phases, the first starting with a note row. Import of old text with rows on the encounter makes a first phase with its name (automated test) |
 | **Icons under a sheet's name** | An encounter shows three icons under its name: Duplicate (the same icon as a row's), Export and Delete (red when hovered), each with a tooltip saying what it does; a phase shows only Delete, under its Name. They do what the buttons did: Duplicate copies the encounter below it, Export copies the text to the clipboard (the status line says so), Delete asks first, and Ctrl + click deletes without asking. The icon sizes and spacing match the row icons |
 | **Dragging in the tree** | Drag an encounter by its name: the yellow outline covers the encounter and its phases (when they are shown). Hovering the encounter or any of its phases, or the small gaps between them, counts as hovering it as one block (the line must not blink off or move while the pointer travels over it), and a yellow line shows where the dragged encounter will land: above that encounter when moving up, below its last phase when moving down. Releasing moves it; the order is kept after a reload and Undo / Ctrl+Z puts it back. A phase moves the same way inside its own encounter only; over another encounter's phase, or an encounter, no line shows and nothing happens. A plain click still selects, the arrow still opens and closes, the phase tick still works. A phase's **Delete** sits under its Name (not beside it). The auto-select tooltip says to reorder by dragging. Move up / Move down are gone |
 | **Dragging a skill** | The icon being dragged is outlined in yellow where it sits (the icon following the pointer stays). Over another icon a yellow vertical line shows where it will land: after that icon when moving later in the same row, before it when moving earlier or from another row. Over the **+** button the line is before it (the skill goes to the end). Releasing puts it there; the old yellow box on the target icon is gone. Dropping a skill the other row already has does nothing |

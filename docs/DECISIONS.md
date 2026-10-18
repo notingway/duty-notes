@@ -86,9 +86,8 @@ you clicked in the tree.
 
 ## What the overlay shows
 
-- **Show full encounter** (setting): the encounter's own rows, then every phase, one shared table. Off: the encounter's own
-  rows pinned above the phase you are on, so raid-wide text stays on screen. An encounter with nothing at its own level looks
-  as if there were no pinning.
+- **Rows live in phases only.** An encounter has its settings (name, level, duty, job) and its phases; it has no table of its own. The editor
+  shows no rows for a selected encounter, and **+ Encounter** creates the encounter with a first phase (\
 - **One table for all sections**, with a title row each, so columns are as wide as the widest content of any phase and line up.
   Separate tables per phase were tried first and had mismatched widths.
 - **The Reset / Previous / Next buttons are hidden in full-encounter mode** (every phase is on screen, so there's nothing to step

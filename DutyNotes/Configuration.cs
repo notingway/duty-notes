@@ -280,7 +280,7 @@ public class Configuration : IPluginConfiguration
     {
         if (Rows.Count > 0 && Roots.Count == 0)
         {
-            Roots.Add(new SheetNode { Name = "Encounter 1", Rows = Rows });
+            Roots.Add(new SheetNode { Name = "Encounter 1", Children = { new SheetNode { Name = "Phase 1", Rows = Rows } } });
             Rows = new();
         }
 

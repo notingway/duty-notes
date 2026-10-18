@@ -183,6 +183,14 @@ public static class Sharing
         var encounter = converter.Build(pack.Encounter, isEncounter: true);
         foreach (var phase in phases) encounter.Children.Add(converter.Build(phase, isEncounter: false));
 
+        // An encounter holds phases, and phases hold rows. Text from before that rule (or written by hand) can carry rows on the encounter itself:
+        // they become a first phase with the encounter's name, so they are not lost.
+        if (encounter.Rows.Count > 0)
+        {
+            encounter.Children.Insert(0, new SheetNode { Name = encounter.Name, Level = encounter.Level, Rows = encounter.Rows });
+            encounter.Rows = new();
+        }
+
         return new ImportResult
         {
             Encounter = encounter,

@@ -423,9 +423,11 @@ public sealed class EditorWindow : Window
     {
         if (ImGui.Button("+ Encounter"))
         {
-            var node = new SheetNode { Name = "New encounter" };
+            // An encounter holds phases, and phases hold the rows, so a new encounter starts with its first phase, ready to fill in.
+            var phase = new SheetNode { Name = "Phase 1" };
+            var node = new SheetNode { Name = "New encounter", Children = { phase } };
             cfg.Roots.Add(node);
-            cfg.SelectedId = node.Id;
+            cfg.SelectedId = phase.Id;
             dirty = true;
         }
 
@@ -767,6 +769,13 @@ public sealed class EditorWindow : Window
 
         if (isEncounter) DrawLevelAndFilter(cfg, node);
         ImGui.Separator();
+
+        // Rows belong to phases. An encounter only has its settings, and its phases to pick from the list.
+        if (isEncounter)
+        {
+            ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
+            return;
+        }
 
         if (ImGui.BeginChild("##rows", new Vector2(0, 0)))
             DrawRows(node);

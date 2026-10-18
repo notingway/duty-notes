@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace DutyNotes.Tests;
 
@@ -122,7 +122,7 @@ public sealed class SerializationTests : CheckBase
         var flat = new Configuration();
         flat.Rows.Add(new SheetRow { Mechanic = "old row" });
         flat.Migrate();
-        Check("a flat list of rows from the first version becomes one encounter", flat.Roots.Count == 1 && flat.Roots[0].Rows.Count == 1 && flat.Rows.Count == 0);
+        Check("a flat list of rows from the first version becomes one encounter with one phase", flat.Roots.Count == 1 && flat.Roots[0].Rows.Count == 0 && flat.Roots[0].Children.Count == 1 && flat.Roots[0].Children[0].Rows.Count == 1 && flat.Rows.Count == 0);
     }
 
     [Fact]
