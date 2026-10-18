@@ -1165,12 +1165,12 @@ public sealed class EditorWindow : Window
                 var rowLeft = ImGui.GetCursorScreenPos().X;
                 var spacing = ImGui.GetStyle().ItemSpacing.Y;
                 ImGui.AlignTextToFramePadding();
-                ImGui.TextUnformatted("Skills");
+                ImGui.TextUnformatted("Actions");
                 ImGui.SameLine();
                 ImGui.SetCursorPosX(fieldX);
                 var backdropMin = ImGui.GetCursorScreenPos();
                 var gap = 3f * ImGuiHelpers.GlobalScale;
-                var iconSide = Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon) + ImGui.GetStyle().FramePadding.Y * 2; // an icon button is the picture plus its frame
+                var iconSide = ActionButtonSide(Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
                 var backdropSize = new Vector2(ImGui.GetContentRegionAvail().X - inset, iconSide + gap * 2);
                 ImGui.GetWindowDrawList().AddRectFilled(backdropMin, backdropMin + backdropSize, ImGui.GetColorU32(ImGuiCol.FrameBg), ImGui.GetStyle().FrameRounding);
                 ImGui.SetCursorScreenPos(backdropMin + new Vector2(gap, gap));
@@ -1349,6 +1349,11 @@ public sealed class EditorWindow : Window
     private static string DescribeRow(string verb, SheetRow row)
         => RowText(row) is { Length: > 0 } text ? $"{verb} \"{text}\"" : verb;
 
+    // The height of an action icon button as last drawn (0 until one has been), so the + button beside it and the backdrop behind it are the same.
+    private float actionButtonSide;
+
+    private float ActionButtonSide(float iconSize) => actionButtonSide > 1f ? actionButtonSide : iconSize + ImGui.GetStyle().FramePadding.Y * 2;
+
     private void DrawActionRow(SheetNode node, int index, SheetRow row)
     {
         var size = new Vector2(Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
@@ -1365,6 +1370,7 @@ public sealed class EditorWindow : Window
 
             // Left button drags, right-click removes. The button's own click does nothing.
             ImGui.ImageButton(wrap.Handle, size);
+            actionButtonSide = ImGui.GetItemRectSize().Y; // what the button really measured, so the + button and the backdrop match it
             var hovered = ImGui.IsItemHovered();
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) removeAt = a;
 
@@ -1420,7 +1426,7 @@ public sealed class EditorWindow : Window
 
         // Same size as the skill icons, so it reads as an empty slot waiting for the next skill.
         // The icons are image buttons, which add frame padding around the picture, so add it here too.
-        if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus, size + ImGui.GetStyle().FramePadding * 2))
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus, new Vector2(ActionButtonSide(size.Y))))
         {
             pickerRow = index;
             filter = string.Empty;
