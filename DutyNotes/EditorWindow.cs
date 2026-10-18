@@ -458,6 +458,7 @@ public sealed class EditorWindow : Window
         DrawImportPopup(cfg);
 
         ImGui.Separator();
+        hoverTarget = null;
         DrawTree(cfg, cfg.Roots);
 
         // A drop is applied after the tree has been drawn, since it changes the lists the tree is walking through.
@@ -479,6 +480,9 @@ public sealed class EditorWindow : Window
     private const string NodePayload = "MITSHEET_NODE";
     private SheetNode? dragTreeNode;
     private (List<SheetNode> list, int from, int to)? treeMove;
+    private SheetNode? hoverTarget;   // the item a dragged one is over this frame (an encounter, when over one of its phases)
+    private int hoverFrom, hoverTo;
+    private float treeBottom;         // the bottom of the last item drawn, so an encounter knows where its phases end
 
     // ---- Import and export ---------------------------------------------------------------------
 
@@ -587,7 +591,7 @@ public sealed class EditorWindow : Window
         return true;
     }
 
-    private void DrawTree(Configuration cfg, List<SheetNode> nodes)
+    private void DrawTree(Configuration cfg, List<SheetNode> nodes, SheetNode? parent = null)
     {
         foreach (var node in nodes.ToList())
         {
@@ -617,15 +621,17 @@ public sealed class EditorWindow : Window
                 dirty = true;
             }
 
-            // Items are dragged to reorder them: encounters among encounters, and phases inside their own encounter.
+            // Items are dragged to reorder them: encounters among encounters, and phases inside their own encounter. An encounter moves
+            // together with its phases: the whole block is outlined, and hovering any of its phases counts as hovering the encounter.
             var itemMin = ImGui.GetItemRectMin();
             var itemMax = ImGui.GetItemRectMax();
             var draw = ImGui.GetWindowDrawList();
+            var dragging = false;
             if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
             {
+                dragging = true;
                 dragTreeNode = node;
                 ImGui.SetDragDropPayload(NodePayload, new byte[] { 1 });
-                draw.AddRect(itemMin, itemMax, ImGui.GetColorU32(DragYellow), 3f * ImGuiHelpers.GlobalScale, ImDrawFlags.None, 2f);
                 ImGui.EndDragDropSource();
             }
 
@@ -633,25 +639,42 @@ public sealed class EditorWindow : Window
             {
                 var payload = ImGui.AcceptDragDropPayload(NodePayload,
                     ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoDrawDefaultRect);
-                if (!payload.IsNull && dragTreeNode is { } dragged && !ReferenceEquals(dragged, node)
-                    && dragged != null && nodes.IndexOf(dragged) is var from and >= 0)
+                if (!payload.IsNull && dragTreeNode is { } dragged)
                 {
-                    // Where it will end up: above this item when moving up, below it when moving down.
-                    var to = nodes.IndexOf(node);
-                    var y = from > to ? itemMin.Y - 1 : itemMax.Y + 1;
-                    draw.AddLine(new Vector2(itemMin.X, y), new Vector2(itemMax.X, y), ImGui.GetColorU32(DragYellow), 3f);
-
-                    if (payload.IsDelivery()) treeMove = (nodes, from, to);
+                    // A phase hovering over another encounter's phase does nothing; an encounter over any of another encounter's phases means that encounter.
+                    var target = nodes.Contains(dragged) ? node : (parent is not null && cfg.Roots.Contains(dragged) ? parent : null);
+                    var list = target is not null && cfg.Roots.Contains(target) && cfg.Roots.Contains(dragged) ? cfg.Roots : nodes;
+                    var from = list.IndexOf(dragged);
+                    var to = target is null ? -1 : list.IndexOf(target);
+                    if (target is not null && !ReferenceEquals(dragged, target) && from >= 0 && to >= 0)
+                    {
+                        hoverTarget = target;
+                        hoverFrom = from;
+                        hoverTo = to;
+                        if (payload.IsDelivery()) treeMove = (list, from, to);
+                    }
                 }
                 ImGui.EndDragDropTarget();
             }
 
+            treeBottom = itemMax.Y;
             if (open)
             {
-                DrawTree(cfg, node.Children);
+                DrawTree(cfg, node.Children, node);
                 ImGui.TreePop();
             }
-            ImGui.PopID();
+
+            // The block of this item: itself, and its phases when they are shown.
+            var blockMax = new Vector2(itemMax.X, treeBottom);
+            if (dragging)
+                draw.AddRect(itemMin, blockMax, ImGui.GetColorU32(DragYellow), 3f * ImGuiHelpers.GlobalScale, ImDrawFlags.None, 2f);
+
+            if (ReferenceEquals(hoverTarget, node))
+            {
+                // Where it will end up: above this block when moving up, below it when moving down.
+                var y = hoverFrom > hoverTo ? itemMin.Y - 1 : blockMax.Y + 1;
+                draw.AddLine(new Vector2(itemMin.X, y), new Vector2(itemMax.X, y), ImGui.GetColorU32(DragYellow), 3f);
+            }            ImGui.PopID();
         }
     }
 
