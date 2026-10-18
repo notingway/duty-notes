@@ -459,7 +459,16 @@ public sealed class EditorWindow : Window
 
         ImGui.Separator();
         hoverTarget = null;
+        treeDragWas = treeDragActive;
+        treeDragActive = false;
         DrawTree(cfg, cfg.Roots);
+
+        // Releasing the mouse over a block drops the dragged item there.
+        if (treeDragWas && ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+        {
+            if (hoverTarget is not null && hoverList is not null) treeMove = (hoverList, hoverFrom, hoverTo);
+            treeDragActive = false;
+        }
 
         // A drop is applied after the tree has been drawn, since it changes the lists the tree is walking through.
         if (treeMove is { } tm)
@@ -482,6 +491,8 @@ public sealed class EditorWindow : Window
     private (List<SheetNode> list, int from, int to)? treeMove;
     private SheetNode? hoverTarget;   // the item a dragged one is over this frame (an encounter, when over one of its phases)
     private int hoverFrom, hoverTo;
+    private List<SheetNode>? hoverList;
+    private bool treeDragActive, treeDragWas; // a tree item is being dragged this frame, and was in the last one
     private float treeBottom;         // the bottom of the last item drawn, so an encounter knows where its phases end
 
     // ---- Import and export ---------------------------------------------------------------------
@@ -630,31 +641,10 @@ public sealed class EditorWindow : Window
             if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
             {
                 dragging = true;
+                treeDragActive = true;
                 dragTreeNode = node;
                 ImGui.SetDragDropPayload(NodePayload, new byte[] { 1 });
                 ImGui.EndDragDropSource();
-            }
-
-            if (ImGui.BeginDragDropTarget())
-            {
-                var payload = ImGui.AcceptDragDropPayload(NodePayload,
-                    ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoDrawDefaultRect);
-                if (!payload.IsNull && dragTreeNode is { } dragged)
-                {
-                    // A phase hovering over another encounter's phase does nothing; an encounter over any of another encounter's phases means that encounter.
-                    var target = nodes.Contains(dragged) ? node : (parent is not null && cfg.Roots.Contains(dragged) ? parent : null);
-                    var list = target is not null && cfg.Roots.Contains(target) && cfg.Roots.Contains(dragged) ? cfg.Roots : nodes;
-                    var from = list.IndexOf(dragged);
-                    var to = target is null ? -1 : list.IndexOf(target);
-                    if (target is not null && !ReferenceEquals(dragged, target) && from >= 0 && to >= 0)
-                    {
-                        hoverTarget = target;
-                        hoverFrom = from;
-                        hoverTo = to;
-                        if (payload.IsDelivery()) treeMove = (list, from, to);
-                    }
-                }
-                ImGui.EndDragDropTarget();
             }
 
             treeBottom = itemMax.Y;
@@ -668,6 +658,22 @@ public sealed class EditorWindow : Window
             var blockMax = new Vector2(itemMax.X, treeBottom);
             if (dragging)
                 draw.AddRect(itemMin, blockMax, ImGui.GetColorU32(DragYellow), 3f * ImGuiHelpers.GlobalScale, ImDrawFlags.None, 2f);
+
+            // Where a dragged item is dropped is decided by the pointer being inside this block (with half the gap to its neighbours on each side),
+            // not by which item is under it, so there is no gap between an encounter and its phases where the line would blink off.
+            if (treeDragWas && dragTreeNode is { } over && nodes.Contains(over) && !ReferenceEquals(over, node))
+            {
+                var halfGap = ImGui.GetStyle().ItemSpacing.Y / 2f;
+                var mouse = ImGui.GetMousePos();
+                if (mouse.X >= itemMin.X && mouse.X <= itemMax.X && mouse.Y >= itemMin.Y - halfGap && mouse.Y <= blockMax.Y + halfGap
+                    && ImGui.IsWindowHovered(ImGuiHoveredFlags.AllowWhenBlockedByActiveItem))
+                {
+                    hoverTarget = node;
+                    hoverFrom = nodes.IndexOf(over);
+                    hoverTo = nodes.IndexOf(node);
+                    hoverList = nodes;
+                }
+            }
 
             if (ReferenceEquals(hoverTarget, node))
             {
