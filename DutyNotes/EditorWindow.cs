@@ -1047,18 +1047,19 @@ public sealed class EditorWindow : Window
         }
         ImGui.EndDisabled();
 
-        // The level follows the chosen duty by default. Changing it by hand overrides that, and this goes back to it.
-        if (plugin.Duties.Get(node.DutyId) is { } duty && node.Level != duty.Level)
+        // The level follows the chosen duty by default. Changing it by hand overrides that, and this goes back to it. It is always there,
+        // greyed out until a duty is chosen, so a level set with "Use my level" can be put back without hunting for the button.
+        var duty = plugin.Duties.Get(node.DutyId);
+        ImGui.SameLine();
+        ImGui.BeginDisabled(duty is null);
+        if (ImGui.Button(duty is null ? "Use duty level" : $"Use duty level ({duty.Level})") && duty is not null)
         {
-            ImGui.SameLine();
-            if (ImGui.Button($"Use duty level ({duty.Level})"))
-            {
-                node.Level = Math.Clamp(duty.Level, 1, MaxLevel);
-                dirty = true;
-            }
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip($"The level is set by hand. {duty.Name} is played at level {duty.Level}; click to follow the duty again.");
+            node.Level = Math.Clamp(duty.Level, 1, MaxLevel);
+            dirty = true;
         }
+        ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(duty is null ? "Choose a duty first. Then this sets the level that duty is played at." : $"{duty.Name} is played at level {duty.Level}; click to use that level.");
     }
 
     private const string RowPayload = "MITSHEET_ROW";
@@ -1069,8 +1070,6 @@ public sealed class EditorWindow : Window
     private int dragRowIndex;
     private SheetRow? dragSkillRow;
     private int dragSkillIndex;
-
-    // Each row's height in the last frame, for the button behind it (which has to be submitted before the row's content is drawn).
 
     private static readonly Vector4 RowBand = new(1f, 1f, 1f, 0.08f); // the lighter band behind every row
     private static readonly Vector4 DragYellow = new(1f, 0.85f, 0.2f, 1f); // the outline of what is dragged and the line where it will land
