@@ -1251,7 +1251,7 @@ public sealed class EditorWindow : Window
             if (ImGui.BeginDragDropSource())
             {
                 // The icon being dragged is outlined where it sits, the yellow of the row's insertion line.
-                draw.AddRect(iconMin, iconMax, ImGui.GetColorU32(DragYellow), 0f, ImDrawFlags.None, 2f);
+                draw.AddRect(iconMin, iconMax, ImGui.GetColorU32(DragYellow), 3f * ImGuiHelpers.GlobalScale, ImDrawFlags.None, 2f);
                 dragSkillRow = row;
                 dragSkillIndex = a;
                 ImGui.SetDragDropPayload(SkillPayload, new byte[] { 1 });
