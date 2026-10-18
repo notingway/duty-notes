@@ -144,7 +144,7 @@ public sealed class OverlayWindow : Window, IDisposable
     {
         lastView = null; // opening shows new content too: hide the first, settling frames
         opening = true;
-        lastSize = null;
+        anchorTracker.Reset();
         settleFrames = SettleFramesAfterOpen;
         placeOnScreen = true;
     }
@@ -173,9 +173,8 @@ public sealed class OverlayWindow : Window, IDisposable
         plugin.Save();
     }
 
-    // Position and size from the previous frame, used to keep the anchor point fixed while auto-sizing.
-    private Vector2? lastPos;
-    private Vector2? lastSize;
+    // Remembers where the anchor point is, and says where the window has to be to keep it there while the window changes size.
+    private readonly AnchorTracker anchorTracker = new();
 
     // When the window is opened again, ImGui re-fits an auto-sized window over its first couple of frames. That settling is not the content
     // growing, and moving the window to compensate for it threw it off the screen, so the first frames after opening are left alone.
@@ -183,34 +182,25 @@ public sealed class OverlayWindow : Window, IDisposable
     private int settleFrames;
 
     /// <summary>
-    /// When the auto-sized window changes size, shift it so the chosen anchor point (e.g. the bottom-right corner)
-    /// stays where it was. A window the user dragged this frame is left alone.
+    /// When the auto-sized window changes size, put it where the chosen anchor point (e.g. the bottom-right corner) stays where it was. A window
+    /// the user dragged is left alone, and its new place becomes the anchor. See <see cref="AnchorTracker"/>.
     /// </summary>
     private void KeepAnchorFixed(Configuration cfg)
     {
         var pos = ImGui.GetWindowPos();
         var size = ImGui.GetWindowSize();
+        var index = (int)cfg.Anchor;
 
         if (settleFrames > 0)
         {
             settleFrames--;
-            lastPos = pos;
-            lastSize = size;
+            anchorTracker.Hold(pos, size, index);
             return;
         }
 
-        if (lastPos is { } lp && lastSize is { } ls && size != ls && pos == lp)
-        {
-            var index = (int)cfg.Anchor;
-            var fraction = new Vector2(index % 3 * 0.5f, index / 3 * 0.5f);
-            pos = lp + (ls - size) * fraction;
-            ImGui.SetWindowPos(pos);
-        }
-
-        lastPos = pos;
-        lastSize = size;
+        var target = anchorTracker.Place(pos, size, index);
+        if (target != pos) ImGui.SetWindowPos(target);
     }
-
     private readonly FontCache fonts = new();
     private float baseFontSize = 17f;
 
@@ -226,7 +216,7 @@ public sealed class OverlayWindow : Window, IDisposable
         settler.Observe(ImGui.GetWindowSize());
 
         if (cfg.AutoSize) KeepAnchorFixed(cfg);
-        else lastSize = null;
+        else anchorTracker.Reset();
 
         // The controls window sits right under the overlay and follows it, so it needs to know where it is.
         Bounds = (ImGui.GetWindowPos(), ImGui.GetWindowSize());

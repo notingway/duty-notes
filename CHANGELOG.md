@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [Unreleased]
+
+### Fixed
+
+- **Switching the full encounter off moved the overlay off the screen.** With auto-size on, the overlay keeps its anchor point (Settings > Layout > Anchor) fixed while it changes size. It did this by adding up the shift from each frame, and ImGui keeps window positions as whole pixels, so a position set from fractions of a pixel came back slightly different and was taken for the window having been dragged; the next size change (the table's columns catch up over a few frames) was then not corrected. The overlay now remembers where the anchor point is and, each frame, puts the window where that point stays put, so it cannot drift however many frames the size takes. A dragged window's new place becomes the anchor. Not yet checked in game.
+
 ## [0.1.1] - 2026-10-18 (experimental)
 
 ### Changed
