@@ -141,6 +141,7 @@ See [docs/DECISIONS.md](docs/DECISIONS.md).
 - Window IDs `###mitsheet-overlay`, `###mitsheet-editor`, `###mitsheet-controls` and the table id `##mitsheet-table`:
   ImGui saves window positions under them. The visible titles say "Duty Notes".
 - `MITSHEET_ROW` and `MITSHEET_SKILL` drag and drop payload names (internal only).
+- `MitigationHAlign` and `MitigationVAlign` (saved settings): the middle column is called **Actions** on screen, but these are saved by name, so they keep the old one.
 
 ## Saving settings
 

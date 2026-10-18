@@ -252,7 +252,7 @@ public sealed class EditorWindow : Window
 
         dirty |= ImGui.Checkbox("Show column headers", ref cfg.ShowHeaders);
         ImGui.SameLine();
-        HelpMarker("Show Mechanic / Mitigation / Notes labels under every phase title.");
+        HelpMarker("Show Mechanic / Actions / Notes labels under every phase title.");
 
         dirty |= ImGui.Checkbox("Auto-size to content", ref cfg.AutoSize);
         ImGui.SameLine();
@@ -274,7 +274,7 @@ public sealed class EditorWindow : Window
         ImGui.EndDisabled();
 
         dirty |= FloatControl("Column spacing", ref cfg.ColumnPadding, 0f, 40f, "%.0f",
-            "Horizontal gap between the Mechanic, Mitigation and Notes columns, in pixels.");
+            "Horizontal gap between the Mechanic, Actions and Notes columns, in pixels.");
 
         ImGui.Spacing();
         ImGui.AlignTextToFramePadding();
@@ -299,7 +299,7 @@ public sealed class EditorWindow : Window
         var step = ImGui.GetFrameHeight() + ImGui.GetStyle().ItemSpacing.Y;
         var labelHeight = ImGui.GetTextLineHeightWithSpacing();
         var columnWidth = step * 3 + 28 * scale;
-        var names = new[] { "Mechanic", "Mitigation", "Notes" };
+        var names = new[] { "Mechanic", "Actions", "Notes" };
 
         for (var column = 0; column < 3; column++)
         {

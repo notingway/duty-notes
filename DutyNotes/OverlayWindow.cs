@@ -404,7 +404,7 @@ public sealed class OverlayWindow : Window, IDisposable
 
         var colFlags = cfg.AutoSize ? ImGuiTableColumnFlags.WidthFixed : ImGuiTableColumnFlags.WidthStretch;
         ImGui.TableSetupColumn("Mechanic", colFlags, cfg.AutoSize ? 0f : 1.2f);
-        ImGui.TableSetupColumn("Mitigation", colFlags, cfg.AutoSize ? 0f : 1.5f);
+        ImGui.TableSetupColumn("Actions", colFlags, cfg.AutoSize ? 0f : 1.5f);
         if (showNotes) ImGui.TableSetupColumn("Notes", colFlags, cfg.AutoSize ? 0f : 1.5f);
 
         var iconSize = new Vector2(Math.Clamp(cfg.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
@@ -429,7 +429,7 @@ public sealed class OverlayWindow : Window, IDisposable
                 ImGui.TableNextRow();
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(0f, 0f, 0f, 0.4f)));
                 var widths = CellWidths(columns);
-                var labels = new[] { "Mechanic", "Mitigation", "Notes" };
+                var labels = new[] { "Mechanic", "Actions", "Notes" };
                 var blocks = Enumerable.Range(0, columns).Select(i => Measure(labels[i], 1f, widths[i])).ToArray();
                 var headerHeight = blocks.Max(b => BlockHeight(b, 0f));
                 for (var i = 0; i < columns; i++)
