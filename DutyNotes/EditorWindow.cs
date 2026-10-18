@@ -1115,10 +1115,8 @@ public sealed class EditorWindow : Window
                 ImGui.EndPopup();
             }
 
-            // A little breathing room between rows, now that they are no longer numbered.
-            ImGui.Dummy(new Vector2(0, 4 * ImGuiHelpers.GlobalScale));
-            ImGui.Separator();
-            ImGui.Dummy(new Vector2(0, 4 * ImGuiHelpers.GlobalScale));
+            // The bands tell the rows apart, so there is no line between them, only a little breathing room.
+            ImGui.Dummy(new Vector2(0, 8 * ImGuiHelpers.GlobalScale));
             ImGui.PopID();
         }
 
@@ -1152,7 +1150,10 @@ public sealed class EditorWindow : Window
             dirty = true;
         }
 
-        if (node.Rows.Count == 0) ImGui.TextDisabled("No rows yet.");
+        // A line closes the list (a line above it is drawn by the sheet pane, under the encounter's settings).
+        if (node.Rows.Count > 0) ImGui.Separator();
+        else ImGui.TextDisabled("No rows yet.");
+
         if (ImGui.Button("Add mechanic row"))
         {
             node.Rows.Add(new SheetRow());

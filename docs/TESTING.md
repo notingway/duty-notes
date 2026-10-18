@@ -59,6 +59,7 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 - **Phases:** the phase buttons under the overlay (also while the editor is open), Previous / Next greyed out at the ends with a tooltip.
 - **Sharing:** Export and Import through the paste window.
 - **Help tab:** the commands, the macro icons, and the copy icons.
+- **Row controls:** the right-click menu on a row (add a mechanic or note row above or below, duplicate, delete), the banded rows, the duplicate and delete icons after a divider, and the add buttons at the bottom.
 - **Stepping between phases:** with auto-size on, Next and Previous swap the phase with no visible flicker (the overlay is hidden, background included, for the two frames it takes to settle).
 - **Startup and position:** the overlay starts hidden every time the game starts, its position is remembered between sessions (by Dalamud), and a saved position that is off the screen is moved back on it when the overlay opens (the log says so).
 - **Delete row:** a note row's delete button says Delete row, the same as a mechanic row's. (The row buttons have since become icons: see the unconfirmed table.)
@@ -70,7 +71,7 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
-| **Row controls** | Every other row in the editor has a slightly lighter band behind it (on a theme with no visible alternate colour, a faint white one), and disabled rows keep it. Each row has, at the top beside the grip and tick, a small | divider and then a duplicate icon and a trash icon right next to each other (the trash turns red when hovered), with tooltips. **Right-click the background of a row** (between the boxes, not inside a text box or on a button): a menu with Add mechanic row above / below, Add note row above / below, Duplicate and Delete. An inserted row lands exactly where chosen (try the first row's *above*, a middle row, and the last row's *below*), and the cursor is in its text box. **Undo** (Ctrl+Z) takes back an insert, a duplicate and a delete. Right-clicking inside a text box must not open the row menu. **Add mechanic row** and **Add note row** are at the bottom of the list, always, with the hint "Right-click a row for more options." under them (and "No rows yet." above them for an empty sheet). Dragging a row to reorder it still works, with the yellow insertion line on top of the bands |
+| **No lines between rows** | In a sheet's row list there is no line between the rows (the bands tell them apart), one line above the first row and one line below the last, then the **Add mechanic row** and **Add note row** buttons. A sheet with no rows shows "No rows yet." and the buttons, without the line below |
 | **Reload keeps the overlay** | With the overlay showing, reload the plugin (Installed Dev Plugins): it is still showing, where it was. With it hidden, reload: it stays hidden. Quit the game and start it again: it is hidden, as before. (The first reload after installing this build hides it once, because the build already running did not leave the marker.) |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.
