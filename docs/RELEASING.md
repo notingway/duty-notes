@@ -54,7 +54,7 @@ index fails after the release was created, it says so: fix the problem in the in
 
 ## Releases so far
 
-- **v0.1.0** (2026-10-18), a pre-release. Not yet test-installed from the repository.
+- **v0.1.0** (2026-10-18), a pre-release. Installed from the repository and confirmed working by the owner. (The first attempt failed because the address pasted was the browser page, `github.com/.../blob/main/plogonway.json`, which serves HTML. The address has to be the raw one, `raw.githubusercontent.com/...`.)
 
 ## Testing the install path
 

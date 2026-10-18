@@ -49,7 +49,7 @@ You need the XIVLauncher with Dalamud installed, and the game.
 
 3. Open `/xlplugins`, find **Duty Notes** under All Plugins and install it. Updates then arrive like any other plugin's.
 
-Dalamud shows its usual warning for third-party repositories. The plugin is experimental: report problems in this repository's issues.
+Use the **raw** address above exactly (not the link from GitHub's file page, which fails with `Download failed`). Dalamud shows its usual warning for third-party repositories. The plugin is experimental: report problems in this repository's issues.
 
 ### As a dev plugin (to build it yourself)
 
