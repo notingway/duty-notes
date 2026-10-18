@@ -28,7 +28,7 @@ The base64 is the **gzip** of a compact UTF-8 JSON document:
     "d": 694,                 // duty: ContentFinderCondition row, 0 for none
     "j": 21,                  // job: ClassJob row, 0 for any job
     "r": [                    // rows of the encounter itself: no longer written; on import they become a first phase named after the encounter
-      { "m": "Raidwide", "s": [7531, 7535], "o": "Every pull" },   // mechanic row: mechanic, skill ids, notes
+      { "m": "Raidwide", "s": [7531, 7535], "o": "Every pull" },   // mechanic row: mechanic, action ids, notes
       { "t": "Stack on the marker" },                               // note row: its text
       { "m": "Spread", "x": true }                                  // "x": true is a row that is switched off
     ],
@@ -51,11 +51,11 @@ encounter itself is always on.
 
 - text over 400,000 characters, a missing or wrong prefix, bad base64, bad gzip or bad JSON are refused with a message;
 - the JSON is read with `TypeNameHandling.None` into plain DTOs, and unzipping stops at 1,000,000 bytes (a gzip bomb);
-- at most 60 phases, 400 rows per sheet and 4,000 rows in all (more than that refuses the text), and 24 skills per row (skills beyond
-  the 24th are cut off, **without** being counted in the "left out" message that reports unknown skills);
+- at most 60 phases, 400 rows per sheet and 4,000 rows in all (more than that refuses the text), and 24 actions per row (actions beyond
+  the 24th are cut off, **without** being counted in the "left out" message that reports unknown actions);
 - names are cut to 128 characters, mechanics to 128, notes to 256, note rows to 1,000; control characters other than line
   breaks are removed; levels are clamped to 1-100;
-- skill ids that don't exist in this game version are dropped (the one exception to "an id is a game Action row" is `Configuration.LimitBreakId`, 4,000,000,001, the plugin's single Limit Break skill) (and counted), the same skill twice in a row is kept once;
+- action ids that don't exist in this game version are dropped (the one exception to "an id is a game Action row" is `Configuration.LimitBreakId`, 4,000,000,001, the plugin's single Limit Break action) (and counted), the same action twice in a row is kept once;
 - the duty is looked up in this game version's data (unknown: cleared and reported), and its zone is taken from there, never
   from the text; an unknown job becomes "any job";
 - every sheet gets a fresh id.

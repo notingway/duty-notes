@@ -342,7 +342,7 @@ public sealed class EditorWindow : Window
         dirty |= FloatControl("Background", ref cfg.BackgroundAlpha, 0f, 1f, "%.2f",
             "Opacity of the overlay background.\n0 is fully transparent, 1 is solid.");
         dirty |= FloatControl("Icon size", ref cfg.IconSize, Configuration.MinIcon, Configuration.MaxIcon, "%.0f",
-            "Size of the skill icons, in pixels.\nThis also sets the minimum row height.");
+            "Size of the action icons, in pixels.\nThis also sets the minimum row height.");
         dirty |= FloatControl("Title text", ref cfg.TitleScale, Configuration.MinScale, Configuration.MaxScale, "%.2f",
             "Text size of the encounter and phase titles.\n1 is the normal UI text size.");
         dirty |= FloatControl("Mechanic text", ref cfg.MechanicScale, Configuration.MinScale, Configuration.MaxScale, "%.2f",
@@ -598,7 +598,7 @@ public sealed class EditorWindow : Window
         });
 
         var message = $"Imported \"{encounter.Name}\": {result.Phases} phase(s), {result.Rows} row(s).";
-        if (result.DroppedSkills > 0) message += $" {result.DroppedSkills} skill(s) that don't exist in this game version were left out.";
+        if (result.DroppedSkills > 0) message += $" {result.DroppedSkills} action(s) that don't exist in this game version were left out.";
         if (result.DutyCleared) message += " Its duty isn't known in this game version, so pick one.";
         SetStatus(message, isError: false);
         return true;
@@ -866,7 +866,7 @@ public sealed class EditorWindow : Window
         if (ImGui.Button((node.JobId == 0 ? "Any job" : plugin.Jobs.Abbreviation(node.JobId)) + "##job"))
             ImGui.OpenPopup("##job-picker");
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("The job this sheet is for. It decides which sheet is chosen when you enter the duty,\nand which job's skills the skill picker offers. \"Any job\" matches everyone.");
+            ImGui.SetTooltip("The job this sheet is for. It decides which sheet is chosen when you enter the duty,\nand which job's actions the action picker offers. \"Any job\" matches everyone.");
 
         DrawDutyPicker(node);
         DrawJobPicker(node);
@@ -1060,7 +1060,7 @@ public sealed class EditorWindow : Window
             node.Level = Math.Clamp(level, 1, MaxLevel);
             dirty = true;
         }
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Only skills unlocked at this level are offered in the skill picker, for this encounter and all of its phases.\nChoosing a duty sets it to the level that duty is played at; change it here to override that.");
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Only actions unlocked at this level are offered in the action picker, for this encounter and all of its phases.\nChoosing a duty sets it to the level that duty is played at; change it here to override that.");
 
         ImGui.SameLine();
         var player = Plugin.ObjectTable.LocalPlayer;
@@ -1309,7 +1309,7 @@ public sealed class EditorWindow : Window
             dirty = true;
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("A row with a mechanic, the skills to use for it, and optional notes.");
+            ImGui.SetTooltip("A row with a mechanic, the actions to use for it, and optional notes.");
 
         ImGui.SameLine();
         if (ImGui.Button("Add note row"))
@@ -1421,7 +1421,7 @@ public sealed class EditorWindow : Window
         {
             var id = row.Actions[ra];
             row.Actions.RemoveAt(ra);
-            var name = plugin.Catalog.Get(id)?.Name ?? "skill";
+            var name = plugin.Catalog.Get(id)?.Name ?? "action";
             PushUndo($"Removed {name}", () => row.Actions.Insert(Math.Min(ra, row.Actions.Count), id));
             dirty = true;
         }
@@ -1434,7 +1434,7 @@ public sealed class EditorWindow : Window
             filter = string.Empty;
             ImGui.OpenPopup("##picker");
         }
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add skills");
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add actions");
         var plusMin = ImGui.GetItemRectMin();
         var plusMax = ImGui.GetItemRectMax();
 
@@ -1514,7 +1514,7 @@ public sealed class EditorWindow : Window
 
         if (ImGui.IsWindowAppearing()) ImGui.SetKeyboardFocusHere();
         ImGui.SetNextItemWidth(-1);
-        ImGui.InputTextWithHint("##filter", "Search skill or job (e.g. 'Reprisal', 'WAR')", ref filter, 64);
+        ImGui.InputTextWithHint("##filter", "Search action or job (e.g. 'Reprisal', 'WAR')", ref filter, 64);
 
         // These only affect this list, so they live here. They are remembered between sessions.
         dirty |= ImGui.Checkbox("Only this job", ref plugin.Config.OnlyCurrentJob);
@@ -1523,7 +1523,7 @@ public sealed class EditorWindow : Window
         ImGui.SameLine();
         dirty |= ImGui.Checkbox("Defensive + healing", ref plugin.Config.OnlyDefensive);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Hide everything that isn't a defensive cooldown or a healing skill (damage attacks, combos, buffs...).\nThe lists are curated in DefensiveSkills.cs.");
+            ImGui.SetTooltip("Hide everything that isn't a defensive cooldown or a healing action (damage attacks, combos, buffs...).\nThe lists are curated in DefensiveSkills.cs.");
 
         // Right-aligned on the same line as the checkboxes.
         const string done = "Done";
@@ -1641,7 +1641,7 @@ public sealed class EditorWindow : Window
                 }
             }
 
-            if (shown == 0) ImGui.TextDisabled("No skills match.");
+            if (shown == 0) ImGui.TextDisabled("No actions match.");
         }
         ImGui.EndChild();
 

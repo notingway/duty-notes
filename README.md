@@ -1,7 +1,7 @@
 # Duty Notes
 
 An in-game overlay for Final Fantasy XIV that holds your notes for a duty: a table of **mechanics**, the **mitigation
-and healing skills** to use for each (shown as icons), notes, and free text. It switches to the right sheet by itself
+and healing actions** to use for each (shown as icons), notes, and free text. It switches to the right sheet by itself
 when you enter the duty, and you can step through the phases of a fight with buttons or macros.
 
 It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people who rehearse hard encounters.
@@ -13,16 +13,16 @@ It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people 
 > **Made with AI.** This plugin was written by an AI (Claude, by Anthropic), not by a human programmer. The owner directed the work
 > and tested it in game. See [AI disclosure](#ai-disclosure) below.
 
-![The overlay showing one phase: three mechanics, the skills to use as icons, and a note for each](images/image1.png)
+![The overlay showing one phase: three mechanics, the actions to use as icons, and a note for each](images/image1.png)
 
 ## What it does
 
 - **Sheets of rows.** An *encounter* holds *phases*, and each holds rows. A **mechanic row** has the mechanic's name, the
-  skills to use (picked from a searchable list and shown as icons) and optional notes. A **note row** is free text that
+  actions to use (picked from a searchable list and shown as icons) and optional notes. A **note row** is free text that
   runs across the full width of the table.
-- **A smart skill picker.** It offers the skills that exist at the encounter's level, so a level 80 sheet doesn't
-  offer Bloodwhetting. Searching any version of a skill finds the one you have (search "Bloodwhetting", get Raw
-  Intuition). It filters to your job and to defensive and healing skills by default.
+- **A smart action picker.** It offers the actions that exist at the encounter's level, so a level 80 sheet doesn't
+  offer Bloodwhetting. Searching any version of an action finds the one you have (search "Bloodwhetting", get Raw
+  Intuition). It filters to your job and to defensive and healing actions by default.
 - **Auto-select by duty and job.** Tie an encounter to a duty and a job. Entering that duty on that job selects the
   encounter, opens the overlay if it was hidden and hides it again when you leave.
 - **Phases.** Show the whole encounter, or only the phase you are on and step through them with **Reset**,
@@ -51,7 +51,7 @@ After you rebuild, reload it from that same list.
 Open the editor with `/dutynotes edit`.
 
 1. **Sheets tab:** add an encounter with **+ Encounter** (it starts with a first phase; rows live in phases, so for a fight with no phases use one phase named after it), and more phases with **+ Phase**. Pick its **Duty** and **Job**. The icons under a sheet's name (Duplicate, Export, Delete; hover for the tooltip) act on it, and you reorder encounters, and the phases inside one, by dragging them in the list; **+ Encounter**, **+ Phase** and **Import** on the left add things.
-   **Add mechanic row** and **Add note row** add a row at the end. Right-click the background of any row for a menu: add a mechanic or note row above or below it, duplicate it, or delete it (duplicate and delete are also icons at the bottom of the row, after its **Show row** tick). Use **+** on a row to add skills (including **Limit Break**), and drag a row by its background to reorder it. The tick beside a row or phase switches it off.
+   **Add mechanic row** and **Add note row** add a row at the end. Right-click the background of any row for a menu: add a mechanic or note row above or below it, duplicate it, or delete it (duplicate and delete are also icons at the bottom of the row, after its **Show row** tick). Use **+** on a row to add actions (including **Limit Break**), and drag a row by its background to reorder it. The tick beside a row or phase switches it off.
 2. **Settings tab:** behavior (auto-select, auto open, auto hide, cutscenes), layout (including how each column is aligned) and style. Each section
    has a **Reset** button that can be undone.
 3. **Help tab:** the chat commands, and macros to copy.

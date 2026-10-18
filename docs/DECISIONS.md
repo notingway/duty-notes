@@ -19,7 +19,7 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
   to phase level on load.
 - **Phases are optional.** An encounter can hold rows itself. Forcing every encounter to have a phase would make single-phase
   fights need an empty wrapper.
-- **Rows come in two kinds:** mechanic rows (name, skills, notes) and note rows (full-width free text). The first design was a
+- **Rows come in two kinds:** mechanic rows (name, actions, notes) and note rows (full-width free text). The first design was a
   "free notes" text above or below each table; note rows replaced it because they can sit anywhere, there can be several, and
   they reuse dragging, duplicating, deleting and undo.
 - **The level is set once, on the encounter.** Phases use it. Choosing a duty sets the level to the level that duty is played
@@ -57,7 +57,7 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
 
 ## Editing rows
 
-- **Row actions: icons for the two common ones, a right-click menu for the rest.** Duplicate and delete are icons on the row's last line, after its **Show row** tick (the row's identity controls; the fields come first, each with a label on the left, in the order of the overlay's columns: Mechanic, Actions (the skills, on a backdrop in the boxes' colour, so they read as a field), Notes; or Note for a note row), after a small divider (`|`), with Delete red on hover so it is not hit by accident (Undo covers it anyway). Everything else a row can do is in a menu on a right-click of the row's background: add a mechanic or a note row above or below it, duplicate, delete. Rows can therefore be added anywhere without dragging, and the rows stay free of buttons. **Add mechanic row** and **Add note row** stay at the bottom of the list (adding at the end is the common case), with a hint that the menu exists. Every row has the same lighter band behind it (a faint white), with its content inset from the band's edges and a small even gap between bands, drawn on a layer behind the row's content (`ChannelsSplit`), so the rows are easy to tell apart, which is why there are no lines between rows, only one above the list and one below it. Alternating bands were tried first and judged too faint to read. A row is dragged by its background, the same area that opens its menu (there is no grip icon): a button covering the row's band is submitted after the row's content and is the drag source and the right-click target (ImGui gives a hovered item to the first widget under the pointer, so the boxes and buttons on top keep their clicks and the button only gets the bare background). The row being dragged gets a yellow outline, the colour of the insertion line, and no tooltip. Making the whole row group the drag source instead would let dragging inside a text box start a row drag, because after `EndGroup` the group takes the ID of the active widget inside it. This replaced two earlier versions: one "Add row below" button with Ctrl + click for a note row, and **+ Mechanic** / **+ Note** buttons on every row.
+- **Row actions: icons for the two common ones, a right-click menu for the rest.** Duplicate and delete are icons on the row's last line, after its **Show row** tick (the row's identity controls; the fields come first, each with a label on the left, in the order of the overlay's columns: Mechanic, Actions (the actions, on a backdrop in the boxes' colour, so they read as a field), Notes; or Note for a note row), after a small divider (`|`), with Delete red on hover so it is not hit by accident (Undo covers it anyway). Everything else a row can do is in a menu on a right-click of the row's background: add a mechanic or a note row above or below it, duplicate, delete. Rows can therefore be added anywhere without dragging, and the rows stay free of buttons. **Add mechanic row** and **Add note row** stay at the bottom of the list (adding at the end is the common case), with a hint that the menu exists. Every row has the same lighter band behind it (a faint white), with its content inset from the band's edges and a small even gap between bands, drawn on a layer behind the row's content (`ChannelsSplit`), so the rows are easy to tell apart, which is why there are no lines between rows, only one above the list and one below it. Alternating bands were tried first and judged too faint to read. A row is dragged by its background, the same area that opens its menu (there is no grip icon): a button covering the row's band is submitted after the row's content and is the drag source and the right-click target (ImGui gives a hovered item to the first widget under the pointer, so the boxes and buttons on top keep their clicks and the button only gets the bare background). The row being dragged gets a yellow outline, the colour of the insertion line, and no tooltip. Making the whole row group the drag source instead would let dragging inside a text box start a row drag, because after `EndGroup` the group takes the ID of the active widget inside it. This replaced two earlier versions: one "Add row below" button with Ctrl + click for a note row, and **+ Mechanic** / **+ Note** buttons on every row.
 
 ## Selection versus navigation
 
@@ -68,7 +68,7 @@ navigation, and the buttons and commands move the selection while editing. Mergi
 you clicked in the tree.
 
 - **The editor's buttons split by what they do.** The left pane has the ones that add something (+ Encounter, + Phase, Import). The right pane has one line under the
-  sheet's name for the ones that act on the selected sheet (Duplicate, Export, Delete: icons, the same Duplicate and Delete icons as a row has, with tooltips; there are no Move up / Move down buttons: sheets are reordered by dragging them in the tree, an encounter among encounters and a phase inside its own encounter, with a yellow outline and an insertion line like rows and skills; a phase can't change encounter because the level lives on the encounter), and the result of the last import or export is shown
+  sheet's name for the ones that act on the selected sheet (Duplicate, Export, Delete: icons, the same Duplicate and Delete icons as a row has, with tooltips; there are no Move up / Move down buttons: sheets are reordered by dragging them in the tree, an encounter among encounters and a phase inside its own encounter, with a yellow outline and an insertion line like rows and actions; a phase can't change encounter because the level lives on the encounter), and the result of the last import or export is shown
   there too. Export copies a whole encounter, so only an encounter has the button; a phase does not show one (exporting or importing a single phase was considered and dropped; see the roadmap).
 
 - **Ctrl + click on Delete skips the confirmation.** Deleting always asks first, but Undo brings a sheet back, so the owner can hold Ctrl to skip the question. (Same habit as Ctrl + right-click on a locked overlay.)
@@ -96,21 +96,21 @@ you clicked in the tree.
 - **The buttons are a separate window** under the overlay, so they stay clickable when the overlay is locked (click-through).
 - **Right-click menu.** Ctrl + right-click opens it on a locked overlay (the overlay takes the mouse only while Ctrl is held).
 
-## Skills
+## Actions
 
-- **Which skills are offered.** Only real, usable ones: rows with an unlock level and a class category, not PvP. See
+- **Which actions are offered.** Only real, usable ones: rows with an unlock level and a class category, not PvP. See
   [GAME-DATA.md](GAME-DATA.md); the Action sheet is full of unusable duplicates.
-- **Level-aware, upgrade-aware.** A skill and its upgrades form a family (from the trait text "Upgrades X to Y"). The picker shows the
+- **Level-aware, upgrade-aware.** An action and its upgrades form a family (from the trait text "Upgrades X to Y"). The picker shows the
   version you have at the encounter's level, and searching **any** version finds it (search Bloodwhetting at level 80, get Raw
   Intuition, shown with the matching version's icon).
 - **Defensive and healing filter is a hand-written list** (`DefensiveSkills.cs`). Classifying by description text was tried and
   was wrong both ways (it caught Raging Strikes and missed Holmgang, Living Dead, Hallowed Ground). Add names to the list when
   something is missing. Healing was added because the owner wanted heals visible, not only mitigation.
-- **One "Limit Break" skill, not one per job and tier.** Limit breaks are not real player actions in the game data (so no filter finds
+- **One "Limit Break" action, not one per job and tier.** Limit breaks are not real player actions in the game data (so no filter finds
   them) and there are about a dozen mitigation ones. A plan only needs to say "limit break here", so there is a single entry with an id of
   its own (`Configuration.LimitBreakId`), which is saved in sheets and export text and so must never change.
 - **Job filter** follows the encounter's job if set (so you can plan for a job you aren't playing), otherwise your current job.
-- **The picker stays open** after a pick, so several skills can be added; picked ones are highlighted and clicking again removes.
+- **The picker stays open** after a pick, so several actions can be added; picked ones are highlighted and clicking again removes.
 
 ## Auto-select
 
@@ -142,7 +142,7 @@ you clicked in the tree.
   settings can change without breaking text others already have. A realistic encounter is about 300 characters.
 - **Import is a paste window, not a silent clipboard read.** It shows the text and its length, reports problems beside it, and avoids depending on the game window owning the clipboard. A **Paste from clipboard** button is kept as a shortcut.
 - **Importing treats the text as untrusted:** a tiny gzip that expands to gigabytes is refused, the JSON is read without type
-  names, sizes and counts are capped, values are clamped, control characters stripped, unknown skills, duties and jobs
+  names, sizes and counts are capped, values are clamped, control characters stripped, unknown actions, duties and jobs
   dropped (and counted), and the zone for a duty always comes from this game's data.
 - **No backup feature.** There was one (backup and restore files, plus automatic dated copies) and it was removed as overkill:
   export and import of single encounters covers sharing and keeping a copy, and Dalamud keeps the settings file itself. If it is ever
