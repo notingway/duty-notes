@@ -3,7 +3,7 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
-## [Unreleased]
+## [0.1.4] - 2026-10-18 (experimental)
 
 ### Fixed
 

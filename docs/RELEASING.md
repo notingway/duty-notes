@@ -56,6 +56,7 @@ index fails after the release was created, it says so: fix the problem in the in
 
 The icon and screenshot addresses are in `DutyNotes.csproj` (`IconUrl`, `ImageUrls`) and also written into the index entry by the script. Both are needed: an installed plugin shows the icon named in the manifest inside `latest.zip`, while the plugin list before installing shows the one in the index.
 
+- **v0.1.4** (2026-10-18), a pre-release: text scaling for players with another global UI scale (see CHANGELOG), sent to one tester. Not yet confirmed on her machine.
 - **v0.1.3** (2026-10-18), a pre-release: the second forms of some actions in the picker (see CHANGELOG). Not yet installed from the repository.
 - **v0.1.2** (2026-10-18), a pre-release: the overlay no longer runs off the screen when the full encounter is switched off (see CHANGELOG). Not yet installed from the repository.
 - **v0.1.1** (2026-10-18), a pre-release: the icon in the package's manifest (see CHANGELOG). Confirmed by the owner: the icon shows once installed, **after restarting the game** (Dalamud kept the missing icon from 0.1.0 until then, so an icon change is only visible after a game restart).
