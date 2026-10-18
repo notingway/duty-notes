@@ -5,6 +5,10 @@ The first release is 0.1.0, an experimental one through the custom plugin reposi
 
 ## [0.1.1] - 2026-10-18 (experimental)
 
+### Changed
+
+- **The plugin installer's command text** (shown under the installed plugin) names only `/dutynotes` and `/dutynotes edit`, one per line; the other commands are in the editor's Help tab.
+
 ### Fixed
 
 - **The icon disappeared once the plugin was installed.** An installed plugin takes its icon from the manifest that came in the zip, and that manifest had no icon or screenshot address (only the repository index had). The icon and screenshot addresses are now in the project file, so they are in the package's manifest too.

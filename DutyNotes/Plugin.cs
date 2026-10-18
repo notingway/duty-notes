@@ -59,8 +59,8 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(Command, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Toggle the Duty Notes overlay. '/dutynotes edit' opens the editor, '/dutynotes lock' toggles click-through, " +
-                          "'/dutynotes next', '/dutynotes prev' and '/dutynotes reset' move between phases, '/dutynotes full' switches between the whole encounter and the current phase.",
+            // What the plugin installer shows under the plugin: just the two commands to start with, one per line. The rest are in the editor's Help tab.
+            HelpMessage = "Toggle the Duty Notes overlay.\n/dutynotes edit → Open the editor. The other commands are in its Help tab.",
         });
 
         PluginInterface.UiBuilder.Draw += windows.Draw;

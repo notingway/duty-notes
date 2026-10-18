@@ -153,7 +153,7 @@ See [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Adding a chat command
 
-1. Handle it in `Plugin.OnCommand` (a `case "word":`), and mention it in the command's `HelpMessage` there.
+1. Handle it in `Plugin.OnCommand` (a `case "word":`), and leave it out of the command's `HelpMessage` there: the plugin installer shows that text, and it only names `/dutynotes` and `/dutynotes edit` (the rest are in the editor's Help tab).
 2. Add it to `HelpCommands.All`, with a macro name if it is worth binding to a hotbar key. The Help tab is drawn from that list.
 3. Add its row to the commands table in `README.md`.
 4. `HelpTests` fails if the list, the plugin and the README disagree (it reads `Plugin.cs` and `README.md`), so a missed step shows up.
