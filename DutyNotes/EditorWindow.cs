@@ -879,6 +879,18 @@ public sealed class EditorWindow : Window
             ImGui.OpenPopup("##job-picker");
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("The job this sheet is for. It decides which sheet is chosen when you enter the duty,\nand which job's actions the action picker offers. \"Any job\" matches everyone.");
+        if (node.JobId != 0)
+        {
+            ImGui.SameLine();
+            ImGui.PushID("clear-job"); // the duty's clear button is the same icon, so it needs its own id
+            if (ImGuiComponents.IconButton(FontAwesomeIcon.Times))
+            {
+                node.JobId = 0;
+                dirty = true;
+            }
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Clear the job (any job)");
+            ImGui.PopID();
+        }
 
         DrawDutyPicker(node);
         DrawJobPicker(node);
@@ -1078,15 +1090,15 @@ public sealed class EditorWindow : Window
         var duty = plugin.Duties.Get(node.DutyId);
         ImGui.SameLine();
         ImGui.BeginDisabled(duty is null);
-        if (ImGui.Button("Sync duty") && duty is not null)
+        if (ImGui.Button("Duty") && duty is not null)
         {
             node.Level = Math.Clamp(duty.Level, 1, MaxLevel);
             dirty = true;
         }
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(duty is null ? "Choose a duty first. Then this sets the level that duty is played at."
-                           : $"Set the level to {duty.Level}, the level {duty.Name} is played at.");
+            ImGui.SetTooltip(duty is null ? "Sync the level with the duty: choose a duty first. Then this sets the level that duty is played at."
+                           : $"Sync the level with the duty: set it to {duty.Level}, the level {duty.Name} is played at.");
 
         // The level your character has on the encounter's job: greyed out until a job is chosen, and while there is no character to ask.
         var jobLevel = 0;
@@ -1096,15 +1108,15 @@ public sealed class EditorWindow : Window
 
         ImGui.SameLine();
         ImGui.BeginDisabled(jobLevel <= 0);
-        if (ImGui.Button("Sync job") && jobLevel > 0)
+        if (ImGui.Button("Job") && jobLevel > 0)
         {
             node.Level = Math.Clamp(jobLevel, 1, MaxLevel);
             dirty = true;
         }
         ImGui.EndDisabled();
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(node.JobId == 0 ? "Choose a job first. Then this sets the level your character has on that job."
-                           : jobLevel > 0 ? $"Set the level to {jobLevel}, the level your character has on {plugin.Jobs.Abbreviation(node.JobId)}."
+            ImGui.SetTooltip(node.JobId == 0 ? "Sync the level with the job: choose a job first. Then this sets the level your character has on that job."
+                           : jobLevel > 0 ? $"Sync the level with the job: set it to {jobLevel}, the level your character has on {plugin.Jobs.Abbreviation(node.JobId)}."
                            : "No level to use: log in with a character that has this job unlocked.");
     }
     private const string RowPayload = "MITSHEET_ROW";
