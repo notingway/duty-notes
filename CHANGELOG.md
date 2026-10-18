@@ -3,15 +3,11 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
-## [Unreleased]
+## [0.1.5] - 2026-10-19 (experimental)
 
 ### Changed
 
 - **Less blur while a text size is being built.** A new text size takes a moment to build (longer on a slow machine), and until it is ready the text is stretched from another font. It is now stretched from the closest font that is already built, not from the normal one, so while a size slider is dragged the stretch is only a step and the text stays much sharper. The exact-size font replaces it as soon as it is ready. Not yet checked in game.
-
-## [Unreleased]
-
-### Changed
 
 - **New phases are called "New phase".** **+ Phase**, and the first phase that **+ Encounter** creates, are named "New phase", like a new encounter is "New encounter" (they were "Phase 1", "Phase 2" and so on, numbered by how many phases the encounter had).
 - **The font log lines from 0.1.4 are gone.** The per-font "ready" lines were added to find a text scaling problem and are no longer needed. A font that fails to build is still logged as a warning.
