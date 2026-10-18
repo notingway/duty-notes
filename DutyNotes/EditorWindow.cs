@@ -992,8 +992,14 @@ public sealed class EditorWindow : Window
     private SheetRow? dragSkillRow;
     private int dragSkillIndex;
 
+    private static readonly Vector4 RowBand = new(1f, 1f, 1f, 0.08f); // the lighter band behind every row
+    private const float RowSpacer = 8f;   // the height of the spacer item between two rows, before scaling
+    private const float RowBandGap = 4f;  // the gap left between one row's band and the next, before scaling
+    private const float RowInset = 6f;    // how far a row's content sits inside its band at the left and right, before scaling
+
     private void DrawRows(SheetNode node)
     {
+        var inset = RowInset * ImGuiHelpers.GlobalScale;
         int? remove = null;
         int? duplicate = null;
         (int position, bool note)? insertAt = null;
@@ -1014,6 +1020,10 @@ public sealed class EditorWindow : Window
             draw.ChannelsSplit(2);
             draw.ChannelsSetCurrent(1);
             ImGui.BeginGroup();
+
+            // The content sits inside the band: indented from its left edge, stopping short of its right edge, with the item spacing above and below.
+            ImGui.Dummy(Vector2.Zero);
+            ImGui.Indent(inset);
 
             // A grip icon is the drag handle for reordering rows. Its click does nothing.
             ImGuiComponents.IconButton(FontAwesomeIcon.GripVertical);
@@ -1050,38 +1060,37 @@ public sealed class EditorWindow : Window
 
                 var height = ImGui.GetTextLineHeightWithSpacing() * 3 + ImGui.GetStyle().FramePadding.Y * 2;
                 FocusIfNew(row);
-                dirty |= ImGui.InputTextMultiline("##text", ref row.Text, 1000, new Vector2(-1, height));
+                dirty |= ImGui.InputTextMultiline("##text", ref row.Text, 1000, new Vector2(-inset, height));
             }
             else
             {
                 // The row's own actions sit with the grip and the tick; the mechanic goes on its own line under them, like the notes and skills below it.
                 DrawRowActions(i, ref duplicate, ref remove);
 
-                ImGui.SetNextItemWidth(-1);
+                ImGui.SetNextItemWidth(-inset);
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextWithHint("##mech", "Mechanic", ref row.Mechanic, 128);
 
                 // The editor lists mechanic, notes, then skills, even though the notes column comes last in the overlay.
-                ImGui.SetNextItemWidth(-1);
+                ImGui.SetNextItemWidth(-inset);
                 dirty |= ImGui.InputTextWithHint("##notes", "Notes", ref row.Notes, 256);
 
                 DrawActionRow(node, i, row);
             }
 
             if (!row.Enabled) ImGui.PopStyleVar();
+            ImGui.Unindent(inset);
+            ImGui.Dummy(Vector2.Zero);
             ImGui.EndGroup();
 
-            // Every other row gets a slightly lighter band behind it, so where one ends and the next begins is easy to see.
+            // Every row gets a lighter band behind it, with a small even gap between one band and the next. The space between two rows is the
+            // item spacing above and below the gap item, so the band grows past the row by enough for exactly RowBandGap to be left over.
             var rowMin = ImGui.GetItemRectMin();
             var rowMax = ImGui.GetItemRectMax();
             draw.ChannelsSetCurrent(0);
-            if (i % 2 == 1)
-            {
-                var band = ImGui.GetStyle().Colors[(int)ImGuiCol.TableRowBgAlt];
-                if (band.W < 0.04f) band = new Vector4(1f, 1f, 1f, 0.05f); // a theme with no visible alternate colour still gets a faint one
-                var pad = 4f * ImGuiHelpers.GlobalScale;
-                draw.AddRectFilled(rowMin - new Vector2(pad, pad), rowMax + new Vector2(pad, pad), ImGui.GetColorU32(band));
-            }
+            var scale = ImGuiHelpers.GlobalScale;
+            var padY = Math.Max(0f, (2 * ImGui.GetStyle().ItemSpacing.Y + RowSpacer * scale - RowBandGap * scale) / 2f);
+            draw.AddRectFilled(rowMin - new Vector2(inset, padY), rowMax + new Vector2(inset, padY), ImGui.GetColorU32(RowBand), 3f * scale);
             draw.ChannelsMerge();
 
             // Dropping a dragged row anywhere on this row (not just on its grip) moves it here.
@@ -1115,8 +1124,8 @@ public sealed class EditorWindow : Window
                 ImGui.EndPopup();
             }
 
-            // The bands tell the rows apart, so there is no line between them, only a little breathing room.
-            ImGui.Dummy(new Vector2(0, 8 * ImGuiHelpers.GlobalScale));
+            // The bands tell the rows apart, so there is no line between them, only the gap.
+            ImGui.Dummy(new Vector2(0, RowSpacer * ImGuiHelpers.GlobalScale));
             ImGui.PopID();
         }
 

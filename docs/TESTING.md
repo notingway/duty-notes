@@ -71,7 +71,7 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
-| **No lines between rows** | In a sheet's row list there is no line between the rows (the bands tell them apart), one line above the first row and one line below the last, then the **Add mechanic row** and **Add note row** buttons. A sheet with no rows shows "No rows yet." and the buttons, without the line below |
+| **Banded rows, no lines between** | In a sheet's row list every row has the same lighter band behind it, with a small even gap (about four pixels) between one band and the next, and no line between rows. The row's boxes and buttons sit inside the band, with a little space at its left, right, top and bottom (they do not touch its edges). One line above the first row and one below the last, then the **Add mechanic row** and **Add note row** buttons. A sheet with no rows shows "No rows yet." and the buttons, without the line below |
 | **Reload keeps the overlay** | With the overlay showing, reload the plugin (Installed Dev Plugins): it is still showing, where it was. With it hidden, reload: it stays hidden. Quit the game and start it again: it is hidden, as before. (The first reload after installing this build hides it once, because the build already running did not leave the marker.) |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.
