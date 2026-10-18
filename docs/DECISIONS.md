@@ -89,7 +89,15 @@ you clicked in the tree.
 ## What the overlay shows
 
 - **Rows live in phases only.** An encounter has its settings (name, level, duty, job) and its phases; it has no table of its own. The editor
-  shows no rows for a selected encounter, and **+ Encounter** creates the encounter with a first phase (\
+  shows no rows for a selected encounter (it shows a line saying to pick a phase), and **+ Encounter** creates the encounter with a first phase
+  ("Phase 1") and **selects the encounter**, not the phase: a new user then sees the encounter's settings first, and can see that duty, job and
+  level belong to it, with its phase right below in the list. (Selecting the phase was tried first and made it look as though there was nowhere
+  to put those details.) For a fight with no phases, use one phase and name it after the fight. This replaced rows on the encounter itself, which
+  were a third kind of table that Next, Previous and Reset could not step to, and which the overlay pinned above the current phase. That pinning
+  is gone as a feature: raid-wide text now goes in the phases that need it. Old export text with rows on the encounter still imports: they become
+  a first phase named after the encounter. With an encounter selected in the editor, the overlay shows its first phase that is switched on (or
+  every phase, with the full encounter on), not an empty table.
+- **Show full encounter** (setting): every phase that is switched on, one shared table. Off: only the phase you are on.
 - **One table for all sections**, with a title row each, so columns are as wide as the widest content of any phase and line up.
   Separate tables per phase were tried first and had mismatched widths.
 - **The Reset / Previous / Next buttons are hidden in full-encounter mode** (every phase is on screen, so there's nothing to step

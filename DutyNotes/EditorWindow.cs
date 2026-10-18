@@ -426,11 +426,12 @@ public sealed class EditorWindow : Window
     {
         if (ImGui.Button("+ Encounter"))
         {
-            // An encounter holds phases, and phases hold the rows, so a new encounter starts with its first phase, ready to fill in.
+            // An encounter holds phases, and phases hold the rows, so a new encounter starts with its first phase. The encounter itself is
+            // what gets selected, so its settings (name, duty, job, level) are what a new user sees first; its phases are right below it.
             var phase = new SheetNode { Name = "Phase 1" };
             var node = new SheetNode { Name = "New encounter", Children = { phase } };
             cfg.Roots.Add(node);
-            cfg.SelectedId = phase.Id;
+            cfg.SelectedId = node.Id;
             dirty = true;
         }
 
