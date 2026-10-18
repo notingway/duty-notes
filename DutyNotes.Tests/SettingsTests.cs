@@ -173,6 +173,30 @@ public sealed class SettingsTests : CheckBase
     }
 
     [Fact]
+    public void ARowCanBeInsertedAtAnyPosition()
+    {
+        SheetNode Three() => new() { Rows = { new SheetRow { Mechanic = "A" }, new SheetRow { Mechanic = "B" }, new SheetRow { Mechanic = "C" } } };
+        string Order(SheetNode n) => string.Join(",", n.Rows.Select(r => r.IsNote ? "note" : r.Mechanic == "" ? "new" : r.Mechanic));
+
+        var aboveFirst = Three(); aboveFirst.InsertRowAt(0, false);
+        var aboveMiddle = Three(); aboveMiddle.InsertRowAt(1, false);
+        var belowLast = Three(); belowLast.InsertRowAt(3, false);
+        Check("above the first row goes first", Order(aboveFirst) == "new,A,B,C");
+        Check("above a middle row goes right before it", Order(aboveMiddle) == "A,new,B,C");
+        Check("below the last row (position 3) goes last", Order(belowLast) == "A,B,C,new");
+
+        var beforeStart = Three(); beforeStart.InsertRowAt(-5, false);
+        var afterEnd = Three(); afterEnd.InsertRowAt(99, false);
+        Check("a position before the list is brought to the start", Order(beforeStart) == "new,A,B,C");
+        Check("a position after the list is brought to the end", Order(afterEnd) == "A,B,C,new");
+
+        var note = Three().InsertRowAt(1, isNote: true);
+        Check("it can be a note row", note.IsNote && note.Text == "" && note.Enabled);
+        var inEmpty = new SheetNode(); inEmpty.InsertRowAt(0, false);
+        Check("in an empty sheet it is the only row", inEmpty.Rows.Count == 1);
+    }
+
+    [Fact]
     public void ACloneIsADeepCopyWithFreshIds()
     {
         // Editing the copy must never touch the original.

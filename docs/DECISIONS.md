@@ -55,6 +55,10 @@ The internal name was changed to `DutyNotes` while nothing was published, with a
   `SaveScheduler` (pure and tested): a quiet half second, or five seconds at most. A crash within that window can lose the last edit, which is accepted. The editor tells the two cases apart with
   `ImGui.IsAnyItemActive()`, and the pending save is also written when the editor or overlay closes and when the plugin unloads.
 
+## Editing rows
+
+- **Row actions: icons for the two common ones, a right-click menu for the rest.** Duplicate and delete are icons beside the grip and tick (the row's identity controls), after a small divider (`|`), with Delete red on hover so it is not hit by accident (Undo covers it anyway). Everything else a row can do is in a menu on a right-click of the row's background: add a mechanic or a note row above or below it, duplicate, delete. Rows can therefore be added anywhere without dragging, and the rows stay free of buttons. **Add mechanic row** and **Add note row** stay at the bottom of the list (adding at the end is the common case), with a hint that the menu exists. Every other row has a lighter band behind it (the theme's alternate row colour, or a faint white), drawn on a layer behind the row's content (`ChannelsSplit`), so the rows are easy to tell apart. This replaced two earlier versions: one "Add row below" button with Ctrl + click for a note row, and **+ Mechanic** / **+ Note** buttons on every row.
+
 ## Selection versus navigation
 
 The editor's tree selection and the overlay's position are separate things (`SelectedId` versus `ActiveEncounterId` and

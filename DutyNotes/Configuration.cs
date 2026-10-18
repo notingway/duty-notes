@@ -73,9 +73,16 @@ public class SheetNode
     /// row (nothing selected, or past the end) puts it at the end.
     /// </summary>
     public SheetRow InsertRowBelow(int index, bool isNote)
+        => InsertRowAt(index < 0 || index >= Rows.Count ? Rows.Count : index + 1, isNote);
+
+    /// <summary>
+    /// Adds an empty row (a mechanic row, or a note row) at a position in the list, and returns it. "Above" row 3 is position 3, "below" it is
+    /// position 4. A position outside the list is brought back into it (before the first row, or at the end).
+    /// </summary>
+    public SheetRow InsertRowAt(int position, bool isNote)
     {
         var row = new SheetRow { IsNote = isNote };
-        Rows.Insert(index < 0 || index >= Rows.Count ? Rows.Count : index + 1, row);
+        Rows.Insert(Math.Clamp(position, 0, Rows.Count), row);
         return row;
     }
 

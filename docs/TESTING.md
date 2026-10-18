@@ -19,7 +19,7 @@ They also need the Dalamud files on disk: the project references `Dalamud.dll` a
 as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
 shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-At the time of writing: **66 tests, 261 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+At the time of writing: **67 tests, 268 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
 `dotnet test` reports the tests; the checks are the `Check` calls.)
 
 | Test class | What it checks |
@@ -61,7 +61,7 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 - **Help tab:** the commands, the macro icons, and the copy icons.
 - **Stepping between phases:** with auto-size on, Next and Previous swap the phase with no visible flicker (the overlay is hidden, background included, for the two frames it takes to settle).
 - **Startup and position:** the overlay starts hidden every time the game starts, its position is remembered between sessions (by Dalamud), and a saved position that is off the screen is moved back on it when the overlay opens (the log says so).
-- **Delete row:** a note row's delete button says Delete row, the same as a mechanic row's.
+- **Delete row:** a note row's delete button says Delete row, the same as a mechanic row's. (The row buttons have since become icons: see the unconfirmed table.)
 - **No encounters:** deleting every encounter, with the empty-state messages, Undo, Import into the empty list, and the list staying empty after a restart.
 
 ### Built, but not yet confirmed in game
@@ -70,7 +70,7 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
+| **Row controls** | Every other row in the editor has a slightly lighter band behind it (on a theme with no visible alternate colour, a faint white one), and disabled rows keep it. Each row has, at the top beside the grip and tick, a small | divider and then a duplicate icon and a trash icon right next to each other (the trash turns red when hovered), with tooltips. **Right-click the background of a row** (between the boxes, not inside a text box or on a button): a menu with Add mechanic row above / below, Add note row above / below, Duplicate and Delete. An inserted row lands exactly where chosen (try the first row's *above*, a middle row, and the last row's *below*), and the cursor is in its text box. **Undo** (Ctrl+Z) takes back an insert, a duplicate and a delete. Right-clicking inside a text box must not open the row menu. **Add mechanic row** and **Add note row** are at the bottom of the list, always, with the hint "Right-click a row for more options." under them (and "No rows yet." above them for an empty sheet). Dragging a row to reorder it still works, with the yellow insertion line on top of the bands |
 | **Reload keeps the overlay** | With the overlay showing, reload the plugin (Installed Dev Plugins): it is still showing, where it was. With it hidden, reload: it stays hidden. Quit the game and start it again: it is hidden, as before. (The first reload after installing this build hides it once, because the build already running did not leave the marker.) |
-| **Add row below** | Every row has an **Add row below** button between **Duplicate** and **Delete row**. Clicking it inserts an empty mechanic row directly under that row, and the cursor is in its Mechanic box. **Ctrl + click** inserts a note row (the cursor goes into its text box). Do it on the first, a middle and the last row, and on a note row. **Undo** (Ctrl+Z) removes the inserted row. The overlay shows the new row in the right place once it has text |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.

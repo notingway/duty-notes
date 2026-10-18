@@ -996,7 +996,7 @@ public sealed class EditorWindow : Window
     {
         int? remove = null;
         int? duplicate = null;
-        (int index, bool note)? insertBelow = null;
+        (int position, bool note)? insertAt = null;
         (int from, int to)? move = null;
 
         // A small margin above the first row, so the insertion line has room to show above it
@@ -1008,7 +1008,11 @@ public sealed class EditorWindow : Window
             var row = node.Rows[i];
             ImGui.PushID(i);
 
-            // The whole row is one group, so it can be the drop target for a dragged row.
+            // The whole row is one group, so it can be the drop target for a dragged row. Its content is drawn on the upper of two layers, so a
+            // background can go behind it once its size is known.
+            var draw = ImGui.GetWindowDrawList();
+            draw.ChannelsSplit(2);
+            draw.ChannelsSetCurrent(1);
             ImGui.BeginGroup();
 
             // A grip icon is the drag handle for reordering rows. Its click does nothing.
@@ -1023,7 +1027,7 @@ public sealed class EditorWindow : Window
             }
             else if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip("Drag to reorder this row");
+                ImGui.SetTooltip("Drag to reorder this row.\nRight-click the row for more options.");
             }
 
             // A tick: unticked, the row is left out of the overlay. It stays here, dimmed, so it can be ticked again.
@@ -1042,13 +1046,17 @@ public sealed class EditorWindow : Window
                 ImGui.SameLine();
                 HelpMarker("A note row is free text across the full width of the table.\nPut it wherever it applies: above the rows, between two mechanics, or below them.");
 
+                DrawRowActions(i, ref duplicate, ref remove);
+
                 var height = ImGui.GetTextLineHeightWithSpacing() * 3 + ImGui.GetStyle().FramePadding.Y * 2;
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextMultiline("##text", ref row.Text, 1000, new Vector2(-1, height));
             }
             else
             {
-                // The mechanic goes on its own line under the grip and tick, like the notes and skills below it.
+                // The row's own actions sit with the grip and the tick; the mechanic goes on its own line under them, like the notes and skills below it.
+                DrawRowActions(i, ref duplicate, ref remove);
+
                 ImGui.SetNextItemWidth(-1);
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextWithHint("##mech", "Mechanic", ref row.Mechanic, 128);
@@ -1060,21 +1068,25 @@ public sealed class EditorWindow : Window
                 DrawActionRow(node, i, row);
             }
 
-            if (ImGui.Button("Duplicate")) duplicate = i;
-            ImGui.SameLine();
-            if (ImGui.Button("Add row below")) insertBelow = (i, ImGui.GetIO().KeyCtrl);
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add an empty row right below this one.\nCtrl + click adds a note row instead.");
-            ImGui.SameLine();
-            if (ImGui.Button("Delete row")) remove = i;
-
             if (!row.Enabled) ImGui.PopStyleVar();
             ImGui.EndGroup();
+
+            // Every other row gets a slightly lighter band behind it, so where one ends and the next begins is easy to see.
+            var rowMin = ImGui.GetItemRectMin();
+            var rowMax = ImGui.GetItemRectMax();
+            draw.ChannelsSetCurrent(0);
+            if (i % 2 == 1)
+            {
+                var band = ImGui.GetStyle().Colors[(int)ImGuiCol.TableRowBgAlt];
+                if (band.W < 0.04f) band = new Vector4(1f, 1f, 1f, 0.05f); // a theme with no visible alternate colour still gets a faint one
+                var pad = 4f * ImGuiHelpers.GlobalScale;
+                draw.AddRectFilled(rowMin - new Vector2(pad, pad), rowMax + new Vector2(pad, pad), ImGui.GetColorU32(band));
+            }
+            draw.ChannelsMerge();
 
             // Dropping a dragged row anywhere on this row (not just on its grip) moves it here.
             // Instead of ImGui's default outline, show an insertion line where the row will end up:
             // above this row when dragging upwards, below it when dragging downwards.
-            var rowMin = ImGui.GetItemRectMin();
-            var rowMax = ImGui.GetItemRectMax();
             if (ImGui.BeginDragDropTarget())
             {
                 var payload = ImGui.AcceptDragDropPayload(RowPayload,
@@ -1088,6 +1100,19 @@ public sealed class EditorWindow : Window
                     if (payload.IsDelivery()) move = (dragRowIndex, i);
                 }
                 ImGui.EndDragDropTarget();
+            }
+
+            // Right-clicking the row's background (not a text box or a button on it) opens its menu.
+            if (ImGui.BeginPopupContextItem("##rowmenu"))
+            {
+                if (ImGui.MenuItem("Add mechanic row above")) insertAt = (i, false);
+                if (ImGui.MenuItem("Add mechanic row below")) insertAt = (i + 1, false);
+                if (ImGui.MenuItem("Add note row above")) insertAt = (i, true);
+                if (ImGui.MenuItem("Add note row below")) insertAt = (i + 1, true);
+                ImGui.Separator();
+                if (ImGui.MenuItem("Duplicate")) duplicate = i;
+                if (ImGui.MenuItem("Delete")) remove = i;
+                ImGui.EndPopup();
             }
 
             // A little breathing room between rows, now that they are no longer numbered.
@@ -1104,9 +1129,9 @@ public sealed class EditorWindow : Window
             PushUndo(DescribeRow("Deleted row", removed), () => node.Rows.Insert(Math.Min(r, node.Rows.Count), removed));
             dirty = true;
         }
-        else if (insertBelow is { } below)
+        else if (insertAt is { } at)
         {
-            var added = node.InsertRowBelow(below.index, below.note);
+            var added = node.InsertRowAt(at.position, at.note);
             PushUndo(added.IsNote ? "Added a note row" : "Added a row", () => node.Rows.Remove(added));
             focusNewRow = added; // the cursor goes into its text box, ready to type
             dirty = true;
@@ -1114,7 +1139,9 @@ public sealed class EditorWindow : Window
         else if (duplicate is { } d)
         {
             var source = node.Rows[d];
-            node.Rows.Insert(d + 1, source.Clone());
+            var copy = source.Clone();
+            node.Rows.Insert(d + 1, copy);
+            PushUndo(DescribeRow("Duplicated row", source), () => node.Rows.Remove(copy));
             dirty = true;
         }
         else if (move is { } m && m.from < node.Rows.Count)
@@ -1125,6 +1152,7 @@ public sealed class EditorWindow : Window
             dirty = true;
         }
 
+        if (node.Rows.Count == 0) ImGui.TextDisabled("No rows yet.");
         if (ImGui.Button("Add mechanic row"))
         {
             node.Rows.Add(new SheetRow());
@@ -1141,6 +1169,25 @@ public sealed class EditorWindow : Window
         }
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("A row of free text across the full width of the table.");
+
+        // Rows can also be added above or below a row, and duplicated or deleted, from the menu on a right-click of its background.
+        if (node.Rows.Count > 0) ImGui.TextDisabled("Right-click a row for more options.");
+    }
+
+    /// <summary>The icons beside a row's tick, after a small divider: duplicate it, or delete it (red when hovered, so it is not hit by accident).</summary>
+    private static void DrawRowActions(int index, ref int? duplicate, ref int? remove)
+    {
+        ImGui.SameLine();
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextDisabled("|");
+
+        ImGui.SameLine();
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Clone)) duplicate = index;
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Duplicate this row.");
+
+        ImGui.SameLine();
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Trash, null, null, new Vector4(0.75f, 0.2f, 0.2f, 1f))) remove = index;
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Delete this row.");
     }
 
     /// <summary>What to call a row in undo entries and while dragging it: its mechanic, or the start of its note.</summary>

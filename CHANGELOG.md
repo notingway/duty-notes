@@ -10,7 +10,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 
 ### Added
 
-- **Add row below.** Every row in the editor has an **Add row below** button that inserts an empty row right under it (Ctrl + click inserts a note row), puts the cursor in its text box, and can be undone.
+- **New row controls.** Right-clicking the background of a row in the editor opens a menu: add a mechanic or a note row above or below it (the cursor goes into the new row's text box, and Undo removes it), duplicate it, or delete it. Duplicate and delete are also icons beside the row's tick, after a small divider, with tooltips (Delete is red when hovered), and Duplicate can be undone. Every other row has a slightly lighter band behind it, so the rows are easy to tell apart. **Add mechanic row** and **Add note row** stay at the bottom of the list.
 - **An icon** (`images/icon.png`, 512 x 512): a clipboard with a shield, generated with ChatGPT and credited in the README. And a screenshot of the overlay (`images/image1.png`), shown in the README and in the plugin installer.
 - **Sheets.** Encounters hold phases (two levels only), and phases hold rows. Mechanic rows have a name, skills shown
   as icons, and notes. Note rows are free text across the full width of the table.
@@ -43,7 +43,6 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 - **The overlay opens on the screen.** If its remembered position is off the screen (it could be left partly above the top after the earlier close-with-X bug, or after a change of resolution), it is moved back so its title bar can be reached. On a fresh install it starts near the top left.
 
 - **The overlay starts hidden** every time the game starts, with or without encounters (it used to come back as it was left). Reloading the plugin during a game session keeps it as it was. Show it with `/dutynotes`, the editor's "Show overlay" tickbox, or let auto-select open it when you enter a duty with a sheet for your job.
-- **A note row's delete button says "Delete row"**, like a mechanic row's.
 
 - **Saving.** While you drag a slider or type, the settings are no longer written on every frame. They are written after a short pause (half a second, and never later than five seconds), and at once when the editor closes, when the plugin unloads, or after a click.
 
