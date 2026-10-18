@@ -758,7 +758,7 @@ public sealed class EditorWindow : Window
         var list = cfg.ContainingList(node);
         if (!isEncounter)
         {
-            dirty |= ImGui.Checkbox("##on", ref node.Enabled);
+            dirty |= ImGui.Checkbox("Show phase##on", ref node.Enabled);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(node.Enabled ? "Show phase\nUntick to skip this phase." : "Show phase\nOff: skipped by the overlay, the full encounter and the Previous / Next buttons.\nStill shown here, and in the overlay while you are editing it.");
 
@@ -1127,7 +1127,7 @@ public sealed class EditorWindow : Window
             ImGui.Indent(inset);
 
             // A tick: unticked, the row is left out of the overlay. It stays here, dimmed, so it can be ticked again.
-            dirty |= ImGui.Checkbox("##on", ref row.Enabled);
+            dirty |= ImGui.Checkbox("Show row##on", ref row.Enabled);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip(row.Enabled ? "Show row\nUntick to leave this row out of the overlay." : "Show row\nOff: left out of the overlay. Tick to show it again.");
             if (!row.Enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
