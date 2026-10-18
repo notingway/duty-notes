@@ -1096,6 +1096,7 @@ public sealed class EditorWindow : Window
 
     private const float RowSpacer = 8f;   // the height of the spacer item between two rows, before scaling
     private const float RowBandGap = 4f;  // the gap left between one row's band and the next, before scaling
+    private const float RowLabelX = 72f;  // where a row's fields start, from its left edge, before scaling
     private const float RowInset = 6f;    // how far a row's content sits inside its band at the left and right, before scaling
 
     private void DrawRows(SheetNode node)
@@ -1126,44 +1127,57 @@ public sealed class EditorWindow : Window
             ImGui.Dummy(Vector2.Zero);
             ImGui.Indent(inset);
 
-            // A tick: unticked, the row is left out of the overlay. It stays here, dimmed, so it can be ticked again.
-            dirty |= ImGui.Checkbox("Show row##on", ref row.Enabled);
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(row.Enabled ? "Show row\nUntick to leave this row out of the overlay." : "Show row\nOff: left out of the overlay. Tick to show it again.");
+            // The fields come first, each with its label on the left, lined up. A row that is switched off is dimmed, but not its own controls below.
             if (!row.Enabled) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+            var fieldLeft = ImGui.GetCursorPosX();
+            var fieldX = fieldLeft + RowLabelX * ImGuiHelpers.GlobalScale;
 
             if (row.IsNote)
             {
                 // A note row: one text box, shown across the full width of the table in the overlay.
-                ImGui.SameLine();
                 ImGui.AlignTextToFramePadding();
-                ImGui.TextDisabled("Note");
+                ImGui.TextUnformatted("Note");
                 ImGui.SameLine();
                 HelpMarker("A note row is free text across the full width of the table.\nPut it wherever it applies: above the rows, between two mechanics, or below them.");
 
-                DrawRowActions(i, ref duplicate, ref remove);
-
                 var height = ImGui.GetTextLineHeightWithSpacing() * 3 + ImGui.GetStyle().FramePadding.Y * 2;
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(fieldX);
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextMultiline("##text", ref row.Text, 1000, new Vector2(-inset, height));
             }
             else
             {
-                // The row's own actions sit with the grip and the tick; the mechanic goes on its own line under them, like the notes and skills below it.
-                DrawRowActions(i, ref duplicate, ref remove);
-
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextUnformatted("Mechanic");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(fieldX);
                 ImGui.SetNextItemWidth(-inset);
                 FocusIfNew(row);
                 dirty |= ImGui.InputTextWithHint("##mech", "Mechanic", ref row.Mechanic, 128);
 
                 // The editor lists mechanic, notes, then skills, even though the notes column comes last in the overlay.
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextUnformatted("Notes");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(fieldX);
                 ImGui.SetNextItemWidth(-inset);
                 dirty |= ImGui.InputTextWithHint("##notes", "Notes", ref row.Notes, 256);
 
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextUnformatted("Skills");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(fieldX);
                 DrawActionRow(node, i, row);
             }
 
             if (!row.Enabled) ImGui.PopStyleVar();
+
+            // The row's own controls close it: whether it shows, and duplicate and delete.
+            dirty |= ImGui.Checkbox("Show row##on", ref row.Enabled);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip(row.Enabled ? "Show row\nUntick to leave this row out of the overlay." : "Show row\nOff: left out of the overlay. Tick to show it again.");
+            DrawRowActions(i, ref duplicate, ref remove);
             ImGui.Unindent(inset);
             ImGui.Dummy(Vector2.Zero);
             ImGui.EndGroup();
