@@ -14,6 +14,26 @@ public sealed class SettingsTests : CheckBase
     };
 
     [Fact]
+    public void MovingWithinAList()
+    {
+        List<string> Abc() => new() { "a", "b", "c" };
+        string Join(List<string> l) => string.Join("", l);
+
+        var l1 = Abc(); var moved1 = Configuration.MoveWithin(l1, 0, 2);
+        Check("first to last", moved1 && Join(l1) == "bca");
+        var l2 = Abc(); var moved2 = Configuration.MoveWithin(l2, 2, 0);
+        Check("last to first", moved2 && Join(l2) == "cab");
+        var l3 = Abc(); var moved3 = Configuration.MoveWithin(l3, 1, 2);
+        Check("one step down", moved3 && Join(l3) == "acb");
+        var l4 = Abc(); var moved4 = Configuration.MoveWithin(l4, 1, 0);
+        Check("one step up", moved4 && Join(l4) == "bac");
+        var l5 = Abc();
+        Check("same place changes nothing", !Configuration.MoveWithin(l5, 1, 1) && Join(l5) == "abc");
+        Check("outside the list changes nothing", !Configuration.MoveWithin(l5, 3, 0) && !Configuration.MoveWithin(l5, 0, 3) && !Configuration.MoveWithin(l5, -1, 1) && Join(l5) == "abc");
+        Check("an empty list is fine", !Configuration.MoveWithin(new List<string>(), 0, 0));
+    }
+
+    [Fact]
     public void ADefaultConfigurationIsAtItsDefaults()
     {
         var fresh = new Configuration();

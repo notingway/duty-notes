@@ -200,7 +200,7 @@ public sealed class EditorWindow : Window
         ImGui.SameLine();
         HelpMarker("When you enter a duty, or change job, the overlay selects the encounter set to that duty and job.\n" +
                    "An encounter set to your exact job wins over one set to \"Any job\".\n" +
-                   "If several match, the one highest in the Sheets list is used (reorder with Move up / Move down).\n" +
+                   "If several match, the one highest in the Sheets list is used (reorder by dragging).\n" +
                    "It only reacts to a change, so picking a sheet yourself sticks until the next one.");
 
         // These two belong to auto-select: they only mean something while it is on, so they are greyed out
@@ -459,7 +459,26 @@ public sealed class EditorWindow : Window
 
         ImGui.Separator();
         DrawTree(cfg, cfg.Roots);
+
+        // A drop is applied after the tree has been drawn, since it changes the lists the tree is walking through.
+        if (treeMove is { } tm)
+        {
+            treeMove = null;
+            if (Configuration.MoveWithin(tm.list, tm.from, tm.to))
+            {
+                var node = tm.list[tm.to];
+                PushUndo($"Moved \"{node.Name}\"", () => Configuration.MoveWithin(tm.list, tm.to, tm.from));
+                dirty = true;
+            }
+        }
+
+        ImGui.Spacing();
+        ImGui.TextDisabled("Drag to reorder.");
     }
+
+    private const string NodePayload = "MITSHEET_NODE";
+    private SheetNode? dragTreeNode;
+    private (List<SheetNode> list, int from, int to)? treeMove;
 
     // ---- Import and export ---------------------------------------------------------------------
 
@@ -570,7 +589,7 @@ public sealed class EditorWindow : Window
 
     private void DrawTree(Configuration cfg, List<SheetNode> nodes)
     {
-        foreach (var node in nodes)
+        foreach (var node in nodes.ToList())
         {
             var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.DefaultOpen;
             if (node.Children.Count == 0) flags |= ImGuiTreeNodeFlags.Leaf;
@@ -596,6 +615,35 @@ public sealed class EditorWindow : Window
             {
                 cfg.SelectedId = node.Id;
                 dirty = true;
+            }
+
+            // Items are dragged to reorder them: encounters among encounters, and phases inside their own encounter.
+            var itemMin = ImGui.GetItemRectMin();
+            var itemMax = ImGui.GetItemRectMax();
+            var draw = ImGui.GetWindowDrawList();
+            if (ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
+            {
+                dragTreeNode = node;
+                ImGui.SetDragDropPayload(NodePayload, new byte[] { 1 });
+                draw.AddRect(itemMin, itemMax, ImGui.GetColorU32(DragYellow), 3f * ImGuiHelpers.GlobalScale, ImDrawFlags.None, 2f);
+                ImGui.EndDragDropSource();
+            }
+
+            if (ImGui.BeginDragDropTarget())
+            {
+                var payload = ImGui.AcceptDragDropPayload(NodePayload,
+                    ImGuiDragDropFlags.AcceptBeforeDelivery | ImGuiDragDropFlags.AcceptNoDrawDefaultRect);
+                if (!payload.IsNull && dragTreeNode is { } dragged && !ReferenceEquals(dragged, node)
+                    && dragged != null && nodes.IndexOf(dragged) is var from and >= 0)
+                {
+                    // Where it will end up: above this item when moving up, below it when moving down.
+                    var to = nodes.IndexOf(node);
+                    var y = from > to ? itemMin.Y - 1 : itemMax.Y + 1;
+                    draw.AddLine(new Vector2(itemMin.X, y), new Vector2(itemMax.X, y), ImGui.GetColorU32(DragYellow), 3f);
+
+                    if (payload.IsDelivery()) treeMove = (nodes, from, to);
+                }
+                ImGui.EndDragDropTarget();
             }
 
             if (open)
@@ -650,17 +698,8 @@ public sealed class EditorWindow : Window
         // Everything that acts on this sheet, on one line under its name.
         var isEncounter = cfg.Roots.Contains(node);
 
-        ImGui.BeginDisabled(cfg.ContainingList(node) is not { } siblings || siblings.IndexOf(node) <= 0);
-        if (ImGui.Button("Move up")) MoveNode(cfg, node, -1);
-        ImGui.EndDisabled();
-        ImGui.SameLine();
-        ImGui.BeginDisabled(cfg.ContainingList(node) is not { } sib2 || sib2.IndexOf(node) >= sib2.Count - 1);
-        if (ImGui.Button("Move down")) MoveNode(cfg, node, 1);
-        ImGui.EndDisabled();
-
         if (isEncounter)
         {
-            ImGui.SameLine();
             if (ImGui.Button("Duplicate"))
             {
                 var copy = node.Clone(node.Name + " (copy)");
@@ -681,7 +720,7 @@ public sealed class EditorWindow : Window
                 ImGui.SetTooltip("Copy this encounter, with all its phases and rows, to the clipboard as text you can share.");
         }
 
-        ImGui.SameLine();
+        if (isEncounter) ImGui.SameLine(); // a phase has only Delete, which goes straight under its name
         if (ImGui.Button("Delete"))
         {
             // Ctrl + click skips the question (Undo still brings it back).
@@ -935,17 +974,6 @@ public sealed class EditorWindow : Window
         }
 
         ImGui.EndPopup();
-    }
-
-    private void MoveNode(Configuration cfg, SheetNode node, int delta)
-    {
-        var list = cfg.ContainingList(node);
-        if (list is null) return;
-        var i = list.IndexOf(node);
-        var j = i + delta;
-        if (j < 0 || j >= list.Count) return;
-        (list[i], list[j]) = (list[j], list[i]);
-        dirty = true;
     }
 
     private void DrawLevelAndFilter(Configuration cfg, SheetNode node)

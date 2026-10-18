@@ -50,7 +50,7 @@ After you rebuild, reload it from that same list.
 
 Open the editor with `/dutynotes edit`.
 
-1. **Sheets tab:** add an encounter with **+ Encounter**, and phases with **+ Phase**. Pick its **Duty** and **Job**. The buttons under a sheet's name (Move up, Move down, Duplicate, Export, Delete) act on it; **+ Encounter**, **+ Phase** and **Import** on the left add things.
+1. **Sheets tab:** add an encounter with **+ Encounter**, and phases with **+ Phase**. Pick its **Duty** and **Job**. The buttons under a sheet's name (Duplicate, Export, Delete) act on it, and you reorder encounters, and the phases inside one, by dragging them in the list; **+ Encounter**, **+ Phase** and **Import** on the left add things.
    **Add mechanic row** and **Add note row** add a row at the end. Right-click the background of any row for a menu: add a mechanic or note row above or below it, duplicate it, or delete it (duplicate and delete are also icons beside its tick). Use **+** on a row to add skills (including **Limit Break**), and drag a row by its background to reorder it. The tick beside a row or phase switches it off.
 2. **Settings tab:** behavior (auto-select, auto open, auto hide, cutscenes), layout (including how each column is aligned) and style. Each section
    has a **Reset** button that can be undone.

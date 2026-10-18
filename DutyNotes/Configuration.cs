@@ -479,6 +479,18 @@ public class Configuration : IPluginConfiguration
     /// <summary>The list that directly contains <paramref name="node"/>, or null if it is not in the tree.</summary>
     public List<SheetNode>? ContainingList(SheetNode node) => ContainingList(Roots, node);
 
+    /// <summary>Moves the item at <paramref name="from"/> so that it ends up at index <paramref name="to"/>, the others shifting along.
+    /// Returns false, changing nothing, when either index is outside the list or they are the same.</summary>
+    public static bool MoveWithin<T>(List<T> list, int from, int to)
+    {
+        if (from == to || from < 0 || to < 0 || from >= list.Count || to >= list.Count) return false;
+
+        var item = list[from];
+        list.RemoveAt(from);
+        list.Insert(to, item);
+        return true;
+    }
+
     private static List<SheetNode>? ContainingList(List<SheetNode> nodes, SheetNode node)
     {
         if (nodes.Contains(node)) return nodes;
