@@ -763,7 +763,8 @@ public sealed class EditorWindow : Window
         ImGui.TextDisabled(node.Children.Count > 0 ? "Pick one of its phases in the list to edit its rows." : "Add a phase with + Phase to start filling in rows.");
         ImGui.Separator();
 
-        // Everything that acts on an encounter, on one line under the line, and then the result of the last import or export.
+        // Everything that acts on an encounter, on one line under the line (with the same space above it as a row's last line has), and then the result of the last import or export.
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + BandPadY());
         DrawSheetActions(cfg, node, isEncounter);
         DrawStatus();
     }
