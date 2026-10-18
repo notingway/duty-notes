@@ -11,10 +11,7 @@ the items below.
 
 ## Open
 
-1. **Continuous integration** (a GitHub Actions workflow). **Next.** The repository went public with 0.1.0 without it (the owner chose to release first); it is the first thing to do now
-   (the tests are now xunit, so it is ready for this). The plan: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; the build points at them
-   with `DalamudLibPath`, which both projects already support), build the plugin, and run `dotnet test`. Check what the distribution contains
-   before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
+1. **Continuous integration** (a GitHub Actions workflow): **not wanted for now.** The owner's call (2026-10-18): all changes are made through one AI session that builds and runs the tests locally before every push (the release script also builds and tests before it releases), so CI would only repeat that. It becomes worth it if other people start sending changes, or for a scheduled build against the newest Dalamud to warn of an API bump. Plan if it is wanted: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; check what it contains first, and point `DalamudLibPath` at it, which both projects already support), build the plugin, run `dotnet test` and check the package. Free for public repositories.
 2. **Publishing.** Needed only if it is released:
    - the repository exists (`notingway/duty-notes`, private for now) and is already the manifest's `RepoUrl`; it has to be made public;
    - already done: the build uses `Dalamud.NET.Sdk` and generates the manifest and `latest.zip`; the custom repository `notingway/plogonway` exists (private) with an empty `plogonway.json`; `scripts\release.ps1` and `docs/RELEASING.md` are written (the script has been dry-run only);
