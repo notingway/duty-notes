@@ -1026,8 +1026,11 @@ public sealed class EditorWindow : Window
     private void DrawLevelAndFilter(Configuration cfg, SheetNode node)
     {
         var level = node.Level;
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextUnformatted("Level");
+        ImGui.SameLine(FormLabelX * ImGuiHelpers.GlobalScale);
         ImGui.SetNextItemWidth(110);
-        if (ImGui.InputInt("Level", ref level, 1, 10))
+        if (ImGui.InputInt("##level", ref level, 1, 10))
         {
             node.Level = Math.Clamp(level, 1, MaxLevel);
             dirty = true;
