@@ -90,7 +90,7 @@ you clicked in the tree.
 
 - **Rows live in phases only.** An encounter has its settings (name, level, duty, job) and its phases; it has no table of its own. The editor
   shows no rows for a selected encounter (it shows a line saying to pick a phase), and **+ Encounter** creates the encounter with a first phase
-  ("Phase 1") and **selects the encounter**, not the phase: a new user then sees the encounter's settings first, and can see that duty, job and
+  ("New phase") and **selects the encounter**, not the phase: a new user then sees the encounter's settings first, and can see that duty, job and
   level belong to it, with its phase right below in the list. (Selecting the phase was tried first and made it look as though there was nowhere
   to put those details.) For a fight with no phases, use one phase and name it after the fight. This replaced rows on the encounter itself, which
   were a third kind of table that Next, Previous and Reset could not step to, and which the overlay pinned above the current phase. That pinning

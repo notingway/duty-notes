@@ -13,7 +13,9 @@ The first release is 0.1.0, an experimental one through the custom plugin reposi
 
 ### Changed
 
-- **A new encounter is selected, not its first phase.** **+ Encounter** still creates the encounter with a first phase ("Phase 1"), but it now selects the encounter, so a new user sees its name, duty, job and level first (and the line saying to pick a phase to edit its rows), instead of a phase with a row list and nowhere obvious to put those details.
+- **New phases are called "New phase".** **+ Phase**, and the first phase that **+ Encounter** creates, are named "New phase", like a new encounter is "New encounter" (they were "Phase 1", "Phase 2" and so on, numbered by how many phases the encounter had).
+- **The font log lines from 0.1.4 are gone.** The per-font "ready" lines were added to find a text scaling problem and are no longer needed. A font that fails to build is still logged as a warning.
+- **A new encounter is selected, not its first phase.** **+ Encounter** still creates the encounter with a first phase ("New phase"), but it now selects the encounter, so a new user sees its name, duty, job and level first (and the line saying to pick a phase to edit its rows), instead of a phase with a row list and nowhere obvious to put those details.
 
 ## [0.1.4] - 2026-10-18 (experimental)
 

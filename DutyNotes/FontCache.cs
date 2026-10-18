@@ -34,7 +34,6 @@ public sealed class FontCache : IDisposable
     {
         public required IFontHandle Handle;
         public long LastUsed;
-        public bool Reported;
     }
 
     /// <summary>
@@ -46,14 +45,7 @@ public sealed class FontCache : IDisposable
         var key = Math.Max(StepPx, (int)MathF.Round(sizePx / StepPx) * StepPx);
         if (GetReady(key) is { } entry)
         {
-            var pushed = entry.Handle.Push();
-            if (!entry.Reported)
-            {
-                entry.Reported = true;
-                Plugin.Log.Information("Font {Key}px is ready: drawn at {Drawn}px (global scale {Scale}, base size {Base}px)",
-                                       key, ImGui.GetFontSize(), ImGuiHelpers.GlobalScale, baseSizePx);
-            }
-            return pushed;
+                        return entry.Handle.Push();
         }
 
         // Not ready (still building, or it failed): the closest font that is ready, stretched to the size. Blurry, but it still follows the

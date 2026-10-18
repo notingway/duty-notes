@@ -428,7 +428,7 @@ public sealed class EditorWindow : Window
         {
             // An encounter holds phases, and phases hold the rows, so a new encounter starts with its first phase. The encounter itself is
             // what gets selected, so its settings (name, duty, job, level) are what a new user sees first; its phases are right below it.
-            var phase = new SheetNode { Name = "Phase 1" };
+            var phase = new SheetNode { Name = "New phase" };
             var node = new SheetNode { Name = "New encounter", Children = { phase } };
             cfg.Roots.Add(node);
             cfg.SelectedId = node.Id;
@@ -442,7 +442,7 @@ public sealed class EditorWindow : Window
         ImGui.BeginDisabled(phaseParent is null);
         if (ImGui.Button("+ Phase") && phaseParent is not null)
         {
-            var node = new SheetNode { Name = $"Phase {phaseParent.Children.Count + 1}", Level = phaseParent.Level };
+            var node = new SheetNode { Name = "New phase", Level = phaseParent.Level };
             phaseParent.Children.Add(node);
             cfg.SelectedId = node.Id;
             dirty = true;
