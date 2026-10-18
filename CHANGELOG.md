@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [0.1.1] - 2026-10-18 (experimental)
+
+### Fixed
+
+- **The icon disappeared once the plugin was installed.** An installed plugin takes its icon from the manifest that came in the zip, and that manifest had no icon or screenshot address (only the repository index had). The icon and screenshot addresses are now in the project file, so they are in the package's manifest too.
+
 ## [0.1.0] - 2026-10-18 (experimental)
 
 The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its scope grew. Its internal name is now

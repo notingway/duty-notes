@@ -11,7 +11,7 @@
   <PropertyGroup>
     <AssemblyName>DutyNotes</AssemblyName>
     <RootNamespace>DutyNotes</RootNamespace>
-    <Version>0.1.0.0</Version>
+    <Version>0.1.1.0</Version>
 
     <!-- The language settings the code was written with (the SDK does not turn these on). -->
     <LangVersion>latest</LangVersion>
@@ -25,6 +25,13 @@
     <Description>An in-game overlay that holds your notes for a duty: a table of mechanics, the mitigation and healing actions to use for each (shown as icons), notes, and free text. Encounters can be tied to a duty and a job so the right one appears when you enter, with phases you can step through from buttons or macros.</Description>
     <RepoUrl>https://github.com/notingway/duty-notes</RepoUrl>
     <Tags>duty;notes;raid;mitigation;overlay</Tags>
+
+    <!--
+      The icon and the screenshot, by address. They have to be in the manifest inside latest.zip as well as in the plugin repository index:
+      once a plugin is installed, Dalamud reads its icon from the manifest that came in the zip, and without these the installed plugin has no icon.
+    -->
+    <IconUrl>https://raw.githubusercontent.com/notingway/duty-notes/main/images/icon.png</IconUrl>
+    <ImageUrls>https://raw.githubusercontent.com/notingway/duty-notes/main/images/image1.png</ImageUrls>
   </PropertyGroup>
 
 </Project>
