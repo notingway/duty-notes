@@ -56,6 +56,14 @@ function Out-Of([string]$exe, [string[]]$arguments) {
     if ($LASTEXITCODE -ne 0) { throw "Failed ($LASTEXITCODE): $(Split-Path $exe -Leaf) $($arguments -join ' ')" }
     return ($text -join "`n").Trim()
 }
+# Whether a command succeeds, with its output thrown away. Redirecting a native command's error output makes Windows PowerShell 5.1 raise an error
+# for anything it prints there (such as gh saying "release not found"), which $ErrorActionPreference = 'Stop' turns into a crash, so it is relaxed here.
+function Succeeds([string]$exe, [string[]]$arguments) {
+    $saved = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { & $exe @arguments *> $null; return ($LASTEXITCODE -eq 0) }
+    finally { $ErrorActionPreference = $saved }
+}
 function Step([string]$text) { Write-Host ""; Write-Host "== $text" -ForegroundColor Cyan }
 function Problem([string]$text) { if ($DryRun) { Write-Warning "$text (ignored in a dry run)" } else { throw $text } }
 
@@ -106,8 +114,7 @@ if (Out-Of $git @('-C', $IndexRepo, 'status', '--porcelain')) { Problem "The ind
 Run $git @('-C', $IndexRepo, 'fetch', 'origin', '--quiet')
 if ((Out-Of $git @('-C', $IndexRepo, 'rev-parse', 'HEAD')) -ne (Out-Of $git @('-C', $IndexRepo, 'rev-parse', 'origin/main'))) { Problem 'The index repository is not up to date with origin/main.' }
 
-& $gh auth status *> $null
-if ($LASTEXITCODE -ne 0) { throw 'gh is not signed in. Run: gh auth login' }
+if (-not (Succeeds $gh @('auth', 'status'))) { throw 'gh is not signed in: run gh auth login' }
 
 # ---- 2. build and test ---------------------------------------------------------------------------
 Step '2. Building in Release and running the tests'
@@ -186,8 +193,7 @@ if ($DryRun) {
 
 # ---- 4. the GitHub release (first, so the index never points at a missing download) --------------
 Step "4. Creating the GitHub release $tag"
-& $gh release view $tag --repo $slug *> $null
-if ($LASTEXITCODE -eq 0) { throw "A release $tag already exists in $slug. Bump <Version> in DutyNotes.csproj." }
+if (Succeeds $gh @('release', 'view', $tag, '--repo', $slug)) { throw "A release $tag already exists in $slug. Bump <Version> in DutyNotes.csproj." }
 $releaseArgs = @('release', 'create', $tag, $zip, '--repo', $slug, '--target', 'main', '--title', "Duty Notes $tag", '--notes', $Notes)
 if ($Prerelease) { $releaseArgs += '--prerelease' }
 Run $gh $releaseArgs
