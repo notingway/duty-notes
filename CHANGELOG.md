@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [Unreleased]
+
+### Fixed
+
+- **Text sizes stopped responding for some players.** One player's text scaling (the Notes column, for example) followed the slider only up to about 1.2 to 1.4 and then fell back to the default size and stopped responding. Three causes were found by reading Dalamud's documentation, none checked on that player's machine yet: the font size handed to Dalamud already included Dalamud's global UI scale, which Dalamud then applies again (so with a global scale other than 100% text came out too big, and a very large font may not build); a font that failed to build was kept and failed again on every frame, for good; and a font was built for every whole pixel the slider passed. Sizes are now divided by the global scale and rounded to steps of 2 pixels, fewer fonts are kept, a font that fails is dropped and tried again after 15 seconds, and while a font is not ready (or has failed) the text is stretched from the normal font, so it keeps following the slider (a little blurry) instead of falling back. The log now says when a font is ready (the size it is drawn at and the global scale) or fails. Nothing changes at a global scale of 100%.
+
 ## [0.1.3] - 2026-10-18 (experimental)
 
 ### Fixed

@@ -347,7 +347,7 @@ public sealed class OverlayWindow : Window, IDisposable
         // Use a font built at the real size instead of stretching the default one. While that font is
         // still being built (first frames at a new size) the text is drawn at the normal size.
         var size = Math.Clamp(scale, Configuration.MinScale, Configuration.MaxScale) * baseFontSize;
-        using var font = fonts.Get(size)?.Push();
+        using var font = fonts.Use(size, baseFontSize);
 
         if (color is { } c) ImGui.PushStyleColor(ImGuiCol.Text, c);
 
@@ -480,7 +480,7 @@ public sealed class OverlayWindow : Window, IDisposable
     private void SpanningTextRow(string text, int columns)
     {
         var scale = Math.Clamp(plugin.Config.NoteRowScale, Configuration.MinScale, Configuration.MaxScale);
-        using var font = fonts.Get(scale * baseFontSize)?.Push();
+        using var font = fonts.Use(scale * baseFontSize, baseFontSize);
 
         ImGui.TableNextRow();
 
@@ -560,7 +560,7 @@ public sealed class OverlayWindow : Window, IDisposable
     private TextBlock Measure(string text, float scale, float wrapWidth)
     {
         var size = Math.Clamp(scale, Configuration.MinScale, Configuration.MaxScale) * baseFontSize;
-        using var font = fonts.Get(size)?.Push();
+        using var font = fonts.Use(size, baseFontSize);
 
         var lines = string.IsNullOrEmpty(text) ? new List<string>() : WrapText(text, Math.Max(40f, wrapWidth));
         var widest = lines.Count == 0 ? 0f : lines.Max(l => ImGui.CalcTextSize(l).X);
@@ -577,7 +577,7 @@ public sealed class OverlayWindow : Window, IDisposable
     private void DrawTextCell(TextBlock block, float scale, Vector4? color, float cellWidth, float rowHeight, HAlign h, VAlign v, float padding)
     {
         var size = Math.Clamp(scale, Configuration.MinScale, Configuration.MaxScale) * baseFontSize;
-        using var font = fonts.Get(size)?.Push();
+        using var font = fonts.Use(size, baseFontSize);
 
         var origin = ImGui.GetCursorScreenPos();
         var height = BlockHeight(block, padding);
