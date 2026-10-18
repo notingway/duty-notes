@@ -19,9 +19,9 @@ cannot redirect.
 
 ## Before the first release (once)
 
-- [ ] **Both repositories are public.** Players can't download from a private repository, and Dalamud's custom repositories have no sign-in. (`duty-notes` and `plogonway` are both private until the owner decides.)
+- [x] **Both repositories are public** (done on 2026-10-18). Players can't download from a private repository, and Dalamud's custom repositories have no sign-in.
 - [x] **An icon** at `images/icon.png` in this repository: square, 64 to 512 pixels, PNG (done: generated with ChatGPT and credited in the README). One screenshot is in (`images/image1.png`, the overlay on a sheet); up to four more are optional (`image2.png` to `image5.png`, at most 730 x 380 pixels each). The release script adds their addresses to the index if the files exist. Not enforced by Dalamud for custom repositories, but the plugin looks bare without them.
-- [ ] **`plogonway` is cloned next to this repository** (`C:\dev\github\notingway\plogonway`), and `gh` is signed in (`gh auth status`).
+- [x] **`plogonway` is cloned next to this repository** (`C:\dev\github\notingway\plogonway`), and `gh` is signed in (`gh auth status`).
 - [ ] **A test install** on the owner's machine, before telling anyone (see below).
 
 ## Making a release
@@ -49,6 +49,12 @@ The script creates the GitHub release **first**, with `latest.zip` attached, and
 the index never points at a download that doesn't exist. The index entry is built from the manifest the build generated (`DutyNotes.json`), so the name,
 version, API level and description can't drift from the csproj; the script adds only the download links, `LastUpdate` and the notes. If updating the
 index fails after the release was created, it says so: fix the problem in the index repository and push `plogonway.json` there. Don't create the release again.
+
+**Run the script plainly, without redirecting its output (no `2>&1`).** Windows PowerShell 5.1 turns anything a native command prints on its error stream (git's \\warning:\\ lines, for example) into an error when it is redirected, and that stopped the first real run after the release had been created but before the index was updated (the fix was to commit and push \\plogonway.json\\ in the index repository by hand, which is what the script's own warning says).
+
+## Releases so far
+
+- **v0.1.0** (2026-10-18), a pre-release. Not yet test-installed from the repository.
 
 ## Testing the install path
 

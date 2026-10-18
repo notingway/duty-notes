@@ -11,7 +11,7 @@ the items below.
 
 ## Open
 
-1. **Continuous integration** (a GitHub Actions workflow). **On hold for a while**, but to be done before the repository goes public
+1. **Continuous integration** (a GitHub Actions workflow). **Next.** The repository went public with 0.1.0 without it (the owner chose to release first); it is the first thing to do now
    (the tests are now xunit, so it is ready for this). The plan: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; the build points at them
    with `DalamudLibPath`, which both projects already support), build the plugin, and run `dotnet test`. Check what the distribution contains
    before writing it. GitHub Actions is free for public repositories, and private ones have a monthly allowance far above what this needs.
