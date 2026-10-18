@@ -463,7 +463,12 @@ public sealed class EditorWindow : Window
         hoverTarget = null;
         treeDragWas = treeDragActive;
         treeDragActive = false;
-        DrawTree(cfg, cfg.Roots);
+
+        // The list scrolls in its own area, so the hint under it stays at the bottom of the pane.
+        var hintHeight = ImGui.GetTextLineHeightWithSpacing() + ImGui.GetStyle().ItemSpacing.Y;
+        if (ImGui.BeginChild("##tree-list", new Vector2(0, -hintHeight)))
+            DrawTree(cfg, cfg.Roots);
+        ImGui.EndChild();
 
         // Releasing the mouse over a block drops the dragged item there.
         if (treeDragWas && ImGui.IsMouseReleased(ImGuiMouseButton.Left))
@@ -484,7 +489,6 @@ public sealed class EditorWindow : Window
             }
         }
 
-        ImGui.Spacing();
         ImGui.TextDisabled("Drag to reorder.");
     }
 
