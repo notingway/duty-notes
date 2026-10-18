@@ -1177,7 +1177,8 @@ public sealed class EditorWindow : Window
                 var backdropMin = new Vector2(rowLeft + RowLabelX * ImGuiHelpers.GlobalScale, labelTop);
                 var gap = 3f * ImGuiHelpers.GlobalScale;
                 var iconSide = ActionButtonSide(Math.Clamp(plugin.Config.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
-                var backdropSize = new Vector2(ImGui.GetContentRegionAvail().X - inset, iconSide + gap * 2);
+                // The width is measured from the row's left (where the cursor is), so take off the label column too: the boxes start there and stop short of the right edge by the inset.
+                var backdropSize = new Vector2(ImGui.GetContentRegionAvail().X - inset - RowLabelX * ImGuiHelpers.GlobalScale, iconSide + gap * 2);
                 ImGui.GetWindowDrawList().AddRectFilled(backdropMin, backdropMin + backdropSize, ImGui.GetColorU32(ImGuiCol.FrameBg), ImGui.GetStyle().FrameRounding);
                 ImGui.SetCursorScreenPos(backdropMin + new Vector2(gap, gap));
                 DrawActionRow(node, i, row);
