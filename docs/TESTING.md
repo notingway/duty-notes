@@ -19,7 +19,7 @@ They also need the Dalamud files on disk: the project references `Dalamud.dll` a
 as many times as it likes. A failed check does not stop the test: the test fails at the end and lists every label that failed, so one run
 shows everything that is wrong. Each test builds its own data, so they run in any order and in parallel.
 
-At the time of writing: **65 tests, 253 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
+At the time of writing: **66 tests, 261 checks, all passing.** (This is the one place the count is recorded; update it here when you add tests.
 `dotnet test` reports the tests; the checks are the `Check` calls.)
 
 | Test class | What it checks |
@@ -27,6 +27,7 @@ At the time of writing: **65 tests, 253 checks, all passing.** (This is the one 
 | `NavigationTests` (stepping between phases) | Next, Previous and Reset (including the ends and encounters without phases), fallbacks for deleted ids, how the editor's selection drives the navigation, stepping from the encounter view |
 | `SettingsTests` (defaults, resets, overlay visibility) | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
 | `SerializationTests` (saving and loading settings) | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
+| `SettingsTests` also covers inserting a row below another | Below the first, a middle and the last row; an empty mechanic or note row, switched on; an empty sheet; an index past the end or negative; the returned row is the one in the list |
 | `SaveSchedulerTests` (when a pending save is written) | Nothing is pending until something changes; a change is due after the quiet time; a burst of changes is one save; a run of changes that never pauses is still saved at the longest wait; a save clears what was pending and the next change starts a fresh wait |
 | `LayoutSettlerTests` (the overlay catching up with new content) | A window is shown by default; a restart hides it for a minimum number of frames and until its size repeats (or not at all, for the quick kind); a width that arrives a frame late does not show it too early; a size that never settles, or a window that is never drawn, is shown after at most 12 frames; a restart starts a fresh count |
 | `ScreenPlacementTests` (keeping a window reachable) | A window that is already reachable is left alone; one above the top, or too far off any side, is moved back so its title bar is on the screen and 80 pixels of it show; a second screen keeps its own origin; tiny, huge and unknown-size cases are handled |
@@ -69,5 +70,6 @@ Nothing at the moment: everything in the plugin has been run in game and passed.
 
 | Feature | What to check |
 | --- | --- |
+| **Add row below** | Every row has an **Add row below** button between **Duplicate** and **Delete row**. Clicking it inserts an empty mechanic row directly under that row, and the cursor is in its Mechanic box. **Ctrl + click** inserts a note row (the cursor goes into its text box). Do it on the first, a middle and the last row, and on a note row. **Undo** (Ctrl+Z) removes the inserted row. The overlay shows the new row in the right place once it has text |
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.

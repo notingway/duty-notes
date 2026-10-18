@@ -10,6 +10,7 @@ The plugin started as "Mitigation Sheet" and was renamed **Duty Notes** once its
 
 ### Added
 
+- **Add row below.** Every row in the editor has an **Add row below** button that inserts an empty row right under it (Ctrl + click inserts a note row), puts the cursor in its text box, and can be undone.
 - **An icon** (`images/icon.png`, 512 x 512): a clipboard with a shield, generated with ChatGPT and credited in the README. And a screenshot of the overlay (`images/image1.png`), shown in the README and in the plugin installer.
 - **Sheets.** Encounters hold phases (two levels only), and phases hold rows. Mechanic rows have a name, skills shown
   as icons, and notes. Note rows are free text across the full width of the table.

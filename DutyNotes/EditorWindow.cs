@@ -996,6 +996,7 @@ public sealed class EditorWindow : Window
     {
         int? remove = null;
         int? duplicate = null;
+        (int index, bool note)? insertBelow = null;
         (int from, int to)? move = null;
 
         // A small margin above the first row, so the insertion line has room to show above it
@@ -1042,12 +1043,14 @@ public sealed class EditorWindow : Window
                 HelpMarker("A note row is free text across the full width of the table.\nPut it wherever it applies: above the rows, between two mechanics, or below them.");
 
                 var height = ImGui.GetTextLineHeightWithSpacing() * 3 + ImGui.GetStyle().FramePadding.Y * 2;
+                FocusIfNew(row);
                 dirty |= ImGui.InputTextMultiline("##text", ref row.Text, 1000, new Vector2(-1, height));
             }
             else
             {
                 // The mechanic goes on its own line under the grip and tick, like the notes and skills below it.
                 ImGui.SetNextItemWidth(-1);
+                FocusIfNew(row);
                 dirty |= ImGui.InputTextWithHint("##mech", "Mechanic", ref row.Mechanic, 128);
 
                 // The editor lists mechanic, notes, then skills, even though the notes column comes last in the overlay.
@@ -1058,6 +1061,9 @@ public sealed class EditorWindow : Window
             }
 
             if (ImGui.Button("Duplicate")) duplicate = i;
+            ImGui.SameLine();
+            if (ImGui.Button("Add row below")) insertBelow = (i, ImGui.GetIO().KeyCtrl);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add an empty row right below this one.\nCtrl + click adds a note row instead.");
             ImGui.SameLine();
             if (ImGui.Button("Delete row")) remove = i;
 
@@ -1096,6 +1102,13 @@ public sealed class EditorWindow : Window
             var removed = node.Rows[r];
             node.Rows.RemoveAt(r);
             PushUndo(DescribeRow("Deleted row", removed), () => node.Rows.Insert(Math.Min(r, node.Rows.Count), removed));
+            dirty = true;
+        }
+        else if (insertBelow is { } below)
+        {
+            var added = node.InsertRowBelow(below.index, below.note);
+            PushUndo(added.IsNote ? "Added a note row" : "Added a row", () => node.Rows.Remove(added));
+            focusNewRow = added; // the cursor goes into its text box, ready to type
             dirty = true;
         }
         else if (duplicate is { } d)
@@ -1244,6 +1257,17 @@ public sealed class EditorWindow : Window
     // Deleting rows, sheets and skills can be taken back. The history lasts until the plugin reloads.
 
     private readonly List<(string label, Action restore)> undoStack = new();
+
+    // A row that has just been inserted: its text box takes the keyboard focus the next time it is drawn.
+    private SheetRow? focusNewRow;
+
+    private void FocusIfNew(SheetRow row)
+    {
+        if (!ReferenceEquals(row, focusNewRow)) return;
+
+        focusNewRow = null;
+        ImGui.SetKeyboardFocusHere();
+    }
 
     private void PushUndo(string label, Action restore)
     {

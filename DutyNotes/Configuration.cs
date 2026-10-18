@@ -68,6 +68,17 @@ public class SheetNode
     /// </summary>
     public bool Enabled = true;
 
+    /// <summary>
+    /// Adds an empty row (a mechanic row, or a note row) right below the row at <paramref name="index"/>, and returns it. An index that is not a
+    /// row (nothing selected, or past the end) puts it at the end.
+    /// </summary>
+    public SheetRow InsertRowBelow(int index, bool isNote)
+    {
+        var row = new SheetRow { IsNote = isNote };
+        Rows.Insert(index < 0 || index >= Rows.Count ? Rows.Count : index + 1, row);
+        return row;
+    }
+
     /// <summary>Whether there is anything to show: a mechanic row, or a note row with text in it. Rows that are switched off don't count.</summary>
     public bool HasContent() => Rows.Any(r => r.Enabled && (!r.IsNote || !string.IsNullOrWhiteSpace(r.Text)));
 

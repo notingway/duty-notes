@@ -1,4 +1,4 @@
-﻿namespace DutyNotes.Tests;
+namespace DutyNotes.Tests;
 
 public sealed class SettingsTests : CheckBase
 {
@@ -141,6 +141,35 @@ public sealed class SettingsTests : CheckBase
         Check("a copy of a row keeps everything, including that it is off",
               !rowCopy.Enabled && rowCopy.Mechanic == "Raidwide" && !ReferenceEquals(rowCopy, offRows.Rows[0]));
         Check("a copy of a sheet keeps which rows are off", offRows.Clone().Rows.Select(r => r.Enabled).SequenceEqual(new[] { false, false, true }));
+    }
+
+    [Fact]
+    public void ARowCanBeInsertedBelowAnotherOne()
+    {
+        SheetNode Three() => new() { Rows = { new SheetRow { Mechanic = "A" }, new SheetRow { Mechanic = "B" }, new SheetRow { Mechanic = "C" } } };
+        string Order(SheetNode n) => string.Join(",", n.Rows.Select(r => r.IsNote ? "note" : r.Mechanic == "" ? "new" : r.Mechanic));
+
+        var first = Three(); first.InsertRowBelow(0, false);
+        var middle = Three(); middle.InsertRowBelow(1, false);
+        var last = Three(); last.InsertRowBelow(2, false);
+        Check("below the first row goes second", Order(first) == "A,new,B,C");
+        Check("below a middle row goes right after it", Order(middle) == "A,B,new,C");
+        Check("below the last row goes last", Order(last) == "A,B,C,new");
+
+        var added = Three().InsertRowBelow(0, isNote: false);
+        Check("it is an empty mechanic row, switched on", !added.IsNote && added.Mechanic == "" && added.Notes == "" && added.Actions.Count == 0 && added.Enabled);
+        var note = Three().InsertRowBelow(1, isNote: true);
+        Check("or an empty note row, switched on", note.IsNote && note.Text == "" && note.Enabled);
+
+        var nothing = new SheetNode(); nothing.InsertRowBelow(0, false);
+        var pastEnd = Three(); pastEnd.InsertRowBelow(99, false);
+        var negative = Three(); negative.InsertRowBelow(-1, false);
+        Check("in an empty sheet it is the only row", nothing.Rows.Count == 1);
+        Check("an index past the end, or negative, adds it at the end", Order(pastEnd) == "A,B,C,new" && Order(negative) == "A,B,C,new");
+
+        var returned = Three();
+        var row = returned.InsertRowBelow(0, false);
+        Check("the row that is returned is the one in the list, so an undo can find it", ReferenceEquals(returned.Rows[1], row));
     }
 
     [Fact]
