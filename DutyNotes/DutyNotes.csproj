@@ -11,7 +11,7 @@
   <PropertyGroup>
     <AssemblyName>DutyNotes</AssemblyName>
     <RootNamespace>DutyNotes</RootNamespace>
-    <Version>0.1.5.0</Version>
+    <Version>0.1.6.0</Version>
 
     <!-- The language settings the code was written with (the SDK does not turn these on). -->
     <LangVersion>latest</LangVersion>
