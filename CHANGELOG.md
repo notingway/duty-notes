@@ -7,7 +7,7 @@ The first release is 0.1.0, an experimental one through the custom plugin reposi
 
 ### Added
 
-- **Skill tooltips at the encounter's level.** Hovering a skill in the overlay shows a card with the skill as it is at the encounter's level, not at yours: outside a duty the game only describes your max-level skill, so what a skill did at the level a duty syncs you to was hard to tell. The card has the icon, name and kind, the cast and recast time, charges, range, radius and MP cost, and the description in the game's colours, with the effects, durations and numbers of that level and job (Reprisal lasts 10s at 90 and 15s for a tank at 100). Recast and charges follow the traits learned by then (Troubadour is 120s before level 88). A skill above the encounter's level says when it is learned. The job is the encounter's, or yours, or else the first job that can use the skill. Not yet checked in game.
+- **Skill tooltips at the encounter's level.** Hovering a skill in the overlay shows a card with the skill as it is at the encounter's level, not at yours: outside a duty the game only describes your max-level skill, so what a skill did at the level a duty syncs you to was hard to tell. The card has the icon, name and kind, the cast and recast time, charges, range, radius and MP cost, and the description in the game's colours, with the effects, durations and numbers of that level and job (Reprisal lasts 10s at 90 and 15s for a tank at 100). Recast and charges follow the traits learned by then (Troubadour is 120s before level 88). A skill above the encounter's level says when it is learned. The job is the encounter's, or yours, or else the first job that can use the skill.
 
 ## [0.1.5] - 2026-10-19 (experimental)
 
