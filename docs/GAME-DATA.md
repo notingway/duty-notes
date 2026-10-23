@@ -24,9 +24,30 @@ Facts:
   `TraitTransient`, say "Upgrades Raw Intuition to Bloodwhetting." A regex over those descriptions links the versions into a
   family (Raw Intuition > Bloodwhetting, Sheltron > Holy Sheltron, Sentinel > Guardian, Vengeance > Damnation, Nebula > Great
   Nebula, Heart of Stone > Heart of Corundum). A family is shown as the version available at the encounter's level.
-- **Descriptions** come from `ActionTransient`. Do not rely on them for numbers: duration is often blank ("Duration: s",
-  as for Reprisal) and potency may be missing, because those values live in status data. That is why sorting skills by
-  duration or power was not built.
+- **Descriptions** come from `ActionTransient`. Read as plain text (`ToString`, `ExtractText`) the numbers that depend on level or job
+  are missing ("Duration: s", as for Reprisal), because they sit inside switches that plain text drops. That is why sorting skills by
+  duration or power was not built. See [Skill tooltips](#skill-tooltips-descriptions-at-a-level) for what the switches are.
+
+## Skill tooltips (descriptions at a level)
+
+The overlay's hover card (`ActionTooltip`, `SyncedText`) describes a skill at the encounter's level. Found with a probe over every usable
+action (October 2026, patch 7.x):
+
+- **A description holds every level's and job's text.** The switches are `If` macros on two global numbers: **gnum68 is the job** (a ClassJob
+  row id, base classes included: `[gnum68==21]` is Warrior, `[gnum68==3]` Marauder) and **gnum72 is the level** (`[gnum72>=78]`). Of 1,893
+  `If` macros, 967 read gnum68 and 903 gnum72; the comparisons are `==` and `>=` (and 3 `>`). The game answers them with your current job and
+  level, so outside a duty the tooltip shows the max-level text. They nest both ways: `<if([gnum68==21],<if([gnum72>=78],...,)>,)>`
+  (Thrill of Battle), and role actions list each job, `<if([gnum72>=98],<if([gnum68==19],15,...10)>,10)>` (Reprisal: 15s for tanks at 98).
+- Branches are strings or plain numbers (Intervention's duration is `<if([gnum68==19],<if([gnum72>=82],8,6)>,6)>`).
+- Other macros: `ColorType` and `EdgeColorType` (7,186 each, the coloured labels), `NewLine`, and `Sheet` in 6 Occult Crescent actions.
+  gnum69 appears in 20 gatherer actions and gnum110 to 112 in the Occult Crescent ones; those are left to the game.
+- **Recast and charges in the Action sheet are from before any trait.** `Recast100ms` is 1200 for Troubadour, whose trait at 88
+  says "Reduces Troubadour recast time to 90 seconds."; `MaxCharges` is 1 for Tetragrammaton and Aurora, which traits raise to 2. The traits
+  say it in their text (`TraitTransient`): "Reduces X recast time (or timer) to N seconds", "Allows the accumulation of charges for
+  consecutive uses of X. Maximum Charges: N" and "Allows a second/third charge of X". `SyncedText.RecastsSetBy` and `ChargesSetBy` read those.
+  Traits that shorten a recast by a few seconds on some event, and the haste traits, are not a new recast and are ignored.
+- `Range` -1 is melee (shown as 3y), 0 is self. `EffectRange` is the radius. `PrimaryCostType` 3 is MP, with `PrimaryCostValue` in hundreds
+  (The Blackest Night: 3/30, 3000 MP); other cost types (gauges) are already written in the description.
 - **There is no "is this defensive" flag.** Hand-written lists in `DefensiveSkills.cs` decide it (`Names` for mitigation,
   `Healing` for heals). Names are matched in English; a name that is not a real player action simply never matches (a test of
   this once removed `Eukrasian Diagnosis`, which is `Diagnosis` while Eukrasia is active, and `Seraphic Illumination`; they are offered again now that the catalog has those second forms).

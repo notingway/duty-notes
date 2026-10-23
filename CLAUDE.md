@@ -78,6 +78,8 @@ and they need the Dalamud files on disk.
 | `ControlsWindow.cs` | Reset / Previous / Next strip, a separate window under the overlay. |
 | `EditorWindow.cs` | The editor (large). Tabs Sheets and Settings; tree; row editing with drag and drop; the duty, job and skill pickers; the import window; settings groups; undo stack. |
 | `ActionCatalog.cs` | Reads the Action sheet, groups skills into upgrade families, answers "which job can use this". |
+| `ActionTooltip.cs` | The overlay's hover card for a skill, at the encounter's level and job: numbers from the Action sheet, lowered or raised by traits, and the description. |
+| `SyncedText.cs` **pure** | Answers the level and job switches in a skill description for a chosen level and job, and reads what trait texts do to recasts and charges. See docs/GAME-DATA.md, "Skill tooltips". |
 | `DefensiveSkills.cs` | Hand-curated lists of defensive and healing skill names. |
 | `DutyCatalog.cs`, `JobCatalog.cs` | Duties (from ContentFinderCondition) and jobs, for the pickers and for zone matching. |
 | `FontCache.cs` | Fonts built at real pixel sizes, for crisp scaled text. |

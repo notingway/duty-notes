@@ -22,11 +22,13 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IPlayerState PlayerState { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+    [PluginService] internal static ISeStringEvaluator SeStringEvaluator { get; private set; } = null!;
 
     internal Configuration Config { get; }
     internal ActionCatalog Catalog { get; }
     internal DutyCatalog Duties { get; }
     internal JobCatalog Jobs { get; }
+    internal ActionTooltip Tooltip { get; }
 
     private readonly WindowSystem windows = new("DutyNotes");
     private readonly OverlayWindow overlay;
@@ -41,6 +43,7 @@ public sealed class Plugin : IDalamudPlugin
         Catalog = new ActionCatalog(DataManager);
         Duties = new DutyCatalog(DataManager);
         Jobs = new JobCatalog(DataManager);
+        Tooltip = new ActionTooltip(DataManager, SeStringEvaluator, Catalog, Jobs);
 
         overlay = new OverlayWindow(this);
         controls = new ControlsWindow(this, overlay);

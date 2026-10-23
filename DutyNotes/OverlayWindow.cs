@@ -400,6 +400,9 @@ public sealed class OverlayWindow : Window, IDisposable
         var iconSize = new Vector2(Math.Clamp(cfg.IconSize, Configuration.MinIcon, Configuration.MaxIcon));
         foreach (var sheet in sections)
         {
+            // The level and job live on the encounter; a phase uses its encounter's. The skill tooltips are drawn for them.
+            var encounter = cfg.Roots.FirstOrDefault(r => r == sheet || r.Children.Contains(sheet)) ?? sheet;
+
             // Title row, in the first column.
             ImGui.TableNextRow();
 
@@ -457,7 +460,7 @@ public sealed class OverlayWindow : Window, IDisposable
                 DrawTextCell(mechanic, cfg.MechanicScale, null, widths[0], rowHeight, HAlignOf(0), VAlignOf(0), framePad);
 
                 ImGui.TableSetColumnIndex(1);
-                DrawIcons(shown, iconSize, widths[1], rowHeight, HAlignOf(1), VAlignOf(1));
+                DrawIcons(shown, iconSize, widths[1], rowHeight, HAlignOf(1), VAlignOf(1), encounter.Level, encounter.JobId);
 
                 if (notes is not null)
                 {
@@ -595,7 +598,7 @@ public sealed class OverlayWindow : Window, IDisposable
         }
     }
 
-    private void DrawIcons(List<uint> actions, Vector2 size, float cellWidth, float rowHeight, HAlign h, VAlign v)
+    private void DrawIcons(List<uint> actions, Vector2 size, float cellWidth, float rowHeight, HAlign h, VAlign v, int level, uint job)
     {
         if (actions.Count == 0) return;
 
@@ -616,7 +619,7 @@ public sealed class OverlayWindow : Window, IDisposable
 
             var wrap = Plugin.TextureProvider.GetFromGameIcon(new GameIconLookup(info.Icon)).GetWrapOrEmpty();
             ImGui.Image(wrap.Handle, size);
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip(info.Name);
+            if (ImGui.IsItemHovered()) plugin.Tooltip.Draw(info, level, job);
         }
     }
 }
