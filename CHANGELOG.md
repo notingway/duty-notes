@@ -3,6 +3,12 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
+## [Unreleased]
+
+### Changed
+
+- **Show phase buttons moved to the top of the editor.** The switch is now with the quick toggles above the tabs, after **Show full encounter**, instead of in the Settings tab; the Layout section's **Reset** still restores it. While the whole encounter is showing it is greyed out but keeps its tick, and hovering it says why. It is also in the overlay's right-click menu, next to **Show full encounter** (it already was). The toggles at the top now wrap onto a second line in a narrow editor instead of running off its edge. Not yet checked in game.
+
 ## [0.1.6] - 2026-10-24 (experimental)
 
 ### Added

@@ -74,7 +74,8 @@ Open the editor with `/dutynotes edit`.
 1. **Sheets tab:** add an encounter with **+ Encounter** (it starts with a first phase; rows live in phases, so for a fight with no phases use one phase named after it), and more phases with **+ Phase**. Pick its **Duty** and **Job**. The icons under a sheet's name (Duplicate, Export, Delete; hover for the tooltip) act on it, and you reorder encounters, and the phases inside one, by dragging them in the list; **+ Encounter**, **+ Phase** and **Import** on the left add things.
    **Add mechanic row** and **Add note row** add a row at the end. Right-click the background of any row for a menu: add a mechanic or note row above or below it, duplicate it, or delete it (duplicate and delete are also icons at the bottom of the row, after its **Show row** tick). Use **+** on a row to add actions (including **Limit Break**), and drag a row by its background to reorder it. The tick beside a row or phase switches it off.
 2. **Settings tab:** behavior (auto-select, auto open, auto hide, cutscenes), layout (including how each column is aligned) and style. Each section
-   has a **Reset** button that can be undone.
+   has a **Reset** button that can be undone. The switches you flip most (**Show overlay**, **Lock overlay**, **Show full encounter**, **Show phase buttons**)
+   are at the top of the editor, above the tabs; the last three are also in the overlay's right-click menu.
 3. **Help tab:** the chat commands, and macros to copy.
    The overlay starts hidden each time the game starts. Show it with `/dutynotes`, with **Show overlay** in the editor, or let auto-select open it when you enter a duty with a sheet for your job.
 4. The overlay itself: right-click it for a menu. Hold **Ctrl** while right-clicking if it is locked.

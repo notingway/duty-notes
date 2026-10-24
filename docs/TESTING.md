@@ -88,10 +88,11 @@ Everything the plugin did up to the SDK switch, and everything added since, was 
 
 ### Built, but not yet confirmed in game
 
-Nothing at the moment: everything in the plugin has been run in game and passed. When something new is built, add it here as a row (the feature and what to check), and move it up to the list above once the owner has confirmed it.
+When something new is built, add it here as a row (the feature and what to check), and move it up to the list above once the owner has confirmed it.
 
 | Feature | What to check |
 | --- | --- |
+| **Show phase buttons** at the top of the editor | It sits after **Show full encounter** with its (?) help, before **Undo**, and is gone from the Settings tab's Layout section. With the full encounter showing it is greyed out but keeps its tick, and hovering it gives the reason; untick the full encounter and it works, and the Reset / Previous / Next buttons appear or disappear with it. It stays in step with the same item in the overlay's right-click menu, survives a reload, and Layout's **Reset** (and its undo) still covers it. Narrow the editor: the toggles wrap onto a second line instead of running off the edge. |
 
 When something fails, check the Dalamud log first (`%APPDATA%\XIVLauncher\dalamud.log`; search for `DutyNotes`, `Switched to`, and
 `ImGui assertion failed`). Auto-select writes a `Switched to "<name>" for territory N, job N` line.

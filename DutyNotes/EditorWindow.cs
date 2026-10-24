@@ -106,7 +106,25 @@ public sealed class EditorWindow : Window
         ImGui.EndChild();
     }
 
-    /// <summary>The two switches you flip often, always visible above the tabs.</summary>
+    /// <summary>
+    /// Puts the next item on the same line if <paramref name="width"/> still fits there, else on a new line,
+    /// so the quick toggles wrap in a narrow window instead of running off its edge.
+    /// </summary>
+    private static void SameLineIfFits(float width)
+    {
+        ImGui.SameLine();
+        if (ImGui.GetContentRegionAvail().X < width) ImGui.NewLine();
+    }
+
+    /// <summary>Width of a checkbox and the (?) marker after it.</summary>
+    private static float CheckboxWithHelpWidth(string label)
+    {
+        var style = ImGui.GetStyle();
+        return ImGui.GetFrameHeight() + style.ItemInnerSpacing.X + ImGui.CalcTextSize(label).X
+               + style.ItemSpacing.X + ImGui.CalcTextSize("(?)").X;
+    }
+
+    /// <summary>The switches you flip often, always visible above the tabs.</summary>
     private void DrawQuickToggles(Configuration cfg)
     {
         var overlayOn = cfg.OverlayVisible;
@@ -122,7 +140,7 @@ public sealed class EditorWindow : Window
         HelpMarker("Locked: the overlay is click-through and its title bar is hidden.\nUnlock it to move, resize or switch sheets from the overlay itself.\n" +
                    "Right-click the overlay for a menu with these switches; hold Ctrl while right-clicking if it is locked.");
 
-        ImGui.SameLine();
+        SameLineIfFits(CheckboxWithHelpWidth("Show full encounter"));
         dirty |= ImGui.Checkbox("Show full encounter", ref cfg.ShowFullEncounter);
         ImGui.SameLine();
         HelpMarker("On: the overlay shows the whole encounter, every phase one under the other.\n" +
@@ -132,8 +150,21 @@ public sealed class EditorWindow : Window
                    "While this editor is open the overlay shows what is selected here instead.\n" +
                    "Also available as /dutynotes full.");
 
-        // Undo for deletions (also Ctrl+Z while this window is focused and no text box is being edited).
+        // The buttons only exist in single-phase mode, so the box is greyed out (but keeps its tick) in full mode.
+        SameLineIfFits(CheckboxWithHelpWidth("Show phase buttons"));
+        ImGui.BeginDisabled(cfg.ShowFullEncounter);
+        dirty |= ImGui.Checkbox("Show phase buttons", ref cfg.ShowControls);
+        ImGui.EndDisabled();
+        if (cfg.ShowFullEncounter && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip("Hidden while the whole encounter is showing.\nUntick \"Show full encounter\" to use them.");
         ImGui.SameLine();
+        HelpMarker("Show Reset, Previous and Next buttons under the overlay for moving between phases.\n" +
+                   "They only appear when the overlay shows a single phase, not the whole encounter.\n" +
+                   "The same actions are available as chat commands, for macros:\n" +
+                   "/dutynotes reset, /dutynotes prev, /dutynotes next");
+
+        // Undo for deletions (also Ctrl+Z while this window is focused and no text box is being edited).
+        SameLineIfFits(ImGui.CalcTextSize("Undo").X + ImGui.GetStyle().FramePadding.X * 2);
         ImGui.BeginDisabled(undoStack.Count == 0);
         if (ImGui.Button("Undo")) Undo();
         ImGui.EndDisabled();
@@ -238,21 +269,7 @@ public sealed class EditorWindow : Window
     {
         GroupHeader("Layout", cfg.IsLayoutDefault, cfg.ResetLayout);
 
-
-        dirty |= ImGui.Checkbox("Show phase buttons", ref cfg.ShowControls);
-        ImGui.SameLine();
-        if (cfg.ShowFullEncounter)
-        {
-            // Ticked but not on screen would look like a bug, so say why.
-            ImGui.AlignTextToFramePadding();
-            ImGui.TextDisabled("(hidden while the whole encounter is showing)");
-            ImGui.SameLine();
-        }
-        HelpMarker("Show Reset, Previous and Next buttons under the overlay for moving between phases.\n" +
-                   "They only appear when the overlay shows a single phase, not the whole encounter.\n" +
-                   "The same actions are available as chat commands, for macros:\n" +
-                   "/dutynotes reset, /dutynotes prev, /dutynotes next");
-
+        // Show full encounter and Show phase buttons are quick toggles at the top, but belong to this section's Reset.
         dirty |= ImGui.Checkbox("Show column headers", ref cfg.ShowHeaders);
         ImGui.SameLine();
         HelpMarker("Show Mechanic / Actions / Notes labels under every phase title.");
