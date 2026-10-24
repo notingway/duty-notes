@@ -22,7 +22,7 @@ cannot redirect.
 - [x] **Both repositories are public** (done on 2026-10-18). Players can't download from a private repository, and Dalamud's custom repositories have no sign-in.
 - [x] **An icon** at `images/icon.png` in this repository: square, 64 to 512 pixels, PNG (done: generated with ChatGPT and credited in the README). One screenshot is in (`images/image1.png`, the overlay on a sheet); up to four more are optional (`image2.png` to `image5.png`, at most 730 x 380 pixels each). The release script adds their addresses to the index if the files exist. Not enforced by Dalamud for custom repositories, but the plugin looks bare without them.
 - [x] **`plogonway` is cloned next to this repository** (`C:\dev\github\notingway\plogonway`), and `gh` is signed in (`gh auth status`).
-- [ ] **A test install** on the owner's machine, before telling anyone (see below).
+- [x] **A test install** on the owner's machine, before telling anyone (see below). Done with v0.1.6 on 2026-10-24.
 
 ## Making a release
 
@@ -56,7 +56,7 @@ index fails after the release was created, it says so: fix the problem in the in
 
 The icon and screenshot addresses are in `DutyNotes.csproj` (`IconUrl`, `ImageUrls`) and also written into the index entry by the script. Both are needed: an installed plugin shows the icon named in the manifest inside `latest.zip`, while the plugin list before installing shows the one in the index.
 
-- **v0.1.6** (2026-10-24), a pre-release: skill tooltips at the encounter's level (the full card with the skill's cast, recast, range, description and numbers as at that level and job; see CHANGELOG). Confirmed on the dev build by the owner. Not yet installed from the repository.
+- **v0.1.6** (2026-10-24), a pre-release: skill tooltips at the encounter's level (the full card with the skill's cast, recast, range, description and numbers as at that level and job; see CHANGELOG). Confirmed on the dev build by the owner, then installed from the repository (the plogonway plugin list, with the dev plugin off) and confirmed working by the owner on 2026-10-24: `/dutynotes edit`, the sample import, the overlay, and the icon after a game restart.
 - **v0.1.5** (2026-10-19), a pre-release: sharper text while a size is built, a new encounter is selected (not its first phase), new phases are called "New phase", and the 0.1.4 font log lines are removed. Not yet installed from the repository.
 - **v0.1.4** (2026-10-18), a pre-release: text scaling for players with another global UI scale (see CHANGELOG), sent to one tester. Reported working on her machine after a first test where the text was still blurry (the stretched fallback); what changed between the two tests is not known.
 - **v0.1.3** (2026-10-18), a pre-release: the second forms of some actions in the picker (see CHANGELOG). Not yet installed from the repository.
