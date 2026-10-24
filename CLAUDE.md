@@ -279,8 +279,8 @@ The same trick works for testing logic outside the game: a temp console project 
 
 ## Where things stand
 
-See [ROADMAP.md](ROADMAP.md) for the open work and [docs/TESTING.md](docs/TESTING.md) for what is confirmed in game. At the time
-of writing (18 October 2026) the owner had run everything in `docs/TESTING.md` in game and it all passed, with nothing outstanding.
-The repository (`notingway/duty-notes`) is private. The plugin builds with `Dalamud.NET.Sdk`, the tests are xunit, and the publishing
+See [ROADMAP.md](ROADMAP.md) for the open work and [docs/TESTING.md](docs/TESTING.md) for what is confirmed in game. As of
+24 October 2026 the owner has confirmed everything in `docs/TESTING.md` in game, including 0.1.6's skill tooltips, with nothing outstanding.
+The repositories (`notingway/duty-notes` and `notingway/plogonway`) are public, and releases are made with `scripts\release.ps1`. The plugin builds with `Dalamud.NET.Sdk`, the tests are xunit, and the publishing
 steps still to do are in the roadmap. Anything built after that date is unconfirmed until the owner says otherwise: add it to the
 "Built, but not yet confirmed" table in `docs/TESTING.md`, and start the next session by asking the owner what they saw.

@@ -5,19 +5,16 @@ What is left, in rough priority order, and what was deliberately not done. See
 
 ## First: confirm what is built but unseen
 
-Several features were built and pass their automated tests but have not been seen in game. Check them before adding more.
-The list is in [docs/TESTING.md](docs/TESTING.md#built-but-not-yet-confirmed-in-game). Anything that behaves oddly comes before
-the items below.
+Nothing is outstanding: as of 24 October 2026 everything built has been confirmed in game. Something new goes in
+[docs/TESTING.md](docs/TESTING.md#built-but-not-yet-confirmed-in-game) until the owner has seen it, and anything that behaves oddly
+comes before the items below.
 
 ## Open
 
 1. **Continuous integration** (a GitHub Actions workflow): **not wanted for now.** The owner's call (2026-10-18): all changes are made through one AI session that builds and runs the tests locally before every push (the release script also builds and tests before it releases), so CI would only repeat that. It becomes worth it if other people start sending changes, or for a scheduled build against the newest Dalamud to warn of an API bump. Plan if it is wanted: set up .NET 10, download Dalamud's published distribution (the assemblies are not on NuGet; check what it contains first, and point `DalamudLibPath` at it, which both projects already support), build the plugin, run `dotnet test` and check the package. Free for public repositories.
-2. **Publishing.** Needed only if it is released:
-   - the repository exists (`notingway/duty-notes`, private for now) and is already the manifest's `RepoUrl`; it has to be made public;
-   - already done: the build uses `Dalamud.NET.Sdk` and generates the manifest and `latest.zip`; the custom repository `notingway/plogonway` exists (private) with an empty `plogonway.json`; `scripts\release.ps1` and `docs/RELEASING.md` are written (the script has been dry-run only);
-   - the icon (`images/icon.png`) and one screenshot (`images/image1.png`) are done; still to do for a first experimental release: more screenshots (optional), making `duty-notes` and `plogonway` public, the first real `scripts\release.ps1` run, and a test install (see `docs/RELEASING.md`);
-   - an icon, the custom repository entry (`pluginmaster.json`), `ApplicableVersion`, the version and a changelog entry;
-   - decide whether to test through a testing channel first.
+2. **Publishing.** Experimental releases are out (see `docs/RELEASING.md`):
+   - done: both repositories (`notingway/duty-notes` and the custom repository `notingway/plogonway`) have been public since 2026-10-18, and releases v0.1.0 to v0.1.6 were made with `scripts\release.ps1`, all as pre-releases;
+   - still to do: a test install from the repository of a recent version (only v0.1.0, v0.1.1 and v0.1.4 have been installed that way), and deciding when to make a full, non-pre-release.
 3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
 4. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
