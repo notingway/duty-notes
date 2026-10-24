@@ -3,7 +3,9 @@
 All notable changes. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 The first release is 0.1.0, an experimental one through the custom plugin repository.
 
-## [Unreleased]
+## [1.0.0] - 2026-10-24
+
+The first full release (no longer experimental). Since 0.1.6, **Show phase buttons** moved to the top of the editor, the README says the plugin is made for the English game client, and everything in the plugin has been confirmed in game.
 
 ### Changed
 
