@@ -158,6 +158,14 @@ you clicked in the tree.
   export and import of single encounters covers sharing and keeping a copy, and Dalamud keeps the settings file itself. If it is ever
   wanted again, export the whole list instead of rebuilding a second format. Settings left in older files by it are ignored on load.
 
+## Client language
+
+- **English client only, for now** (the owner, 2026-10-24: "only english for now until someone requests language support").
+  Three features read English game text (the "Only defensive" filter, upgrade chains, and trait recasts and charges in the
+  tooltip), so on German, French and Japanese clients they fail quietly; everything else works, and shared sheets carry ids,
+  not names. The audience is small so far and the fix is known and small (read those sheets in English and link by row id;
+  see the roadmap), so it waits until someone asks. The README says so.
+
 ## The fix worth remembering
 
 Dalamud saves with type names and loads by filling lists that already exist. For any list inside a saved class that duplicated

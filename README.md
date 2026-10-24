@@ -34,6 +34,12 @@ It is a [Dalamud](https://github.com/goatcorp/Dalamud) plugin, built for people 
   how each column is aligned, and a right-click menu on the overlay.
 - **Help built in.** A Help tab lists the chat commands, with macros and icons to copy for next, prev and reset.
 
+**Made for the English game client.** On a German, French or Japanese client everything works except three things that
+read the game's English text: the picker's **Only defensive** filter (it shows nothing), upgrade chains (searching a skill
+doesn't give the version you have at the encounter's level), and the recast and charges that traits change in a skill's
+tooltip (the base values are shown). Names and descriptions show in your client's language either way, and shared sheets
+work across languages. If you would like your language supported, ask for it in an issue.
+
 ## Install
 
 You need the XIVLauncher with Dalamud installed, and the game.

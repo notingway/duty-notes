@@ -19,6 +19,8 @@ comes before the items below.
 3. **An accent for note rows** (a dimmer text colour, or a bar at the left) if they are hard to tell from mechanic rows.
 4. **Remember that auto-select opened the overlay across a plugin reload.** Today `overlayOpenedByUs` is in memory, so
    reloading the plugin while inside a duty means leaving that duty will not hide the overlay.
+5. **Other client languages (German, French, Japanese).** Deferred by the owner (2026-10-24) until someone asks. Today three things read English game text and fail on other clients: the picker's "Only defensive" filter, upgrade chains, and the tooltip's recast and charges from traits (see the README). Plan: the global client ships English text for every sheet, so read `Trait`/`TraitTransient` and the `Action` names used for the `DefensiveSkills` matching in English (`IDataManager.GetExcelSheet<T>(ClientLanguage.English)`) and link them by row id, in `ActionCatalog` (`UpgradeRegex`, `DefensiveSkills`) and `ActionTooltip` (`SyncedText.RecastsSetBy`/`ChargesSetBy`); what is displayed stays in the client's language. Chinese and Korean clients don't ship English, but they use their own Dalamud builds.
+
 ## Ideas considered and left
 
 - **Reset to the first phase on a wipe.** Nothing watches combat, wipes or death today: Reset is the button or `/dutynotes reset` only (it goes to the first phase that is on). Automatic reset would use Dalamud's `ICondition` (combat state, death) but a wipe has no single signal, so it could misfire. If it is ever built: a setting, off by default, and a decision on the trigger first. Left as it is for now (the owner, 2026-10-18).
