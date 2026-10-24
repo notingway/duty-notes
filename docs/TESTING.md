@@ -24,7 +24,6 @@ At the time of writing: **78 tests, 317 checks, all passing.** (This is the one 
 
 | Test class | What it checks |
 | --- | --- |
-
 | `NavigationTests` (stepping between phases) | Next, Previous and Reset (including the ends and encounters without phases), fallbacks for deleted ids, how the editor's selection drives the navigation, stepping from the encounter view |
 | `SettingsTests` (defaults, resets, overlay visibility) | The defaults, each section's Reset and its undo, "is this section at its defaults", the show and hide decisions of auto-select, sheet helpers (`HasContent`, `Clone`) |
 | `SerializationTests` (saving and loading settings) | Loading the way Dalamud does, repeated, with no duplication (a regression test for a real bug); the one-time rewrite of the old type names; older and odd files; healing deep or duplicated trees |
